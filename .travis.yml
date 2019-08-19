@@ -3,8 +3,8 @@ language: php
 php:
   - 7.1.9
   
-before_deploy:
-  - ./pre_deploy.sh
+before_install:
+  - ./before_install.sh
 
 deploy:
   provider: elasticbeanstalk
