@@ -1,0 +1,1 @@
+./vendor/bin/phpmd . html unusedcode,controversial,design
