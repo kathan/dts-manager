@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env sh
 echo pwd
 echo "Downloading phpMyAdmin"
 curl -O https://files.phpmyadmin.net/phpMyAdmin/4.9.0.1/phpMyAdmin-4.9.0.1-all-languages.zip
