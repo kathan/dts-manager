@@ -1,1 +1,1 @@
-./vendor/bin/phpmd . html unusedcode,controversial,design
+./vendor/bin/phpmd . html unusedcode,controversial,design >> phpmd_results.html
