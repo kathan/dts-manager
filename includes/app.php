@@ -1,5 +1,5 @@
 <?php
-//ini_set();
+ini_set('error_reporting', E_ALL);
 error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 date_default_timezone_set('America/Chicago');
 //==========App Settings===========
