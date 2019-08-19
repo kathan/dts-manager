@@ -1,0 +1,245 @@
+body
+{
+	font-family:Arial;
+	padding:0px;
+	margin:0px;
+}
+td
+{
+	vertical-align:top;
+}
+table
+{
+	padding:0pt;
+	border-bottom:solid 1px black;
+	width:100%;
+}
+
+#bol
+{
+	/*height:678pt;*/
+	
+	width:528pt;
+	border:solid 1pt black;
+	border-bottom:0px;
+	
+}
+
+.ship_from, .row5, .row7
+{
+	height:70pt;
+}
+
+.row
+{
+	display:table-row;
+	padding:0pt;
+}
+
+.header
+{
+	font-stretch:condensed;
+	font-size:12pt;
+	font-weight:bold;
+	text-align:center;
+	
+}
+
+.row1
+{
+	height:13pt;
+	vertical-align:middle;
+}
+
+.row2, .row4, .row6
+{
+	height:15pt;
+	vertical-align:middle;
+}
+
+.row8
+{
+	height:84pt;
+}
+
+.row9
+{
+	height:43pt;
+}
+
+.col1_a
+{
+	width:318pt;
+}
+
+.col1_b
+{
+	width:424pt;
+}
+
+.col2_a
+{
+	width:210pt;
+}
+
+.col2_b
+{
+	width:104;
+}
+
+.reverse
+{
+	background-color:black;
+	color:white;
+	font-size:12pt;
+	text-align:center;
+	
+}
+
+.ship_to, .ship_from, .third_party
+{
+	padding-left:1em;
+	font-size:10pt;
+}
+
+.references, .ship_to
+{
+	vertical-align:top;
+}
+.ship_to
+{
+	height:72pt;
+}
+.t_head
+{
+	height:22pt;
+}
+.freight_terms, .special_instructions
+{
+	width:104pt;
+	font-size:10pt;
+	padding:2pt;
+}
+.t_head
+{
+	font-size:8pt;
+	padding:2pt;
+}
+
+/*.special_instructions
+{
+	font-size:10pt;
+	padding:2pt;
+	font-family:monospace;
+}*/
+
+.t_head
+{
+	text-align:center;
+	width:62pt;
+	font-weight:bold;
+}
+
+.col6_c
+{
+	width:298pt;
+}
+
+.item_table
+{
+	font-size:9pt;
+	height:12pt;
+	text-align:center;
+}
+
+.col1_d
+{
+	width:257pt;
+}
+
+.liability_limit
+{
+	font-size:6pt;
+	padding:2pt;
+	line-height: 200%;
+	
+}
+
+.cod_amount
+{
+	font-weight:bold;
+	font-size:10pt;
+	line-height: 200%;
+}
+
+.liability_note
+{
+	font-weight:bold;
+	font-size:7pt;
+	text-align:center;
+	vertical-align:middle;
+	height:10pt;
+	
+}
+.col1_e
+{
+	width:265pt;
+}
+
+.agreement
+{
+	height:58pt;
+	font-size:8.5pt;
+	padding:2pt;
+}
+.shipper_sig, .carrier_sig
+{
+	font-size:8pt;
+	padding:2pt;
+}
+
+.shipper_sig
+{
+	height:68pt;
+}
+
+.trailer_loaded, .freight_counted
+{
+	font-size:10pt;
+	font-weight:bold;
+	line-height:175%;
+	width:118pt;
+	padding:2pt;
+}
+
+.shipper_sig_title, .carrier_sig_title, .freight_terms_title, .special_instructions_title
+{
+	font-weight:bold;
+	font-family:Arial;
+}
+
+.bottom_border
+{
+	border-bottom-style:solid;
+	border-bottom-width:1pt;
+	border-bottom-color:black;
+}
+
+.top_border
+{
+	border-top-style:solid;
+	border-top-width:1pt;
+	border-top-color:black;
+}
+
+.right_border
+{
+	border-right-style:solid;
+	border-right-width:1pt;
+	border-right-color:black;
+}
+
+.liability_note, .carrier_sig
+{
+	
+}

@@ -1,0 +1,109 @@
+<style type='text/css'>
+.row1
+{
+	background-color:#D3D3D3;
+}
+
+.row1:hover
+{
+	background-color:#4169E1;
+	color:white;
+	cursor:pointer;
+}
+
+.row2:hover
+{
+	background-color:#4169E1;
+	color:white;
+	cursor:pointer;
+}
+
+.row1
+{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#4169E1'; this.style.color='white';this.style.cursor='pointer';"),
+                  onmouseout=new Function("this.style.backgroundColor='#D3D3D3'; this.style.color='black';this.style.cursor='default';"));
+}
+
+.row2
+{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#4169E1'; this.style.color='white';this.style.cursor='pointer';"),
+                  onmouseout=new Function("this.style.backgroundColor='white'; this.style.color='black';this.style.cursor='default';"));
+}
+
+.row2
+{
+	background-color:white;
+}
+div.tableContainer {
+	width:95%;
+	height: 101px; 	/* must be greater than tbody*/
+	overflow: auto;
+	margin: 0 auto;
+	border:1px solid black;
+	}
+
+table.list {
+	width: 100%;		/*100% of container produces horiz. scroll in Mozilla*/
+	border: none;
+	background-color: #f7f7f7;
+	}
+	
+table.list>tbody	{  /* child selector syntax which IE6 and older do not support*/
+	overflow: auto;
+	width:90%;
+	height: 100px;
+	overflow-x: hidden;
+	}
+	
+table.list>thead table.list>tr	{
+	position:relative; 
+	top: expression(offsetParent.scrollTop); /*IE5+ only*/
+	}
+	
+table.list>thead .list>td, table.list>thead table.list>th {
+	text-align: center;
+	font-size: 14px; 
+	background-color: oldlace;
+	color: steelblue;
+	font-weight: bold;
+	border-top: solid 1px #d8d8d8;
+	}	
+	
+table.list>td	{
+	color: #000;
+	padding-right: 2px;
+	font-size: 12px;
+	text-align: right;
+	border-bottom: solid 1px #d8d8d8;
+	border-left: solid 1px #d8d8d8;
+	}
+
+table.list>tfoot table.list>td	{
+	text-align: center;
+	font-size: 11px;
+	font-weight: bold;
+	background-color: papayawhip;
+	color: steelblue;
+	border-top: solid 2px slategray;
+	}
+
+table.list>td:last-child {padding-right: 20px;} /*prevent Mozilla scrollbar from hiding cell content*/
+
+</style>
+<style type='text/css' media='print'>
+div.tableContainer {overflow: visible;	}
+table>tbody	{overflow: visible; }
+td {height: 14pt;} /*adds control for test purposes*/
+thead td	{font-size: 11pt;	}
+tfoot td	{
+	text-align: center;
+	font-size: 9pt;
+	border-bottom: solid 1px slategray;
+	}
+	
+thead	{display: table-header-group;	}
+tfoot	{display: table-footer-group;	}
+thead th, thead td	{position: static; } 
+
+
+</style>

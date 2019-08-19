@@ -1,5 +1,5 @@
 /vendor
-
+/templates_c
 .DS_Store
 nbproject
-phpmd_results.html
+phpmdresults.html

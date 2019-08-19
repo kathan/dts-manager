@@ -1,0 +1,302 @@
+/*==== Start Menu =====*/
+.frame
+{
+	border:solid black 1px;
+}
+.faux_edit
+{
+	font-family:"sans serif";
+	border-top:2px #848484 solid;
+	border-left:2px #848484 solid;
+	border-bottom:2px #fafafa solid;
+	border-right:2px #fafafa solid;
+	background-color:#f0f0f0;
+	color:#7f7f8e;
+	width:10.4em;
+}
+.tab
+{
+	/*width:100%;*/
+	font-size:.95em;
+	/*line-height:normal;*/
+	/*border:1px solid black;*/
+}
+checkbox, textarea, select
+{
+	font-size:.95em;
+}
+.tab ul
+{
+	list-style:none;
+}
+
+.tab li
+{
+	display:inline;
+}
+
+.tab a
+{
+	padding-left:1em;
+	float:left;
+	background: #CCC url("http://darrelkathan.com/dts/images/tab-left.gif") no-repeat left top;
+	margin-right:1px;
+	padding-bottom:.25em;
+	text-decoration:none;
+}
+
+.tab a span
+{
+	float:left;
+	display:block;
+	background: #CCC url("http://darrelkathan.com/dts/images/tab-right.gif") no-repeat right top;
+	padding-right:1em;
+	padding-top:.5em;
+	padding-bottom:.25em;
+	color:#FFF;
+}
+    
+.tab_sep
+{
+	height:1em;
+	background:#000;
+}
+.active_tab
+{
+	background: #000;
+}
+
+.active_tab span
+{
+	float:left;
+	display:block;
+	background: #000;
+	padding-right:1em;
+	padding-top:.5em;
+	padding-bottom:.25em;
+	color:#FFF;
+}
+/*=== End Menu =====*/
+.load_list
+{
+	height:0px;
+}
+fieldset
+{
+	background-color:white;
+	
+}
+td
+{
+	vertical-align:top;
+}
+
+legend
+{
+	font-weight:bold;
+	background-color:white;
+	padding:3px;
+	border-top:1px solid #848484;
+	border-left:1px solid #848484;
+	border-right:2px ridge #848484;
+	border-bottom:2px ridge #848484;
+}
+a
+{
+	text-decoration:none;
+}
+.edit_class
+{
+	text-align:left;
+}
+.label_class
+{
+	text-align:right;
+}
+body
+{
+	font-size:.75em;
+	font-family:sans-serif;
+}
+.row1
+{
+	background-color:#D3D3D3;
+}
+
+.row1:hover
+{
+	background-color:#4169E1;
+	color:white;
+	/*cursor:pointer;*/
+}
+
+.row2:hover
+{
+	background-color:#4169E1;
+	color:white;
+	/*cursor:pointer;*/
+}
+
+/*.row1
+{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#4169E1'; this.style.color='white';this.style.cursor='pointer';"),
+                  onmouseout=new Function("this.style.backgroundColor='#D3D3D3'; this.style.color='black';this.style.cursor='default';"));
+}
+
+.row2
+{
+	h: expression(onmouseover=new Function("this.style.backgroundColor='#4169E1'; this.style.color='white';this.style.cursor='pointer';"),
+                  onmouseout=new Function("this.style.backgroundColor='white'; this.style.color='black';this.style.cursor='default';"));
+}*/
+
+
+.row2
+{
+	background-color:white;
+}
+
+.menu_item
+{
+
+	border-right:1px solid gray;
+	width:6em;
+
+	cursor:pointer;
+	/*background-color: lightGray;*/
+ 	text-align: center;
+ 	padding: 0px 3px 0px 3px;
+ 	margin: 3px;
+ 	vertical-align:bottom;
+	/*color: white;*/
+	/*width:100px;*/
+	/*BORDER: #CCCCCC 1px solid;
+	font-size: 12px;
+	display:block;
+	background-image:url('http://darrelkathan.com/dts/images/tab.gif');*/
+}
+
+/*==== Calendar ====*/
+	.cpYearNavigation,
+	.cpMonthNavigation
+			{
+			background-color:#6677DD;
+			text-align:center;
+			vertical-align:middle;
+			text-decoration:none;
+			color:#FFFFFF;
+			font-weight:bold;
+			}
+	.cpDayColumnHeader,
+	.cpYearNavigation,
+	.cpMonthNavigation,
+	.cpCurrentMonthDate,
+	.cpCurrentMonthDateDisabled,
+	.cpOtherMonthDate,
+	.cpOtherMonthDateDisabled,
+	.cpCurrentDate,
+	.cpCurrentDateDisabled,
+	.cpTodayText,
+	.cpTodayTextDisabled,
+	.cpText
+			{
+			font-family:arial;
+			font-size:8pt;
+			}
+	TD.cpDayColumnHeader
+			{
+			text-align:right;
+			border:solid thin #6677DD;
+			border-width:0px 0px 1px 0px;
+			}
+	.cpCurrentMonthDate,
+	.cpOtherMonthDate,
+	.cpCurrentDate
+			{
+			text-align:right;
+			text-decoration:none;
+			}
+	.cpCurrentMonthDateDisabled,
+	.cpOtherMonthDateDisabled,
+	.cpCurrentDateDisabled
+			{
+			color:#D0D0D0;
+			text-align:right;
+			text-decoration:line-through;
+			}
+	.cpCurrentMonthDate
+			{
+			color:#6677DD;
+			font-weight:bold;
+			}
+	.cpCurrentDate
+			{
+			color: #FFFFFF;
+			font-weight:bold;
+			}
+	.cpOtherMonthDate
+			{
+			color:#808080;
+			}
+	TD.cpCurrentDate
+			{
+			color:#FFFFFF;
+			background-color: #6677DD;
+			border-width:1px;
+			border:solid thin #000000;
+			}
+	TD.cpCurrentDateDisabled
+			{
+			border-width:1px;
+			border:solid thin #FFAAAA;
+			}
+	TD.cpTodayText,
+	TD.cpTodayTextDisabled
+			{
+			border:solid thin #6677DD;
+			border-width:1px 0px 0px 0px;
+			}
+	A.cpTodayText,
+	SPAN.cpTodayTextDisabled
+			{
+			height:20px;
+			}
+	A.cpTodayText
+			{
+			color:#6677DD;
+			font-weight:bold;
+			}
+	SPAN.cpTodayTextDisabled
+			{
+			color:#D0D0D0;
+			}
+	.cpBorder
+			{
+			border:solid thin #6677DD;
+			}
+/*==== End Calendar ====*/
+
+
+/*#load_warehouse.tableContainer
+{
+	height: 4.1em;
+}
+#warehouse.list>tbody
+{
+	height: 4em;
+}*/
+.bold
+{
+	font-weight:bold;
+}
+.border
+{
+	border:solid black 1px;
+}
+.left
+{
+	text-align:left;
+}
+.right
+{
+	text-align:right;
+}
