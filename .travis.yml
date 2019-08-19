@@ -3,6 +3,9 @@ language: php
 php:
   - 7.1.9
   
+before_deploy:
+  - ./pre_deploy.sh
+
 deploy:
   provider: elasticbeanstalk
   access_key_id: 
