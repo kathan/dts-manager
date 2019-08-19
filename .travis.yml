@@ -11,5 +11,5 @@ deploy:
     secure: $AWS_SECRET_ACCESS_KEY
   region: "us-east-1"  
   app: "dts-manager"
-  env: "dts-manager-dev"
+  env: "DtsManager-dev"
   bucket_name: "dts-manager-s3-bucket"
