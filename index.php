@@ -31,8 +31,8 @@ if(isset($_GET['r'])){
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="stylesheet" href="style.css" type="text/css" media="all">
-		<script src="events.js.php" type="text/javascript"></script>
-		<script src="jquery.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/events.js.php"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="scripts/jquery.ui.js"></script>
 		<script type="text/javascript" src="scripts/jquery.datepick.js"></script>
 		<script src="base.js" type="text/javascript"></script>
