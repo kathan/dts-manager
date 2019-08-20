@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 date_default_timezone_set('America/Chicago');
 //==========App Settings===========
 define('SITE_NAME', 'DTS');
-define('APP_ROOT', '/dts');
 define('HTTP_ROOT', "$_SERVER[HTTP_HOST]".APP_ROOT);
 define('IMG_ROOT', HTTP_ROOT."/images");
 define('CGI_ROOT', "$_SERVER[HTTP_HOST]/cgi-bin");

@@ -1,43 +1,32 @@
 <?php
-	/*=================================
-	|
-	|
-	|
-	=================================*/
-	require_once('includes/global.php');
-	require_once('includes/auth.php');
-	//include_once("includes/hit.php");
-	global $feedback;
+    /*=================================
+    |
+    |
+    |
+    =================================*/
+    require_once('includes/global.php');
+    require_once('includes/auth.php');
+    global $feedback;
 	
-	if (isset($_POST['submit']))
-	{
-	//echo md5($_POST['password']);
-		if (login($_POST['username'], $_POST['password']))
-		{	
-			/*=================================
-			|When the user successfully logs in,
-			|forward him to the loggedin.php page
-			|so the current cookie state is used.
-			=================================*/
-			//echo "You have been logged in.";
-			//header("Location: http://".HTTP_ROOT."/");
-		}else{
-			logError("not logged in", "login");
-			loginform();
-		}
+    if (isset($_POST['submit'])){
+        if (login($_POST['username'], $_POST['password'])){	
+            /*=================================
+            |When the user successfully logs in,
+            |forward him to the loggedin.php page
+            |so the current cookie state is used.
+            =================================*/
 	}else{
-		
-		if(logged_In())
-		{
-			//header("Location: /new");
-			
-		}else{
-			echo loginForm();
-		}
+            logError("not logged in", "login");
+            loginform();
+        }
+    }else{
+        if(!logged_In()){
+            echo loginForm();
 	}
-	echo $feedback;
-function loginForm()
-{
+    }
+    echo $feedback;
+    
+function loginForm(){
 	$content = "
 	<img src='http://".IMG_ROOT."/dts.gif'>
 	<table class='center'>
@@ -71,6 +60,5 @@ function loginForm()
 ";
 return $content;
 }	
-
 
 ?>

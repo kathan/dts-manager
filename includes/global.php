@@ -1,156 +1,125 @@
 <?php
-	global $feedback;
+global $feedback;
 	
-	require_once("database.php");
+require_once("database.php");
 	
-	function safe_define($key, $value)
-	{
-		if(!defined($key))
-		{
-			define($key, $value);
-		}
+function safe_define($key, $value){
+    if(!defined($key)){
+	define($key, $value);
+    }
+}
+
+function array2query(){
+    $args = func_get_args();
+    $ary = $args[0];
+    unset($args[0]);
+    $ex = $args;
+    if(is_array($ary)){
+	$i=0;
+	$str = '';
+	foreach($ary as $key => $val){
+            if(!in_array($key, $ex)){
+		$i > 0 ? $str .= '&amp;' : '';
+		$str .= "$key=".urlencode($val);
+		$i++;
+            }
 	}
-	function array2query()
-	{
-		$args = func_get_args();
-		$ary = $args[0];
-		unset($args[0]);
-		$ex = $args;
-		if(is_array($ary))
-		{
-			$i=0;
-			$str = '';
-			foreach($ary as $key => $val)
-			{
-				if(!in_array($key, $ex))
-				{
-					$i > 0 ? $str .= '&amp;' : '';
-					$str .= "$key=".urlencode($val);
-					$i++;
-				}
-			}
-		}
-		return $str;
-	}
-	function nbsp($str)
-	{
-		return str_replace(" ", '&nbsp;', $str);
-	}
-	function get_action()
-	{
-		if(isset($_REQUEST['action']))
-		{
-			return $_REQUEST['action'];
-		}else{
-			return '';
-		}
-	}
+    }
+    return $str;
+}
 	
-	function &safe_get(&$v)
-	{
-		if(isset($v))
-		{
-			return $v;
-		}
-	}
+function nbsp($str){
+    return str_replace(" ", '&nbsp;', $str);
+}
+
+function get_action(){
+    if(isset($_REQUEST['action'])){
+	return $_REQUEST['action'];
+    }else{
+        return '';
+    }
+}
 	
-	function ob_get_output($file)
-	{
-		ob_start();
-		include ($file);
-		return ob_get_clean();
-		
-	}
+function &safe_get(&$v){
+    if(isset($v)){
+        return $v;
+    }
+}
 	
-	function set_post($key, $value)
-	{
-		$_REQUEST[$key] = $value;
-		$_POST[$key] = $value;
-	}
+function ob_get_output($file){
+    ob_start();
+    include ($file);
+    return ob_get_clean();
+}
 	
-	function unset_post($key)
-	{
-		unset($_REQUEST[$key]);
-		unset($_POST[$key]);
-	}
+function set_post(&$key, &$value){
+    $_REQUEST[$key] = $value;
+    $_POST[$key] = $value;
+}
 	
-	function action_is($action)
-	{
-		if(isset($_REQUEST['action']) && $_REQUEST['action'] == $action)
-		{
-			return true;
-		}else{
-			return false;
-		}
-	}
+function unset_post($key){
+    unset($_REQUEST[$key]);
+    unset($_POST[$key]);
+}
 	
-	function dateToMySQL($origdate)
-	{
-		if (isset($origdate))
-		{
-			return date("Y-m-d h:m:s", strtotime($origdate));
-		}
-	}
+function action_is($action){
+    if(isset($_REQUEST['action']) && $_REQUEST['action'] == $action){
+	return true;
+    }else{
+	return false;
+    }
+}
 	
-	function MySQL_Date_To_format($mysqldate, $format)
-	{
-		if(isset($mysqldate) && $mysqldate != ''  && $mysqldate != '0000-00-00')
-		{
-			$date_time_ary = explode( ' ', $mysqldate);
-			$date_ary = explode( '-', $date_time_ary[0]);
-			$date_str ='';
-			if(isset($date_ary[1]) && isset($date_ary[2]) && $date_ary[0])
-			{
-				$date_str .= $date_ary[1].'/'.$date_ary[2].'/'.$date_ary[0]." ";
-			}else
-			{
-				$date_str .= '00/00/0000';
-			}
-			$date_str .= safe_get($date_time_ary[1]);
-			//print_r($date_ary);
-			//echo $date_str;
-			return date($format, strtotime($date_str));
-		}else
-		{
-			return date($format);
-		}
-	}
+function dateToMySQL($origdate){
+    if (isset($origdate)){
+	return date("Y-m-d h:m:s", strtotime($origdate));
+    }
+}
 	
-	function logError($err, $function)
-	{
-		$sql ="INSERT INTO errors(
-								error_string,
-								server_values,
-								function,
-								request_values
-								)
-								values(
-								'$err',
-								'".formToDB(array_to_string($_SERVER))."',
-								'$function',
-								'".formToDB(array_to_string($_REQUEST))."'
-								)";
-		db_query($sql);
-		if( db_error())
-		{
-			//echo db_error();
-			//echo $sql;
-		}
+function MySQL_Date_To_format($mysqldate, $format){
+    if(isset($mysqldate) && $mysqldate != ''  && $mysqldate != '0000-00-00'){
+	$date_time_ary = explode( ' ', $mysqldate);
+	$date_ary = explode( '-', $date_time_ary[0]);
+	$date_str ='';
+	if(isset($date_ary[1]) && isset($date_ary[2]) && $date_ary[0]){
+            $date_str .= $date_ary[1].'/'.$date_ary[2].'/'.$date_ary[0]." ";
+	}else{
+            $date_str .= '00/00/0000';
 	}
+	$date_str .= safe_get($date_time_ary[1]);
+	return date($format, strtotime($date_str));
+    }else{
+	return date($format);
+    }
+}
 	
-	function getFileName($path)
-	{
-		$pathAry = explode("/", $path);
-		if ($pathAry[0] == "")
-		{
-			unset($pathAry[0]);
-		}
-		if ($pathAry[count($pathAry)] == "")
-		{
-			unset($pathAry[count($pathAry)]);
-		}
-		return $pathAry[count($pathAry)];
-	}
+function logError($err, $function){
+    $sql ="INSERT INTO errors(
+                error_string,
+                server_values,
+                function,
+                request_values)
+            values(
+                '$err',
+		'".formToDB(array_to_string($_SERVER))."',
+		'$function',
+		'".formToDB(array_to_string($_REQUEST))."'
+            )";
+    db_query($sql);
+    if( db_error()){
+    }
+}
+	
+function getFileName($path){
+    $pathAry = explode("/", $path);
+    if ($pathAry[0] == ""){
+	unset($pathAry[0]);
+    }
+    if ($pathAry[count($pathAry)] == ""){
+        unset($pathAry[count($pathAry)]);
+    }
+    return $pathAry[count($pathAry)];
+}
 	
 	function array_to_stringOLD($array)
 	{

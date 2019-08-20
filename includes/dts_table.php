@@ -3,8 +3,7 @@ require_once"global.php";
 require_once"auth.php";
 require_once"table.php";
 require_once"tab_menu.php";
-class dts_table extends table
-{
+class dts_table extends table{
 	var $delete_icon='<img border=0 src="images/delete.gif" />';
 	var $search = 'Search';
 	var $edit = 'edit';
@@ -55,20 +54,18 @@ class dts_table extends table
 	var $prefix;
 	var $null_str ='<span style="color:red">N/A</span>';
 	
-	function __construct($name, $desc=true)
-	{
+	function __construct($name, $desc=true){
 		asort($this->ltl_carriers);
 		$this->generate_times();
 		parent::__construct($name, $desc);
 		$this->add_to_breadcrumb($this->page, $name);
 		$this->tab_menu = new tab_menu();
 	}
-	function money($num)
-	{
+	function money($num){
 		return number_format($num, 2, '.', '');
 	}
-	function generate_times()
-{
+	
+        function generate_times(){
 	$this->times['null'] ='';
 	$start_time = 0;
 	$end_time = 24;
