@@ -1511,8 +1511,6 @@ class load_table extends dts_table{
 		$this->add();
 		if(DB::error()){
 			echo DB::error();
-			$this->add_error();
-			$this->add_error($sql);
 		}
 		$this->load_id = $this->last_id;
 	}
