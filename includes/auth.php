@@ -70,7 +70,6 @@ function login($username, $password){
 			AND password = ?
 			AND active = 1
 			LIMIT 1";
-                var_dump([$sql, $binds]);
 		$result = DB::query($sql, $binds);
 		if(DB::error()){
 			global $feedback;

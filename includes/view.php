@@ -91,7 +91,6 @@ class view{
 		}
 		$pk = $this->primary_key;
 		
-		//$html = $this->get_styles();
 		$html = "
 		<div class='tableContainer' id='tableContainer' style='height: $this->tableContainer_height;overflow: auto;margin: 0 auto;'>
 			<table class='$this->class scrollTable' id='$this->id' style='width: 99%;border: none;background-color: #f7f7f7;'>\n";
@@ -99,13 +98,11 @@ class view{
 		//====== Row Heads ======
 		if(!$hide_column_heads){
 			$html .= "<thead>\n";
-			//$html .= "<tr style='position:relative;top: expression(offsetParent.scrollTop);'>\n";
 			$html .= "<tr>";
 			
 			$col_count = DB::num_fields($res);
 			for($c=0; $c < $col_count; $c++){
 				$col_name = DB::field_name($res, $c);
-				//var_dump($col_name);
 				if(!array_key_exists($col_name, $this->hidden_columns)){
 					$html .= "<th>".$this->format_label($col_name)."</th>\n";
 				}
