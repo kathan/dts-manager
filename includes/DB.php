@@ -40,8 +40,12 @@ class DB{
                 }
             }
         }
-        call_user_func_array([$stmt, 'bind_param'], $bind_ary);
-	return $stmt->execute();
+        if(call_user_func_array([$stmt, 'bind_param'], $bind_ary)){
+            return $stmt->execute();
+        }else{
+            Feedback::add($sql);
+            Feedback::add($bind_ary);
+        }
     }
 	
     public static function num_rows(mysqli_result $result){
