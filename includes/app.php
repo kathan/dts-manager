@@ -17,7 +17,7 @@ class App{
     public static $site_name = 'DTS';
     
     public static function getSiteName(){
-        return "$_SERVER[HTTP_HOST]";
+        return self::$site_name;
     }
 
     public static function getHttpRoot(){
