@@ -44,8 +44,8 @@ class DB{
         return $stmt->execute();
     }
 	
-    public static function num_rows(mysqli_result $result){
-        if (isset($result)){
+    public static function num_rows($result){
+        if ($result){
             return $result->num_rows;
         }
     	return 0;
