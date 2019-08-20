@@ -25,7 +25,7 @@ class DB{
 	return self::$db->query($sql);
     }
 	
-    public static function num_rows($result){
+    public static function num_rows(mysqli_result $result){
         if (isset($result)){
             return $result->num_rows;
         }
