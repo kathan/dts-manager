@@ -1,6 +1,5 @@
-boo's
 <?php
-require_once("includes/app.php");
+require_once("./includes/app.php");
 require_once('includes/Template.php'); 
 
 require_once("includes/global.php");

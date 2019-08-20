@@ -11,6 +11,7 @@ define('HTTP_ROOT', "$_SERVER[HTTP_HOST]".APP_ROOT);
 define('IMG_ROOT', HTTP_ROOT."/images");
 define('CGI_ROOT', "$_SERVER[HTTP_HOST]/cgi-bin");
 define('PRIVATE_ROOT', "$_SERVER[HTTP_HOST]/members");
+ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/lib/:..");
 //=================================
 
 class App{
