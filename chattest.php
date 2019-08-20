@@ -6,7 +6,6 @@ require_once("includes/global.php");
 require_once("includes/auth.php");
 
 define('SMALL_VIEW', "sml_view");
-//include_once("includes/hit.php");
 
 //==========Process============
 $c ='';
@@ -33,10 +32,10 @@ if(isset($_GET['r']))
 	}
 	$c .='<html>
 	<head>
-		<link rel="stylesheet" href="http://'.HTTP_ROOT.'/style.css" type="text/css" media="all">
-		<script src="http://'.HTTP_ROOT.'/events.js.php" type="text/javascript"></script>
-		<script src="jquery.js" type="text/javascript"></script>
-		<script src="http://'.HTTP_ROOT.'/base.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="all">
+		<script src="js/events.js" type="text/javascript"></script>
+		<script src="js/jquery.js" type="text/javascript"></script>
+		<script src="js/base.js" type="text/javascript"></script>
 	</head>
 	<body>';
 	$c .= ob_get_output("pages/$page");
@@ -62,10 +61,10 @@ $page_content = ob_get_output("pages/$page");
 $c .= '<html>
 	<head>';
 		isset($GLOBALS['page_title']) ? $c .= '<title>DTS-'.$GLOBALS['page_title'].'</title>' : '';
-$c .= '	<link rel="stylesheet" href="http://'.HTTP_ROOT.'/style.css" type="text/css" media="all">
-		<script src="http://'.HTTP_ROOT.'/events.js.php" type="text/javascript"></script>
-		<script src="jquery.js" type="text/javascript"></script>
-		<script src="http://'.HTTP_ROOT.'/base.js" type="text/javascript"></script>
+$c .= '	<link rel="stylesheet" href="css/style.css" type="text/css" media="all">
+		<script src="js/events.js" type="text/javascript"></script>
+		<script src="js/jquery.js" type="text/javascript"></script>
+		<script src="js/base.js" type="text/javascript"></script>
 	</head>
 	<body>';
 $c .= '	<center>

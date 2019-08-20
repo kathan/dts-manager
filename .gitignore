@@ -1,5 +1,6 @@
 /vendor
 /templates_c
+/log
 .DS_Store
 nbproject
 phpmd_results.html
