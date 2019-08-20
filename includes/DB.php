@@ -39,13 +39,9 @@ class DB{
                         break;
                 }
             }
+            call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
-        if(call_user_func_array([$stmt, 'bind_param'], $bind_ary)){
-            return $stmt->execute();
-        }else{
-            Feedback::add($sql);
-            Feedback::add($bind_ary);
-        }
+        return $stmt->execute();
     }
 	
     public static function num_rows(mysqli_result $result){
@@ -91,7 +87,7 @@ class DB{
 
     public static function error(){
         if(self::$db->error){
-			return self::$db->error;
+            return self::$db->error;
         }
     }
 
