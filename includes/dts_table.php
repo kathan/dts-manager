@@ -221,7 +221,7 @@ function resize()
 				{
   				var d = document.getElementById(table+'_portal');
 				  d.innerHTML = 'Loading '+table;			
-					var url = 'http://".HTTP_ROOT."/?page=$this->name&portal='+table+'&action=portal&".SMALL_VIEW."&'+params;
+					var url = '?page=$this->name&portal='+table+'&action=portal&".SMALL_VIEW."&'+params;
 					var portal = getFromURL(url);
 				}catch(e)
 				{

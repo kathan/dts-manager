@@ -112,7 +112,7 @@ class load_table extends dts_table{
 					$code .= "<div class='tab_sep'></div>";
 				}
 				
-				$code .= "<title>".SITE_NAME."-Loads</title>";
+				$code .= "<title>".App::getSiteName()."-Loads</title>";
 				$code .= $this->db_script();
 				
 				$code .= $this->portal_script();
