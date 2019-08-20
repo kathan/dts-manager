@@ -284,8 +284,6 @@ class load_table extends dts_table{
 			$this->load_id = DB::insertid();
 		}
 		
-		/*$sql = "INSERT INTO `load_warehouse`(load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,creation_date)
-				SELECT $this->load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = $old_load_id";*/
 		$sql = "INSERT INTO `load_warehouse`(load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,creation_date)
 				SELECT $this->load_id,open_time,close_time,warehouse_id,NOW(),activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = $old_load_id";
 		$r = DB::query($sql);
@@ -362,13 +360,9 @@ class load_table extends dts_table{
 			$where .= " $clause ltl_number = '$_REQUEST[bol]'";
 			$clause = 'AND';
 		}
-		//!logged_in_as('admin') ? $where .= " $clause l.order_by = ".get_user_id() : '';
-		//$where .= " $clause l.order_by = ".get_user_id();
-		//echo $_REQUEST['bol'];
 		$sql .= $where;
 		$re = DB::query($sql);
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo DB::error()."<br>";
 			echo $sql;
 		}
@@ -382,7 +376,6 @@ class load_table extends dts_table{
 	function get_search_edit(){
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		//$t->assign('load_types', dts_table::$load_type);
 		
 		return $t->fetch(App::getTempDir().'load_search_form.tpl');
 	}

@@ -36,7 +36,7 @@ class load_warehouse_table extends dts_table
 		$code .= $this->module_script();
 		$code .= $this->sortable_script();
 		$code .= $this->popup_script();
-		$code .= '<link rel="stylesheet" href="'.APP_ROOT.'/style.css" type="text/css" media="all">';
+		$code .= '<link rel="stylesheet" href="css/style.css" type="text/css" media="all">';
 		$code .= "<div class='content load_content' id='content'>";
 		switch(get_action())
 		{

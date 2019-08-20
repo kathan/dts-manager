@@ -11,7 +11,6 @@ define('MIN_UN_LENGTH', 4);
 define('MAX_UN_LENGTH', 15);
 define('PHP_COOKIE_LENGTH', 60*60*24*7);//7 days
 define('MYSQL_COOKIE_LENGTH', 'INTERVAL 7 day');
-safe_define('APP_ROOT', '/');
 
 set_cookie();
 function logged_in_as($name)
@@ -144,8 +143,7 @@ function logout()
 	//require_once('pre.php');
 	$expires = time() + PHP_COOKIE_LENGTH;
 	
-	if(setcookie(COOKIE_USERNAME,'',$expires,APP_ROOT,'',0) && setcookie(COOKIE_HASH,'',$expires,APP_ROOT,'',0))
-	{
+	if(setcookie(COOKIE_USERNAME,'',$expires,App::getAppRoot(),'',0) && setcookie(COOKIE_HASH,'',$expires,App::getAppRoot(),'',0)){
 		define('LOGGED_IN', false);
 		return true;
 	}else{

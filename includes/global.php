@@ -44,7 +44,6 @@ function &safe_get(&$v){
     if(isset($v)){
         return $v;
     }
-    return null;
 }
 	
 function ob_get_output($file){

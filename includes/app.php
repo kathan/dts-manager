@@ -6,7 +6,6 @@ error_reporting(E_ALL);
 date_default_timezone_set('America/Chicago');
 //==========App Settings===========
 define('SITE_NAME', 'DTS');
-define('HTTP_ROOT', "$_SERVER[HTTP_HOST]".APP_ROOT);
 define('IMG_ROOT', HTTP_ROOT."/images");
 define('CGI_ROOT', "$_SERVER[HTTP_HOST]/cgi-bin");
 define('PRIVATE_ROOT', "$_SERVER[HTTP_HOST]/members");
@@ -20,6 +19,10 @@ class App{
     public static $db;
     public static $templates_dir = '/templates/';
     public static $img_dir = '/images';
+    
+    public static function getHttpRoot(){
+        return "$_SERVER[HTTP_HOST]";
+    }
     public static function getTempDir(){
         return self::getAppRoot().self::$templates_dir;
     }
