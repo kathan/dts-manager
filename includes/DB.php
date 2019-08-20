@@ -41,7 +41,11 @@ class DB{
         $row_obj = $result->fetch_row();
         return $row_obj[$field];
     }
-	
+
+    public static function data_seek($result, $offset){
+        return $result->data_seek($offset);
+    }
+
     public static function affected_rows(){
         return self::$db->affected_rows;
     }
