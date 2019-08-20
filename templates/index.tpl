@@ -5,9 +5,9 @@
 	<head>
 		<title>DTS{if $page_title}-{$page_title}{/if}</title>
 		<link rel="stylesheet" href="style.css" type="text/css" media="all"/>
-		<script type="text/javascript" src="events.js.php"></script>
-		<script type="text/javascript" src="jquery.js"></script>
-		<script type="text/javascript" src="base.js"></script>
+		<script type="text/javascript" src="js/events.js.php"></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/base.js"></script>
 	</head>
 	<body>
 		<div style="width:90%;margin-left:auto;margin-right:auto" class="">

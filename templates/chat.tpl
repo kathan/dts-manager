@@ -51,12 +51,5 @@ Online Users
 </div>
 <style>
 	#online_users ul{list-style:none;margin:3px;padding:0px;height:100px;overflow:scroll}
-	#online_users{
-		background-color:white;
-		padding:3px;
-		border:#eee solid 1px;
-		position:fixed;
-		bottom:0px;
-		right:0px;
-	}
+	#online_users{background-color:white;padding:3px;border:'#eee solid 1px';position:fixed;bottom:0px;right:0px;}
 </style>

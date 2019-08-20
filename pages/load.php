@@ -1507,12 +1507,12 @@ class load_table extends dts_table{
 	
 	function create_new(){
             set_post('order_date', 'NOW()');
-		set_post('order_by', get_user_id());
-		$this->add();
-		if(DB::error()){
-			echo DB::error();
-		}
-		$this->load_id = $this->last_id;
+            set_post('order_by', get_user_id());
+            $this->add($_POST);
+            if(DB::error()){
+		echo DB::error();
+            }
+            $this->load_id = $this->last_id;
 	}
 	
 	function get_new(){

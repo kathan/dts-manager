@@ -194,9 +194,7 @@ class table{
 			$this->sql_where .= "$pk_name = $_REQUEST[$pk_name]";
 			$i++;
 		}
-		//echo $this->sql;
 		$this->_describe();
-		//$this->_scan_resource();
 	}
 	
 	function get_sql(){
@@ -693,7 +691,6 @@ class table{
 		}else{
 			while($row = DB::fetch_assoc($r)){
 				if(!isset($this->columns[$row['Field']])){
-					//$column = new column($this, $row['Field']);
 					$column = new column($this, $row['Field'], false);
 					$search = '/(\w+)(\((\d+)\))?/';
 					preg_match($search, $row['Type'], $result);

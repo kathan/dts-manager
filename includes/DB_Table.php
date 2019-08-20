@@ -2,36 +2,28 @@
 require_once('global.php');
 require_once('DB.php');
 require_once('column.php');
-require_once('Request.php');
 require_once('feedback.php');
 
-class DB_Table extends Request{
+class DB_Table{
 	public static $save_str = 'Save';
 	public static $add_str = 'Add';
 	public static $delete_str = 'Delete';
-	var $columns = [];
-	var $name;
-	var $table;
-	var $feedback;
+	public static $columns = [];
+	public static $name;
+	public static $table;
+	public static $feedback;
 	private $feedback_ary=[];
-	var $error_str;
-	var $conn;
-	var $sql;
+	public static $error_str;
+	public static $conn;
+	public static $sql;
+        private $dbname;
 	private $debug=0;
-	function __construct($table=null){
+	function __construct($table){
 		/*include_once('Version.php');
 		Version::add(__FILE__, .1);*/
-		$this->dbname = $dbname;
 		
-		if(!$table){
-			$filename = get_file_name($_SERVER['SCRIPT_NAME']);
-			$filename = explode('.', $filename);
-			$this->name = $filename[0];
-			$this->tables = $filename[0];
-		}else{
-			$this->name = $table;
-			$this->tables = $table;
-		}
+		$this->name = $table;
+		$this->tables = $table;
 		$this->describe();
 	}
 	
@@ -60,7 +52,7 @@ class DB_Table extends Request{
 		return $this->name;
 	}
 	
-	function describe(){
+	private function describe(){
 		/*Query for all columns in the table and */
 		$this->sql = "Describe `$this->name`";
 		$r = DB::query($this->sql);
@@ -102,11 +94,9 @@ class DB_Table extends Request{
 				}
 			}
 		}
-		
 	}
 	
 	function execute(){
-	
 		switch($this->get_action()){
 			
 			case DB_Table::$delete_str:
@@ -122,47 +112,11 @@ class DB_Table extends Request{
 		}
 	}
 	
-	function add_old(){
-		if($this->check_data()){
-			$field_names = '';
-			$values = "";
-			$this->sql = "INSERT INTO `".$this->name ."` (";
-			$fields = array_keys(array_merge($_REQUEST, $_FILES));
-
-			foreach($fields as $field){	
-				if($field != 'action' && $field != DB_Table::$save_str && array_key_exists($field, $this->columns) && ((isset($_REQUEST[$field]) && $_REQUEST[$field] != '') || isset($_FILES[$field]))){
-					if($field_names != ''){
-						$field_names .= ', ';
-						$values .= ",";
-					}
-					$field_names .= "`$field`";
-					
-					$values .= $this->columns[$field]->format_for_db($this->safe_get($_REQUEST[$field]));
-					
-					if($this->columns[$field]->error_str){
-						$this->add_error($this->columns[$field]->error_str);
-					}
-				}
-			}
-			$this->sql .= "$field_names) VALUES ($values)";
-			//echo "<br>$this->sql<br>";
-			$r = DB::query($this->sql);
-			
-			if(DB::error()){
-				return false;
-			}else{
-			
-				$this->add_feedback("New record was added.");
-				
-				$this->last_id = DB::last_insert_id();
-				return true;
-			}
-		}
-	}
 	function insert($input){
 		return $this->add($input);
 	}
-	function add($input){
+	
+        function add($input){
 		
 		if($this->check_data($input)){
 			$field_names = '';
@@ -186,7 +140,6 @@ class DB_Table extends Request{
 				}
 			}
 			$this->sql .= "$field_names) VALUES ($values)";
-			//echo $this->sql."<br /><br />";
 			$r = DB::query($this->sql);
 			
 			if(DB::error()){
@@ -204,18 +157,17 @@ class DB_Table extends Request{
 		}
 		
 	}
+        
 	function update($input){
 		$pks = $this->get_primary_keys();
 		
 		$set = '';
 		$this->sql = "UPDATE `".$this->name."`
 		SET ";
-		//$fields = array_keys(array_merge($input, $_FILES));
 		$fields = array_keys($input);
 		
 		foreach($fields as $field){
 			//Instead of check for primary key, check for auto increment
-			//if($field != 'action' && isset($_REQUEST[$field]) &&  !in_array($field, $pks) || $this->columns[$field]->type == 'binary')
 			if(!$this->columns[$field]->auto_inc && $field != 'action' && array_key_exists($field, $this->columns) && $this->columns[$field]->actual){
 				if(!$set == ''){
 					$set .= ', ';
@@ -232,7 +184,6 @@ class DB_Table extends Request{
 			$this->sql .= " $clause `$pk` = ".$pk_obj->format_for_db($input[$pk]);
 			$clause = 'AND';
 		}
-		//echo $this->sql;
 		DB::query($this->sql);
 		if(DB::error()){
 			$this->add_error(DB::error());
@@ -240,30 +191,6 @@ class DB_Table extends Request{
 			return false;
 		}else{
 			$this->add_feedback("ID $_REQUEST[$pk] was updated.");
-			return true;
-		}
-	}
-	
-	function delete_old(){
-		
-		$pks = $this->get_primary_keys();
-		
-		$this->sql = "DELETE FROM ".$this->name;
-		$clause = 'WHERE';
-		foreach($pks as $pk_obj){
-			$pk = $pk_obj->get_name();
-			$this->sql .= " $clause $pk = ".$pk_obj->format_for_db($_REQUEST[$pk]);
-			$clause = 'AND';
-			
-		}
-		$result = DB::Query($this->sql);
-		if(db_error()){
-			$this->add_error(DB::error());
-			$this->add_error($this->sql);
-			$this->add_error('table.delete');
-			return false;
-		}else{
-			$this->add_feedback("ID $_REQUEST[$pk] was deleted.");
 			return true;
 		}
 	}
@@ -293,7 +220,6 @@ class DB_Table extends Request{
 	}
 	
 	function check_data(&$input){
-		//print_r($input);
 		$failure = false;
 		$fields = array_keys($input);
 		foreach($fields as $field){
@@ -301,7 +227,6 @@ class DB_Table extends Request{
 				
 				$c = $this->columns[$field];
 				if(!$c->check_input($input[$field])){
-					//echo "$field failed<br/>";
 					$failure = true;
 					$this->add_feedback($c->feedback);
 					$this->add_error($c->error_str);
@@ -311,8 +236,8 @@ class DB_Table extends Request{
 		
 		return !$failure;
 	}
+        
 	function add_feedback($feedback){
-		
 		if($feedback != ''){
 			$this->feedback .= "$feedback<br />";
 			$this->feedback_ary[] = $feedback;
