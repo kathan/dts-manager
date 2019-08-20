@@ -57,9 +57,9 @@ class DB{
     public static function fetch_assoc($result){
         return $result->fetch_assoc();
     }
-	
+    
     public static function insertid(){
-        return self::$db->insert_id();
+        return self::$db->insert_id;
     }
 	
     public static function last_insert_id(){
