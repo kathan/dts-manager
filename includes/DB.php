@@ -19,27 +19,27 @@ class DB{
 	
     public static function query($sql, $binds=null){
         $bind_ary = [];
-        $type = '';
+        $bind_ary[0] = '';
 	if(isset($binds)){
             $stmt = self::$db->prepare($sql);
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
-                        $type .= 's';
+                        $bind_ary[0] .= 's';
                         $bind_ary[] = $val;
                         break;
                     case 'integer':
-                        $type .= 'i';
+                        $bind_ary[0] .= 'i';
                         $bind_ary[] = $val;
                         break;
                     case 'double':
-                        $type .= 'd';
+                        $bind_ary[0] .= 'd';
                         $bind_ary[] = $val;
                         break;
                 }
             }
         }
-        call_user_func_array($stmt->bind_param, $bind_ary);
+        call_user_func_array([$stmt, 'bind_param'], $bind_ary);
 	return $stmt->execute();
     }
 	
