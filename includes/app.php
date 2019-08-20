@@ -13,15 +13,20 @@ define('CGI_ROOT', "$_SERVER[HTTP_HOST]/cgi-bin");
 define('PRIVATE_ROOT', "$_SERVER[HTTP_HOST]/members");
 ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/lib/:..");
 //=================================
+ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/includes/:..");
 
 class App{
     public static $db;
     public static $templates_dir = '/templates/';
-
+    public static $img_dir = '/images';
     public static function getTempDir(){
         return self::getAppRoot().self::$templates_dir;
     }
-	
+    
+    public static function getImgRoot(){
+        return self::getAppRoot().self::$img_dir;
+    }
+    
     public static function getAppRoot(){
         return pathinfo(__DIR__, PATHINFO_DIRNAME);
     }
