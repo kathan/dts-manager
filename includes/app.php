@@ -29,7 +29,7 @@ class App{
     }
     
     public static function getImgRoot(){
-        return self::getAppRoot().self::$img_dir;
+        return self::$img_dir;
     }
     
     public static function getAppRoot(){
