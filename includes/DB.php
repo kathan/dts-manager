@@ -27,18 +27,19 @@ class DB{
                 switch(gettype($val)){
                     case 'string':
                         $bind_ary[0] .= 's';
-                        $bind_ary[] = $val;
+                        $bind_ary[] = &$val;
                         break;
                     case 'integer':
                         $bind_ary[0] .= 'i';
-                        $bind_ary[] = $val;
+                        $bind_ary[] = &$val;
                         break;
                     case 'double':
                         $bind_ary[0] .= 'd';
-                        $bind_ary[] = $val;
+                        $bind_ary[] = &$val;
                         break;
                 }
             }
+            $stmt->bind_para
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         return $stmt->execute();
