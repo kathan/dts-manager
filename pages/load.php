@@ -1160,18 +1160,16 @@ class load_table extends dts_table{
 	function get_load_edit(){
 		
 		$r = $this->current_row();
-		if($r['cancelled'])
-		{
+                var_dump($r);
+		if($r['cancelled']){
 			$c = $this->style("
 				.load_content{background-color:$this->cancel_color}");
-		}else
-		{
+		}else{
 			$c = $this->style("
 				.load_content, .content{background-color:#EEEEEE}");
 		}
 		$auth_edit=false;
-		if(!$this->been_delivered() && (logged_in_as('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']))
-		{
+		if(!$this->been_delivered() && (logged_in_as('admin') || get_user_id() === $r['order_by'] || get_user_id() === $r['acct_owner'])){
 			$auth_edit=true;
 		}
 		$c .= $this->popup_script();
@@ -1192,8 +1190,7 @@ class load_table extends dts_table{
 				<table width='100%' border=0>
 					<tr>
 						<td>Order By:</td>";
-		if(logged_in_as('admin'))
-		{
+		if(logged_in_as('admin')){
 			$col = $this->get_column('order_by');
 			$col->set_value_list($this->get_users());
 			$c .= "				<td>".$this->fetch_edit('order_by', $r['order_by'])."</td>";
@@ -1246,23 +1243,16 @@ class load_table extends dts_table{
 		$c .= $this->script("
 				set_content_color();
 				var cont;
-				function set_content_color()
-				{
-					if(!cont)
-					{
+				function set_content_color(){
+					if(!cont){
 						cont = document.getElementById('content');
 					}
 					var cancelled = document.getElementsByName('cancelled');
 					cancelled = cancelled[0];
 					
-					if(cancelled.checked)
-					{
+					if(cancelled.checked){
 						cont.style.backgroundColor = '$this->cancel_color';
-					}/*else if(rating.value == 'Expedited')
-					{
-						cont.style.backgroundColor = '$this->expedited_color';
-					}*/else
-					{
+					}else{
 						cont.style.backgroundColor = '$this->content_color';
 					}
 					return true;
@@ -1311,8 +1301,7 @@ class load_table extends dts_table{
 			<div id='customer_module'></div>
 		</fieldset>";
 		$c .= $this->script("
-					function update_cust_module()
-					{
+					function update_cust_module(){
 						get_module('customer', 'action=view&load_id=$this->load_id');
 					}
 					jQuery().ready(function(){
@@ -1359,8 +1348,7 @@ class load_table extends dts_table{
 		$c .= "<div id='load_warehouse_portal'></div>";
 		$c .= "</fieldset>";
 		$c .= $this->script("		
-			function add_load_warehouse(load_id)
-			{
+			function add_load_warehouse(load_id){
 				var warehouse_selection = document.getElementById('warehouse_selection');
 				var type = document.getElementById('warehouse_type');
 				var param_str = 'table=load_warehouse&type='+type.value+'&warehouse_id='+warehouse_selection.value+'&load_id=';
@@ -1371,16 +1359,13 @@ class load_table extends dts_table{
 				update_warehouse_portal();
 			}
 			
-			function update_warehouse_portal()
-			{
+			function update_warehouse_portal(){
 				get_portal('load_warehouse', 'load_id=$this->load_id');
 				init_cals();
 			}
 			
-			function delete_warehouse(warehouse_id)
-			{
-				if(confirm('Are you sure you want to delete warehouse '+warehouse_id+' from this load?'))
-				{
+			function delete_warehouse(warehouse_id){
+				if(confirm('Are you sure you want to delete warehouse '+warehouse_id+' from this load?')){
 					var obj=new Object();
 					obj.id = 'action=$this->delete&table=load_warehouse&load_id=$this->load_id&warehouse_id=';
 					obj.value = warehouse_id;
@@ -1389,13 +1374,11 @@ class load_table extends dts_table{
 				}
 			}
 			var cal_act_dates = Array();
-			function init_cals()
-			{
+			function init_cals(){
 				include('./CalendarPopup.js');
 				
 				var cals = document.getElementsByName('cal_act_date');
-				for(i=0;i<cals.length;i++)
-				{
+				for(i=0;i<cals.length;i++){
 					cal_act_dates[i] = new CalendarPopup(cals[i].id);
 					cal_act_dates[i].id = cals[i].id+'_cal';
 				}
@@ -1588,9 +1571,8 @@ class load_table extends dts_table{
 		
 		//==================
 		$c .= $this->script("
-		function open_rate_conf(url, id)
-		{
-			eval(\"window.open(url, '\" + id + \"', 'toolbar=1, scrollbars=1, location=1, statusbar=1, menubar=1, resizable=1, width=700, height=600, left = 0, top = 0');\");
+		function open_rate_conf(url, id){
+                    eval(\"window.open(url, '\" + id + \"', 'toolbar=1, scrollbars=1, location=1, statusbar=1, menubar=1, resizable=1, width=700, height=600, left = 0, top = 0');\");
 		}");
 		$c .= "</td></tr></table>";
 		
@@ -1598,11 +1580,10 @@ class load_table extends dts_table{
 	}
 	
 	function create_new(){
-		set_post('order_date', 'NOW()');
+            set_post('order_date', 'NOW()');
 		set_post('order_by', get_user_id());
 		$this->add();
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo DB::error();
 			$this->add_error();
 			$this->add_error($sql);
