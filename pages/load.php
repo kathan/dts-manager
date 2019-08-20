@@ -34,7 +34,7 @@ class load_table extends dts_table{
 	var $row_height='6.5em';
 	var $page;
 	
-	function load_table(){
+	function __construct(){
 		parent::__construct('load');
 		isset($_REQUEST['page']) ? $this->page = $_REQUEST['page'] : $this->page = 'load';
 		
