@@ -269,12 +269,12 @@ class table{
 	}
 	
         function add(){
-            $t = new DB_Table('load');
+            $t = new DB_Table($this->name);
             if($this->check_form()){
                 $fields = array_keys(array_merge($_REQUEST, $_FILES));
                 if($t->add($fields)){
                     $this->add_feedback("New record was added.");
-                    $this->last_id = db_insertid();
+                    $this->last_id = DB::insertid();
                     return true;
                 }else{
                     return false;
