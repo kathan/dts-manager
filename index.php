@@ -29,7 +29,7 @@ if(isset($_GET['r'])){
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-		<link rel="stylesheet" href="style.css" type="text/css" media="all">
+		<link rel="stylesheet" href="css/style.css" type="text/css" media="all">
 		<script type="text/javascript" src="js/events.js.php"></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery.ui.js"></script>
@@ -61,7 +61,7 @@ if(isset($_GET['r'])){
 $c .= '<html>
 	<head>';
     isset($GLOBALS['page_title']) ? $c .= '<title>DTS-'.$GLOBALS['page_title'].'</title>' : '';
-$c .= '	<link rel="stylesheet" href="style.css" type="text/css" media="all">
+$c .= '	<link rel="stylesheet" href="css/style.css" type="text/css" media="all">
 		<script type="text/javascript" src="js/events.js.php" ></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery.ui.js"></script>

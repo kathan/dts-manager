@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="http://domestictransportsolutions.com/dts/bol_style.css" type="text/css" media="all">
+<link rel="stylesheet" href="css/bol_style.css" type="text/css" media="all">
 <style media='print' type='text/css'>
 {literal}
 	#print_button{display:none}
