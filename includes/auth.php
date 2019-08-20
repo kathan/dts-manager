@@ -215,23 +215,23 @@ function user_getemail() {
 }
 
 function getUserName() {
-	if (logged_in($_COOKIE[COOKIE_USERNAME], $_COOKIE[COOKIE_HASH])) {
-		return $_COOKIE[COOKIE_USERNAME];
-	} else {
-		//look up the user some day when we need it
-		return ' ERROR - Not Logged In ';
-	}
+    if (logged_in($_COOKIE[COOKIE_USERNAME], $_COOKIE[COOKIE_HASH])) {
+	return $_COOKIE[COOKIE_USERNAME];
+    } else {
+	//look up the user some day when we need it
+	return ' ERROR - Not Logged In ';
+    }
 }
-function set_cookie()
-{
-	session_start();
-	$expires = time() + PHP_COOKIE_LENGTH;
-	$new_cookie = session_id();
-	setcookie(COOKIE_NAME, $new_cookie, $expires,APP_ROOT,'',0);
-	$_COOKIE[COOKIE_NAME] = $new_cookie;
+
+function set_cookie(){
+    session_start();
+    $expires = time() + PHP_COOKIE_LENGTH;
+    $new_cookie = session_id();
+    setcookie(COOKIE_NAME, $new_cookie, $expires, App::getAppRoot(),'',0);
+    $_COOKIE[COOKIE_NAME] = $new_cookie;
 }
-function debug($s)
-{
-	echo $s."<br>";
+
+function debug($s){
+    echo $s."<br>";
 }
 ?>
