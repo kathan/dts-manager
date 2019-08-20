@@ -85,7 +85,7 @@ function login($username, $password)
 			$feedback .= DB::error()."<br>";
 			$feedback .= $sql."<br>";
 		}
-		if (!$result || DB::numrows($result) < 1){
+		if (!$result || DB::num_rows($result) < 1){
 			$feedback .=  ' ERROR - User not found or password incorrect ';
 			return false;
 		} else {
