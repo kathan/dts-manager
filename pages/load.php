@@ -80,8 +80,8 @@ class load_table extends dts_table{
 	function current_row(){
 		$sql = "SELECT l.*, (select acct_owner from customer where customer_id = l.customer_id) acct_owner
 				FROM `load` l
-				WHERE load_id = $this->load_id";
-		$re = DB::query($sql);
+				WHERE load_id = ?";
+		$re = DB::query($sql, [$this->load_id]);
 		$r = DB::fetch_assoc($re);
 		return $r;
 	}
@@ -261,21 +261,21 @@ class load_table extends dts_table{
 	function repeat_load(){
 		
 		$old_load_id = $_REQUEST['load_id'];
+                $binds = [get_user_id(), $old_load_id];
 		$sql = "INSERT INTO `load`(customer_id,trailer_type,pallets,length,size,weight,class,commodity, order_date, order_by)
-				SELECT customer_id,trailer_type,pallets,length,size,weight,class,commodity, NOW(), ".get_user_id()." FROM `load` WHERE load_id = $old_load_id";
-		$r = DB::query($sql);
+			SELECT customer_id,trailer_type,pallets,length,size,weight,class,commodity, NOW(), ? FROM `load` WHERE load_id = ?";
+		$r = DB::query($sql, $binds);
 		if(DB::error()){
 			echo DB::error();
 			$this->add_error();
 			$this->add_error($sql);
-		}else
-		{
+		}else{
 			$this->load_id = DB::insertid();
 		}
-		
+		$binds = [$this->load_id, $old_load_id];
 		$sql = "INSERT INTO `load_warehouse`(load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,creation_date)
-				SELECT $this->load_id,open_time,close_time,warehouse_id,NOW(),activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = $old_load_id";
-		$r = DB::query($sql);
+			SELECT ?,open_time,close_time,warehouse_id,NOW(),activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = ?";
+		$r = DB::query($sql, $binds);
 		if(DB::error()){
 			echo DB::error();
 			$this->add_error();
@@ -334,19 +334,22 @@ class load_table extends dts_table{
 							FROM `load` l ";
 		$clause = 'WHERE';
 		$where='';
-		
+		$binds = [];
 		if(isset($_REQUEST['load_id']) && intval($_REQUEST['load_id']) > 0){
-			$where .= " $clause load_id = ".intval($_REQUEST['load_id']);
-			$clause = 'AND';
+                    $binds[] = intval($_REQUEST['load_id']);
+                    $where .= " $clause load_id = ?";
+                    $clause = 'AND';
 		}elseif(isset($_REQUEST['order_number']) && $_REQUEST['order_number'] != ''){
-			$where .= " $clause load_id in (SELECT load_id FROM load_warehouse WHERE pick_dest_num like '$_REQUEST[order_number]')";
-			$clause = 'AND';
+                    $binds[] = $_REQUEST['order_number'];
+                    $where .= " $clause load_id in (SELECT load_id FROM load_warehouse WHERE pick_dest_num like ?)";
+                    $clause = 'AND';
 		}elseif(isset($_REQUEST['bol']) && $_REQUEST['bol'] != ''){
-			$where .= " $clause ltl_number = '$_REQUEST[bol]'";
-			$clause = 'AND';
+                    $binds[] = $_REQUEST['bol'];
+                    $where .= " $clause ltl_number = ?";
+                    $clause = 'AND';
 		}
 		$sql .= $where;
-		$re = DB::query($sql);
+		$re = DB::query($sql, $binds);
 		if(DB::error()){
 			echo DB::error()."<br>";
 			echo $sql;
@@ -369,8 +372,8 @@ class load_table extends dts_table{
 		$c ='';
 		
 		$sql = "SELECT	c.carrier_id, phys_address,
-						CONCAT('<a href=\"#\" onclick=\"javascript:popUp(\'?page=load_carrier&action=$this->edit_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\', 960, 350)\">',name,'</a>') name,
-						CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
+                            CONCAT('<a href=\"#\" onclick=\"javascript:popUp(\'?page=load_carrier&action=$this->edit_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\', 960, 350)\">',name,'</a>') name,
+                            CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
 
 		
 		if(logged_in_as('admin')){
@@ -380,10 +383,10 @@ class load_table extends dts_table{
 		}
 		$sql .= ",lc.carrier_id, CONCAT(main_phone_number, '<br>', fax) phone_fax,  (SELECT username FROM users u WHERE u.user_id =lc.booked_with) booked_with, lc.notes
 					FROM `load` l, carrier c, load_carrier lc
-					WHERE l.load_id = $this->load_id
+					WHERE l.load_id = ?
 					AND lc.load_id = l.load_id
 					AND c.carrier_id = lc.carrier_id";
-		$re = DB::query($sql);
+		$re = DB::query($sql, [$this->load_id]);
 		$r = DB::fetch_assoc($re);
 		
 		$c .= "<table style='width:100%;border:1px solid black;' class='content'><tr>\n";
@@ -436,9 +439,9 @@ class load_table extends dts_table{
 			,DATE_FORMAT(activity_date, '$this->date_format') activity_date
 			FROM load_warehouse lw, warehouse w
 			WHERE lw.warehouse_id = w.warehouse_id
-			AND load_id = $this->load_id
+			AND load_id = ?
 			ORDER BY type desc, lw.creation_date asc";
-		$r = DB::query($sql);
+		$r = DB::query($sql, [$this->load_id]);
 		return $r;
 	}
 	

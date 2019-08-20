@@ -81,50 +81,57 @@ class lane //extends dts_table
 					AND dw.warehouse_id = dest.warehouse_id";
 		$clause = 'AND';
 		$where='';
-		
+		$binds = [];
 		if(isset($_REQUEST['start_activity_date']) && $_REQUEST['start_activity_date'] != ''){
-			$where .= " $clause l.activity_date >= '".dateToMySQL($_REQUEST['start_activity_date'])."'";
+                    $binds[] = dateToMySQL($_REQUEST['start_activity_date']);
+                    $where .= " $clause l.activity_date >= ?";
 		}else{
-			$c .= 'Please select an starting activity date.<br>';
+                    $c .= 'Please select an starting activity date.<br>';
 		}
 		
 		if(isset($_REQUEST['end_activity_date']) && $_REQUEST['end_activity_date'] != ''){
-			$where .= " $clause l.activity_date <= '".dateToMySQL($_REQUEST['end_activity_date'])."'";
+                    $binds[] = dateToMySQL($_REQUEST['end_activity_date']);
+                    $where .= " $clause l.activity_date <= ?";
 		}else{
-			$c .= 'Please select an ending activity date.<br>';
+                    $c .= 'Please select an ending activity date.<br>';
 		}
 					
 		if(isset($_REQUEST['pickup_city']) && $_REQUEST['pickup_city'] !=''){
-			$where .= " $clause pw.city like '$_REQUEST[pickup_city]'";
+                    $binds[] = $_REQUEST['pickup_city'];
+                    $where .= " $clause pw.city like ?";
 		}else{
-			$c .= 'Please select a pickup city.<br>';
+                    $c .= 'Please select a pickup city.<br>';
 		}
 			
 		if(isset($_REQUEST['pickup_state']) && $_REQUEST['pickup_state'] !=''){
-			$where .= " $clause pw.state like '$_REQUEST[pickup_state]'";
+                    $binds[] = $_REQUEST['pickup_state'];
+                    $where .= " $clause pw.state like ?";
 		}else{
-			$c .= 'Please select a pickup state.<br>';
+                    $c .= 'Please select a pickup state.<br>';
 		}
 		
 		if(isset($_REQUEST['dest_city']) && $_REQUEST['dest_city'] !=''){
-			$where .= " $clause dw.city like '$_REQUEST[dest_city]'";
+                    $binds[] = $_REQUEST['dest_city'];
+                    $where .= " $clause dw.city like ?";
 		}else{
-			$c .= 'Please select a destintion city.<br>';
+                    $c .= 'Please select a destintion city.<br>';
 		}
 			
 		if(isset($_REQUEST['dest_state']) && $_REQUEST['dest_state'] !=''){
-			$where .= " $clause dw.state like '$_REQUEST[dest_state]'";
+                    $binds[] = $_REQUEST['dest_state'];
+                    $where .= " $clause dw.state like ?";
 		}else{
-			$c .= 'Please select a destintion state.<br>';
+                    $c .= 'Please select a destintion state.<br>';
 		}
 		
 		if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != ''){
-			$where .= " $clause l.load_type = '$_REQUEST[load_type]'";
+                    $binds[] = $_REQUEST['load_type'];
+                    $where .= " $clause l.load_type = ?";
 		}
 		$sql .= $where;
 		$sql .= ' ORDER BY l.activity_date';
 		$t = new Template();
-		$re = DB::query($sql);
+		$re = DB::query($sql, $binds);
 		$t->assign('loads', DB::to_array($re));
 		
 		return $t->fetch(App::getTempDir().'lane_search_result.tpl');

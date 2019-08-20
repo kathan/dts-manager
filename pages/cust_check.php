@@ -2,15 +2,16 @@
 require_once('app.php');
 $_SERVER['REQUEST_METHOD'] == 'POST' ? check_for_existing($_POST) : '';
 function check_for_existing($cust){
-		$sql = "SELECT c.*, '$cust[address]' REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
+    $binds = [$cust['address'], $cust['name'], $cust['name'], $cust['address'], $cust['address'], "$cust[zip]%", $cust['zip']];
+		$sql = "SELECT c.*, ? REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
 				FROM customer c
-				WHERE (soundex(name) like CONCAT(soundex('$cust[name]'), '%')
-				OR soundex('$cust[name]') like CONCAT(soundex(name), '%'))
-				AND (soundex(address) like CONCAT(soundex('$cust[address]'), '%')
-				OR soundex('$cust[address]') like CONCAT(soundex(address), '%'))
-				AND (zip like '$cust[zip]%'
-				OR '$cust[zip]' like CONCAT(zip, '%'))";
-		$re = DB::query($sql);
+				WHERE (soundex(name) like CONCAT(soundex(?), '%')
+				OR soundex(?) like CONCAT(soundex(name), '%'))
+				AND (soundex(address) like CONCAT(soundex(?), '%')
+				OR soundex(?) like CONCAT(soundex(address), '%'))
+				AND (zip like ?
+				OR ? like CONCAT(zip, '%'))";
+		$re = DB::query($sql, $binds);
 		echo DB::error();
 		echo "Results<table>";
 		while($r = DB::fetch_assoc($re)){

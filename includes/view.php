@@ -1,5 +1,4 @@
 <?php
-//require_once("database.php");
 require_once("select_input.php");
 
 class view{
@@ -18,44 +17,46 @@ class view{
 	var $tableContainer_height='295px';
 	var $tbody_height='250px';
 	
-	function __construct($sql=''){
-		$this->sql = $sql;
+	function __construct($sql='', $binds=null){
+            $this->sql = $sql;
+            $this->binds = $binds;
 	}
 	
 	function set_id($id){
-		$this->id = $id;
+            $this->id = $id;
 	}
 	
 	function set_edit_column($col){
-		$this->edit_columns[$col] = $col;
+            $this->edit_columns[$col] = $col;
 	}
 	
 	function set_value_list($col, $vl){
-		$this->value_lists[$col] = $vl;
+            $this->value_lists[$col] = $vl;
 	}
 	
 	function set_element_on_change($col, $val){
-		$this->element_on_change[$col] = $val;
+            $this->element_on_change[$col] = $val;
 	}
 	
 	function set_element_id($col, $id){
-		$this->element_ids[$col] = $id;
+            $this->element_ids[$col] = $id;
 	}
 	
 	function hide_column($col){
-		$this->hidden_columns[$col] = $col;
+            $this->hidden_columns[$col] = $col;
 	}
 	
 	function add_class($class){
-		$this->class .= " $class";
+            $this->class .= " $class";
 	}
 	
 	function set_table($table){
 		$this->table = $table;
 	}
 	
-	function set_sql($sql){
-		$this->sql = $sql;
+	function set_sql($sql, $binds){
+            $this->sql = $sql;
+            $this->binds = $binds;
 	}
 	
 	function hide_primary_key(){
@@ -82,7 +83,7 @@ class view{
 	}
 	
 	function render($hide_column_heads=false){
-		$res = DB::query($this->sql);
+		$res = DB::query($this->sql, $this->binds);
 		
 		if(DB::error()){
 			echo $this->sql;

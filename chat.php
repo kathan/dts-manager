@@ -32,33 +32,33 @@ global $dbh;
 $dbh = mysql_connect(DBPATH,DBUSER,DBPASS);
 mysql_selectdb(DBNAME,$dbh);*/
 
-if ($_GET['action'] == "chatheartbeat") { chatHeartbeat(); } 
-if ($_GET['action'] == "available") { available(); } 
-if ($_GET['action'] == "getUsers") { getUsers(); } 
-if ($_GET['action'] == "unavailable") { unavailable(); } 
-if ($_GET['action'] == "sendchat") { sendChat(); } 
-if ($_GET['action'] == "closechat") { closeChat(); } 
-if ($_GET['action'] == "startchatsession") { startChatSession(); } 
+if ($_GET['action'] == "chatheartbeat"){ chatHeartbeat(); } 
+if ($_GET['action'] == "available"){ available(); } 
+if ($_GET['action'] == "getUsers"){ getUsers(); } 
+if ($_GET['action'] == "unavailable"){ unavailable(); } 
+if ($_GET['action'] == "sendchat"){ sendChat(); } 
+if ($_GET['action'] == "closechat"){ closeChat(); } 
+if ($_GET['action'] == "startchatsession"){ startChatSession(); } 
 
-if (!isset($_SESSION['chatHistory'])) {
+if (!isset($_SESSION['chatHistory'])){
 	$_SESSION['chatHistory'] = array();	
 }
 
-if (!isset($_SESSION['openChatBoxes'])) {
+if (!isset($_SESSION['openChatBoxes'])){
 	$_SESSION['openChatBoxes'] = array();	
 }
 
-function chatHeartbeat() {
-	
-	$sql = "select * from chat where (chat.to = '".mysql_real_escape_string($_SESSION['username'])."' AND recd = 0) order by id ASC";
-	$query = mysql_query($sql);
+function chatHeartbeat(){
+	$binds = [mysql_real_escape_string($_SESSION['username'])];
+	$sql = "select * from chat where (chat.to = ? AND recd = 0) order by id ASC";
+	$query = DB::query($sql, $binds);
 	$items = '';
 
-	$chatBoxes = array();
+	$chatBoxes = [];
 
-	while ($chat = mysql_fetch_array($query)) {
+	while ($chat = DB::fetch_array($query)){
 
-		if (!isset($_SESSION['openChatBoxes'][$chat['from']]) && isset($_SESSION['chatHistory'][$chat['from']])) {
+		if (!isset($_SESSION['openChatBoxes'][$chat['from']]) && isset($_SESSION['chatHistory'][$chat['from']])){
 			$items = $_SESSION['chatHistory'][$chat['from']];
 		}
 
@@ -72,7 +72,7 @@ function chatHeartbeat() {
 	   },
 EOD;
 
-	if (!isset($_SESSION['chatHistory'][$chat['from']])) {
+	if (!isset($_SESSION['chatHistory'][$chat['from']])){
 		$_SESSION['chatHistory'][$chat['from']] = '';
 	}
 
@@ -88,14 +88,14 @@ EOD;
 		$_SESSION['openChatBoxes'][$chat['from']] = $chat['sent'];
 	}
 
-	if (!empty($_SESSION['openChatBoxes'])) {
-	foreach ($_SESSION['openChatBoxes'] as $chatbox => $time) {
-		if (!isset($_SESSION['tsChatBoxes'][$chatbox])) {
+	if (!empty($_SESSION['openChatBoxes'])){
+	foreach ($_SESSION['openChatBoxes'] as $chatbox => $time){
+		if (!isset($_SESSION['tsChatBoxes'][$chatbox])){
 			$now = time()-strtotime($time);
 			$time = date('g:iA M dS', strtotime($time));
 
 			$message = "Sent at $time";
-			if ($now > 180) {
+			if ($now > 180){
 				$items .= <<<EOD
 {
 "s": "2",
@@ -104,7 +104,7 @@ EOD;
 },
 EOD;
 
-	if (!isset($_SESSION['chatHistory'][$chatbox])) {
+	if (!isset($_SESSION['chatHistory'][$chatbox])){
 		$_SESSION['chatHistory'][$chatbox] = '';
 	}
 
@@ -124,7 +124,7 @@ EOD;
 	$sql = "update chat set recd = 1 where chat.to = '".mysql_real_escape_string($_SESSION['username'])."' and recd = 0";
 	$query = mysql_query($sql);
 
-	if ($items != '') {
+	if ($items != ''){
 		$items = substr($items, 0, -1);
 	}
 header('Content-type: application/json');
@@ -139,27 +139,27 @@ header('Content-type: application/json');
 			exit(0);
 }
 
-function chatBoxSession($chatbox) {
+function chatBoxSession($chatbox){
 	
 	$items = '';
 	
-	if (isset($_SESSION['chatHistory'][$chatbox])) {
+	if (isset($_SESSION['chatHistory'][$chatbox])){
 		$items = $_SESSION['chatHistory'][$chatbox];
 	}
 
 	return $items;
 }
 
-function startChatSession() {
+function startChatSession(){
 	$items = '';
-	if (!empty($_SESSION['openChatBoxes'])) {
-		foreach ($_SESSION['openChatBoxes'] as $chatbox => $void) {
+	if (!empty($_SESSION['openChatBoxes'])){
+		foreach ($_SESSION['openChatBoxes'] as $chatbox => $void){
 			$items .= chatBoxSession($chatbox);
 		}
 	}
 
 
-	if ($items != '') {
+	if ($items != ''){
 		$items = substr($items, 0, -1);
 	}
 
@@ -178,7 +178,7 @@ header('Content-type: application/json');
 	exit(0);
 }
 
-function sendChat() {
+function sendChat(){
 	$from = $_SESSION['username'];
 	$to = $_POST['to'];
 	$message = $_POST['message'];
@@ -187,7 +187,7 @@ function sendChat() {
 	
 	$messagesan = sanitize($message);
 
-	if (!isset($_SESSION['chatHistory'][$_POST['to']])) {
+	if (!isset($_SESSION['chatHistory'][$_POST['to']])){
 		$_SESSION['chatHistory'][$_POST['to']] = '';
 	}
 
@@ -201,14 +201,14 @@ EOD;
 
 
 	unset($_SESSION['tsChatBoxes'][$_POST['to']]);
-
-	$sql = "insert into chat (chat.from,chat.to,message,sent) values ('".mysql_real_escape_string($from)."', '".mysql_real_escape_string($to)."','".mysql_real_escape_string($message)."',NOW())";
-	$query = mysql_query($sql);
+        $binds = [mysql_real_escape_string($from), mysql_real_escape_string($to), mysql_real_escape_string($message)];
+	$sql = "insert into chat (chat.from,chat.to,message,sent) values (?, ?, ?, NOW())";
+	$query = DB::query($sql, $binds);
 	echo "1";
 	exit(0);
 }
 
-function closeChat() {
+function closeChat(){
 
 	unset($_SESSION['openChatBoxes'][$_POST['chatbox']]);
 	
@@ -216,7 +216,7 @@ function closeChat() {
 	exit(0);
 }
 
-function available() {
+function available(){
 
 	$sql = "update users set available = 1 where username = '$_SESSION[username]'";
 	
@@ -226,44 +226,40 @@ function available() {
 	exit(0);
 }
 
-function getUsers() {
-
+function getUsers(){
+    $binds = [$_SESSION['username']];
 	$sql = "SELECT username, available
 			FROM users 
-			WHERE username != '$_SESSION[username]'
+			WHERE username != ?
 			AND active = 1
 			ORDER BY username";
-	//echo $sql;
-	$re = mysql_query($sql);
+	$re = DB::query($sql, $binds);
 	$ary = Array();
-	while($r = DB::fetch_assoc($re))
-	{
+	while($r = DB::fetch_assoc($re)){
 		$row = Array();
-		foreach($r as $k=>$v)
-		{
+		foreach($r as $k=>$v){
 			$row[$k]=$v;
 		}
 		$ary[]=$row;
 	}
 	echo json_encode($ary);
-	//echo "1";
 	exit(0);
 }
 
-function unavailable() {
-
-	$sql = "update users set available = 0 where username = '$_SESSION[username]'";
+function unavailable(){
+    $binds = [$_SESSION['username']];
+    $sql = "update users set available = 0 where username = ?";
 	
-	$query = mysql_query($sql);
+    $query = DB::query($sql, $binds);
 	
-	echo "1";
-	exit(0);
+    echo "1";
+    exit(0);
 }
 
-function sanitize($text) {
-	$text = htmlspecialchars($text, ENT_QUOTES);
-	$text = str_replace("\n\r","\n",$text);
-	$text = str_replace("\r\n","\n",$text);
-	$text = str_replace("\n","<br>",$text);
-	return $text;
+function sanitize($text){
+    $text = htmlspecialchars($text, ENT_QUOTES);
+    $text = str_replace("\n\r","\n",$text);
+    $text = str_replace("\r\n","\n",$text);
+    $text = str_replace("\n","<br>",$text);
+    return $text;
 }

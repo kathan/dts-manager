@@ -37,10 +37,11 @@ class App{
     }
 
     public static function get_username($user_id){
+        $binds = [$user_id];
         $sql = "SELECT username
 		FROM users
-		WHERE user_id = $user_id";
-        $re = DB::query($sql);
+		WHERE user_id = ?";
+        $re = DB::query($sql, $binds);
 	if(DB::num_rows($re) > 0){
             $r = DB::fetch_assoc($re);
             return $r['username'];

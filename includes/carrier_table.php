@@ -96,21 +96,27 @@ class carrier_table extends dts_table{
 		$sql = "SELECT carrier_id, CONCAT('S', carrier_id) id, name, phys_city, phys_state FROM carrier ";
 		$clause = 'WHERE';
 		$where='';
+                $binds = [];
 		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0){
-			$where .= " $clause carrier_id = ".intval(trim($_REQUEST['carrier_id'], 's S'));
+                    $binds[] = intval(trim($_REQUEST['carrier_id'], 's S'));
+                    $where .= " $clause carrier_id = ?";
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '$_REQUEST[name]'";
-				$clause = 'AND';
-			}
+                    if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
+                         $binds[] = $_REQUEST['name'];
+			$where .= " $clause name like ?";
+			$clause = 'AND';
+                    }
 			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !=''){
-				$where .= " $clause phys_address like '$_REQUEST[phys_address]'";
+                            $binds[] = $_REQUEST['phys_address'];
+                            $where .= " $clause phys_address like ?";
 			}
 			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !=''){
-				$where .= " $clause phys_city like '$_REQUEST[phys_city]'";
+                            $binds[] = $_REQUEST['phys_city'];
+                            $where .= " $clause phys_city like ?";
 			}
 			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !=''){
-				$where .= " $clause phys_state like '$_REQUEST[phys_state]'";
+                            $binds[] = $_REQUEST['phys_state'];
+                            $where .= " $clause phys_state like ?";
 			}
 		}
 		$sql .= $where;
@@ -142,10 +148,9 @@ class carrier_table extends dts_table{
 		return $c;
 	}
 	
-	function get_loads()
-	{
+	function get_loads(){
 		require_once"includes/portal.php";
-		
+		$binds = [$_REQUEST['carrier_id']];
 		$p = new portal("SELECT 	l.load_id,
 								IFNULL(
 									(SELECT CONCAT(IF(cancelled,'<span style=\"$this->cancel_style\">',IF(rating='Expedited','<span style=\"$this->expedited_style\">','')),w.state,' ',w.city)
@@ -166,17 +171,15 @@ class carrier_table extends dts_table{
 									limit 1) 
 								, '$this->null_str') dest
 							FROM `load` l, load_carrier lc
-							WHERE lc.carrier_id = $_REQUEST[carrier_id]
-							AND l.load_id = lc.load_id");
+							WHERE lc.carrier_id = ?
+							AND l.load_id = lc.load_id", $binds);
 		$p->set_table($this->load);
 		$p->hide_column('load_id');
 		$p->set_primary_key('load_id');
 		$p->set_row_action("\"row_clicked('\$id', '\$pk', '\$table')\";");
 		return $p->render();
 	}
-	function get_carrier_menu()
-	{
-		
+	function get_carrier_menu(){
 		$c = "<table><tr>";
 		$c .= "<td><a href='?page=carrier'><div class='menu'>All Carriers</div></a></td>";
 		$c .= "<td><a href='?page=carrier&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
@@ -186,8 +189,7 @@ class carrier_table extends dts_table{
 		return $c;
 	}
 	
-	function get_carrier_list()
-	{
+	function get_carrier_list(){
 		require_once"includes/portal.php";
 		
 		$p = new portal("	SELECT carrier_id, CONCAT('$this->prefix', carrier_id) id, name, phys_city city, phys_state state
@@ -198,8 +200,7 @@ class carrier_table extends dts_table{
 		$p->hide_column('carrier_id');
 		return $p->render();
 	}
-	function get_carrier_edit()
-	{
+	function get_carrier_edit(){
 		$r = $this->get_row($_REQUEST['carrier_id']);
 		$c = "<center><h2>$this->prefix$r[carrier_id]</h2>";
 		
@@ -269,15 +270,12 @@ class carrier_table extends dts_table{
 		#load table>tbody{ height:3em !important;}");
 		//=============
 		$c .= "</td></tr></table>";
-		if(isset($_REQUEST[$this->new_str]))
-		{
+		if(isset($_REQUEST[$this->new_str])){
 			$c .= "<input type='button' onclick='cancel();' value='Cancel'>";
 			$c .= "<input type='button' onclick='window.location = \"?page=$this->name\";' value='Save'>";
 			$c .= $this->script("
-						function cancel()
-						{
-							if(confirm('Are you sure you want to cancel?'))
-							{
+						function cancel(){
+							if(confirm('Are you sure you want to cancel?')){
 								window.location=\"?action=$this->delete_str&page=$this->name&carrier_id=$_REQUEST[carrier_id]\";
 							}
 						}");
@@ -285,13 +283,11 @@ class carrier_table extends dts_table{
 		return $c;
 	}
 	
-	function fetch_edit($name, $value, $protected=false)
-	{
+	function fetch_edit($name, $value, $protected=false){
 		$c =& $this->get_column($name);
 		$pk_obj =& $this->get_primary_key();
 		$pk_name = $pk_obj->get_name();
-		if($protected)
-		{
+		if($protected){
 			return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
 			
 		}else{
@@ -306,12 +302,10 @@ class carrier_table extends dts_table{
 		}
 	}
 	
-	function portal_script()
-	{
+	function portal_script(){
 		return "
 			<script>
-			function get_portal(table)
-			{
+			function get_portal(table){
 				var d = document.getElementById(table);
 				d.innerHTML = 'Loading '+table;
 				var portal = getFromURL('?page=$this->name&portal='+table+'&carrier_id=".safe_get($_REQUEST['carrier_id'])."&action=portal&".SMALL_VIEW."');

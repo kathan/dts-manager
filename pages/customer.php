@@ -138,15 +138,16 @@ class customer_table extends dts_table{
 	}
 	
 	function check_for_existing($cust){
-		$sql = "SELECT c.*, '$cust[address]' REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
+            $binds = [$cust['address'], $cust['name'], $cust['name'], $cust['address'], $cust['address'], "$cust[zip]%", $cust['zip']];
+		$sql = "SELECT c.*, ? REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
 				FROM customer c
-				WHERE (soundex(name) like CONCAT(soundex('$cust[name]'), '%')
-				OR soundex('$cust[name]') like CONCAT(soundex(name), '%'))
-				AND (soundex(address) like CONCAT(soundex('$cust[address]'), '%')
-				OR soundex('$cust[address]') like CONCAT(soundex(address), '%'))
-				AND (zip like '$cust[zip]%'
-				OR '$cust[zip]' like CONCAT(zip, '%'))";
-		$re = DB::query($sql);
+				WHERE (soundex(name) like CONCAT(soundex(?), '%')
+				OR soundex(?) like CONCAT(soundex(name), '%'))
+				AND (soundex(address) like CONCAT(soundex(?), '%')
+				OR soundex(?) like CONCAT(soundex(address), '%'))
+				AND (zip like ?
+				OR ? like CONCAT(zip, '%'))";
+		$re = DB::query($sql, $binds);
 		return $re;
 	}
 	
@@ -157,14 +158,14 @@ class customer_table extends dts_table{
 		$this->customer_id = $this->last_id;
 	}
 	function get_customers(){
-		
+		$binds = [get_user_id()];
 		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM users u WHERE u.user_id = c.acct_owner) acct_owner
 							FROM customer c
 							";
 		if(!logged_in_as('admin') && !logged_in_as('super admin')){
-			$sql .= " WHERE acct_owner = ".get_user_id();
+			$sql .= " WHERE acct_owner = ?";
 		}
-		$p = new portal($sql);
+		$p = new portal($sql, $binds);
 		$p->set_row_action("\"row_clicked('\$id', '\$pk', '\$table')\";");
 		$p->set_primary_key('customer_id');
 		$p->hide_column('customer_id');
@@ -174,12 +175,13 @@ class customer_table extends dts_table{
 	
 	function get_loads_old(){
 		if($this->customer_id>0){
-			
-			$p = new portal("SELECT load_id,
-								DATE_FORMAT(l.activity_date,'$this->date_format') activity_date,
-								IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city, ', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'PICK' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') origin,
-								IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city,', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'DEST' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') dest
-								FROM `load` l WHERE l.customer_id = $this->customer_id");
+                    $binds = [$this->customer_id];
+			$p = new portal("   SELECT load_id,
+                                            DATE_FORMAT(l.activity_date,'$this->date_format') activity_date,
+                                            IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city, ', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'PICK' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') origin,
+                                            IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city,', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'DEST' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') dest
+                                            FROM `load` l
+                                            WHERE l.customer_id = ?", $binds);
 			$p->hide_column('load_id');
 			$p->set_table('load');
 			$p->set_primary_key('load_id');
@@ -217,8 +219,10 @@ class customer_table extends dts_table{
 										limit 1) 
 								, '$this->null_str') dest
 							FROM `load` l
-							WHERE l.customer_id = $this->customer_id";
-		$re = DB::query($sql);
+							WHERE l.customer_id = ?";
+                
+                $binds = [$this->customer_id];
+		$re = DB::query($sql, $binds);
 		$t = new Template();
 		$t->assign('loads', DB::to_array($re));
 		}
@@ -229,7 +233,7 @@ class customer_table extends dts_table{
 		
 		$p = new portal("	SELECT warehouse_id, name, city, state
 							FROM warehouse w
-							WHERE w.customer_id = $this->customer_id");
+							WHERE w.customer_id = ?", [$this->customer_id]);
 		$p->set_table('warehouse');
 		$p->hide_column('warehouse_id');
 		$p->set_primary_key('warehouse_id');
@@ -240,10 +244,9 @@ class customer_table extends dts_table{
 	
 	function get_notes(){
 		$sql = "SELECT note_id, notes, last_updated
-								FROM customer_notes cn WHERE cn.customer_id = $this->customer_id
+								FROM customer_notes cn WHERE cn.customer_id = ?
 								ORDER BY last_updated";
-		$re = DB::query($sql);
-		
+		$re = DB::query($sql, [$this->customer_id]);
 		
 		$t = new Template();
 		$t->assign('notes', DB::to_array($re));
@@ -252,8 +255,6 @@ class customer_table extends dts_table{
 	}
 	
 	function get_search(){
-		
-		
 		$c = '<center><h2>Customer Search</h2>';
 		
 		$si = new submit_input($this->search, $this->action);
@@ -290,37 +291,45 @@ class customer_table extends dts_table{
 				, phone, fax, state, contact_name FROM customer ";
 		$clause = 'WHERE';
 		$where='';
+                $binds = [];
 		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0){
-			$where .= " $clause customer_id = ".intval(trim($_REQUEST['customer_id'], 't T'));
-			$clause = 'AND';
+                    $binds[] = intval(trim($_REQUEST['customer_id'], 't T'));
+                    $where .= " $clause customer_id = ?";
+                    $clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '%".addslashes($_REQUEST['name'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['name'])."%";
+                            $where .= " $clause name like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
-				$where .= " $clause address like '%".addslashes($_REQUEST['address'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['address'])."%";
+                            $where .= " $clause address like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
-				$where .= " $clause city like '%".addslashes($_REQUEST['city'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['city'])."%";
+                            $where .= " $clause city like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
-				$where .= " $clause state like '%".addslashes($_REQUEST['state'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['state'])."%";
+                            $where .= " $clause state like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['acct_owner']) && $_REQUEST['acct_owner'] >0){
-				$where .= " $clause acct_owner = $_REQUEST[acct_owner]";
-				$clause = 'AND';
+                            $binds[] = $_REQUEST['acct_owner'];
+                            $where .= " $clause acct_owner = ?";
+                            $clause = 'AND';
 			}
 		}
 		if(!logged_in_as('admin') && !logged_in_as('super admin')){
-			$where .= " $clause acct_owner = ".get_user_id();
-			$clause = 'AND';
+                    $binds[] = get_user_id();
+                    $where .= " $clause acct_owner = ?";
+                    $clause = 'AND';
 		}
 		$sql .= $where;
-		$re = DB::query($sql);
+		$re = DB::query($sql, $binds);
 		return $re;
 	}
 	
@@ -342,14 +351,14 @@ class customer_table extends dts_table{
 	}
 	
 	function current_row(){
-		if(!isset($this->current_row)){
-			$this->current_row = $this->get_row($this->customer_id);
-		}
-		return $this->current_row;
+            if(!isset($this->current_row)){
+		$this->current_row = $this->get_row($this->customer_id);
+            }
+            return $this->current_row;
 	}
+        
 	function get_edit(){
-		
-		$r = $this->current_row();
+            $r = $this->current_row();
 		$t = new Template();
 		$t->assign('cust', $r);
 		$t->assign('cust_to_wh', $this->cust_to_wh);
@@ -365,9 +374,9 @@ class customer_table extends dts_table{
 		$sql = "SELECT user_id, username
 				FROM users";
 		$re = DB::query($sql);
-		$ary = Array('');
+		$ary = [];
 		while($r = DB::fetch_assoc($re)){
-			$ary[$r['user_id']] = $r['username'];
+                    $ary[$r['user_id']] = $r['username'];
 		}
 		return $ary;
 	}

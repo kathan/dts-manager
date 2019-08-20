@@ -42,8 +42,7 @@ class DB_Editor extends DB_Table{
 	
 	function add_column($val, $alias=''){
 		
-		if(isset($alias))
-		{
+		if(isset($alias)){
 			$this->columns[$alias] = new column($this, $val);
 			$this->columns[$alias]->alias = $alias;
 		}else
@@ -73,13 +72,10 @@ class DB_Editor extends DB_Table{
 	}
 	
 	function execute(){
-		if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
-		{
-			if(parent::execute())
-			{
+		if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
+			if(parent::execute()){
 				
-				if(isset($_POST['referer']))
-				{
+				if(isset($_POST['referer'])){
 					//header("Location: $_REQUEST[referer]");
 				}else{
 					//$c .= $this->list_records();
@@ -91,8 +87,7 @@ class DB_Editor extends DB_Table{
 	
 		}
 			$this->debug ? $this->add_feedback("action:".Request::get_action()) : '';
-			switch($_GET['action'])
-			{
+			switch($_GET['action']){
 				case $this->new_str:
 					$c .= $this->edit();
 					break;
@@ -129,39 +124,32 @@ class DB_Editor extends DB_Table{
 	
 	function get_edit_html(&$col, $value=null){
 		
-		if(isset($col->parent_column))
-		{
+		if(isset($col->parent_column)){
 			require_once("select_input.php");
 			return new select_input($col->get_name(), $col->parent_column->get_name(), $col->parent_label_column, $col->get_parent_records(), $value);
 			
-		}elseif(array_key_exists($col->get_name(), $this->select))
-		{
+		}elseif(array_key_exists($col->get_name(), $this->select)){
 			require_once("select_input.php");
 			//$name, $id_name, $label_name, $options, $selected=null
 			$i = new select_input($col->get_name(), $col->get_name(), $col->get_name(), $this->select[$col->get_name()],$value);
 			return $i;
 		}else{
 			//echo $col->get_type();
-			if($col->pw)
-			{
+			if($col->pw){
 				require_once("password_input.php");
 				return new password_input($col->get_name(), true);
-			}elseif($col->hidden)
-			{
+			}elseif($col->hidden){
 				//This should handle and date formats as well
 				return $col->get_hidden($value);
-			}elseif(array_key_exists($col->get_name(), $this->edit_html))
-			{
+			}elseif(array_key_exists($col->get_name(), $this->edit_html)){
 				return $this->edit_html[$col->get_name()];
 			}else{
 			
-				switch($col->get_type())
-				{
+				switch($col->get_type()){
 					case 'date':
 						require_once("date_input.php");
 						$i = new date_input($col->get_name(), $col->MySQL_Date_To_format($value, 'n/j/Y'));
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						$i->set_label($col->label);
@@ -171,8 +159,7 @@ class DB_Editor extends DB_Table{
 						require_once("datetime_input.php");
 						$i =  new datetime_input($col->get_name(), $col->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -181,8 +168,7 @@ class DB_Editor extends DB_Table{
 						require_once("datetime_input.php");
 						$i =  new datetime_input($col->get_name(), $col->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -191,8 +177,7 @@ class DB_Editor extends DB_Table{
 						require_once('checkbox_input.php');
 						$i =  new checkbox_input($col->get_name(), $value);
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -201,8 +186,7 @@ class DB_Editor extends DB_Table{
 						require_once('checkbox_input.php');
 						$i =  new checkbox_input($col->get_name(), $value);
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -211,8 +195,7 @@ class DB_Editor extends DB_Table{
 						require_once('checkbox_input.php');
 						$i =  new checkbox_input($col->get_name(), $value);
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -220,17 +203,14 @@ class DB_Editor extends DB_Table{
 					case 'mediumtext':
 						require_once('textarea_input.php');
 						$i =  new textarea_input($col->get_name(), $value);
-						if(isset($col->rows))
-						{
+						if(isset($col->rows)){
 							$i->set_rows($col->rows);
 						}
-						if(isset($col->cols))
-						{
+						if(isset($col->cols)){
 							$i->set_cols($col->cols);
 						}
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -239,8 +219,7 @@ class DB_Editor extends DB_Table{
 						require_once("file_input.php");
 						$i =  new file_input($col->get_name());
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
@@ -249,29 +228,24 @@ class DB_Editor extends DB_Table{
 						require_once("file_input.php");
 						$i =  new file_input($col->get_name());
 						$i->set_label($col->label);
-						if($col->table_obj->auto_save)
-						{
+						if($col->table_obj->auto_save){
 							$i->set_id($col->id);
 						}
 						return $i;
 						break;
 					default:
-						if(isset($col->value_list))
-						{
+						if(isset($col->value_list)){
 
 							return new select_input($col->get_name(), '', $col->get_name(), $col->value_list, $value);
 						}else{
 							
 							require_once('text_input.php');
 							$i =  new text_input($col->get_name(), $value);
-							if(isset($col->length))
-							{
-								if($col->table_obj->auto_save)
-								{
+							if(isset($col->length)){
+								if($col->table_obj->auto_save){
 									$i->set_id($col->id);
 								}
-								if($col->length < 30)
-								{
+								if($col->length < 30){
 									$i->set_attribute('size', $col->length);
 								}
 								$i->set_attribute('maxlength', $col->length);
@@ -306,11 +280,8 @@ class DB_Editor extends DB_Table{
 	function get_row(){
 		$pks = $this->get_primary_keys();
 		$col_list .= '';
-		//print_r($this->no_view);
-		foreach($this->columns as $col)
-		{
-			if(!in_array($col->get_name(), $this->no_view))
-			{
+		foreach($this->columns as $col){
+			if(!in_array($col->get_name(), $this->no_view)){
 				($col_list != '' ? $col_list .= ',':'');
 				$col_list .= "".$col->get_column_name()."";
 			}
@@ -319,10 +290,8 @@ class DB_Editor extends DB_Table{
 		$sql = "SELECT $col_list FROM `".$this->get_name()."` ";
 		
 		$clause = 'WHERE';
-		foreach($pks as $pk)
-		{
-			if(!isset($_REQUEST[$pk->get_name()]))
-			{
+		foreach($pks as $pk){
+			if(!isset($_REQUEST[$pk->get_name()])){
 				$this->add_error("Primary key not set. Missing ".$pk->get_name());
 				return false;
 			}
@@ -336,8 +305,7 @@ class DB_Editor extends DB_Table{
 		return $this->row;
 	}
 	function edit(){
-		if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST')
-		{
+		if(strtoupper($_SERVER['REQUEST_METHOD']) == 'POST'){
 			$row = $_POST;
 		}else{
 			$row = $this->get_row();
@@ -355,8 +323,7 @@ class DB_Editor extends DB_Table{
 	}
 	
 	function list_records($filter=''){
-		if(file_exists($this->list_template))
-		{
+		if(file_exists($this->list_template)){
 			return $this->get_template($filter);
 		}else{
 			return $this->build_list($filter);
@@ -386,10 +353,8 @@ class DB_Editor extends DB_Table{
 	}
 	
 	function build_query($filter=''){
-		foreach($this->columns as $col)
-		{
-			if(!in_array($col->get_name(), $this->no_view))
-			{
+		foreach($this->columns as $col){
+			if(!in_array($col->get_name(), $this->no_view)){
 				($col_list != '' ? $col_list .= ',':'');
 				
 				$col_list .= "".$col->get_column_name()."";
@@ -398,13 +363,10 @@ class DB_Editor extends DB_Table{
 		}
 		$sql = "SELECT $col_list FROM `".$this->get_name()."` ";
 		$clause = 'WHERE';
-		if($filter != '')
-		{
+		if($filter != ''){
 			
-			foreach($this->columns as $col)
-			{
-				if($col->actual && $col->check_value($filter))
-				{
+			foreach($this->columns as $col){
+				if($col->actual && $col->check_value($filter)){
 					($col->use_like() ? $op='like':$op = '=');
 				
 					$sql .= "$clause `".$col->get_name()."` $op ".$col->format_for_db($filter).' ';
@@ -414,8 +376,7 @@ class DB_Editor extends DB_Table{
 			
 		}
 		//print_r($this->where);
-		foreach($this->where as $w)
-		{
+		foreach($this->where as $w){
 			$sql .= "$clause $w";
 			$clause = 'AND';
 		}
@@ -423,8 +384,7 @@ class DB_Editor extends DB_Table{
 		$sql .= "ORDER BY ";
 		$i=0;
 		$pks = $this->get_primary_keys();
-		foreach($pks as $pk)
-		{
+		foreach($pks as $pk){
 			$i > 0 ? $sql .= ',' : '';
 			$sql .= $pk->get_name();
 			$i++;
@@ -447,11 +407,9 @@ class DB_Editor extends DB_Table{
 		$pks = $this->get_primary_keys();
 		
 		
-		for($col = 0; $col <= DB::num_fields($re);$col++)
-		{
+		for($col = 0; $col <= DB::num_fields($re);$col++){
 			
-			if(!isset($this->list_columns) || in_array(DB::field_name($re, $col), $this->list_columns))
-			{
+			if(!isset($this->list_columns) || in_array(DB::field_name($re, $col), $this->list_columns)){
 				$c .= "<th class=\"".DB::field_name($re, $col)."\">".DB_Editor::format_name(DB::field_name($re, $col))."</th>\n";
 			}
 		}
@@ -461,12 +419,10 @@ class DB_Editor extends DB_Table{
 		$next_start = $start + $this->list_limit;
 		(($result_count - $start) > $this->list_limit ? $next_group_count = $this->list_limit :$next_group_count =($result_count - $start));
 		DB::data_seek($re, $start);
-		while($row = DB::fetch_array($re))
-		{
+		while($row = DB::fetch_array($re)){
 			$q_str='';
 			$q_input='';
-			foreach($pks as $pk)
-			{
+			foreach($pks as $pk){
 				$q_str .= "&amp;".$pk->get_name()."=".$row[$pk->get_name()]."&amp;".Request::recycle_get();
 				$q_input .= "<input type=\"hidden\" name=\"".$pk->get_name()."\" value=\"".$row[$pk->get_name()]."\" />".Request::recycle_post();
 			}
@@ -474,10 +430,8 @@ class DB_Editor extends DB_Table{
 			
 			$r++;
 			$c .= "<tr class=\"$class\">\n";
-			for($col = 0; $col < DB::num_fields($re);$col++)
-			{
-				if(!isset($this->list_columns) || in_array(DB::field_name($re, $col), $this->list_columns))
-				{
+			for($col = 0; $col < DB::num_fields($re);$col++){
+				if(!isset($this->list_columns) || in_array(DB::field_name($re, $col), $this->list_columns)){
 					$c .= "<td class=\"".DB::field_name($re, $col)."\"><a href=\"?action=edit$q_str\">".$row[$col]."</a></td>\n";
 				}
 			}
@@ -499,8 +453,7 @@ qq;*/
 			$c .= "</td></tr>\n";
 			
 			
-			if($r > $this->list_limit)
-			{
+			if($r > $this->list_limit){
 				
 				$footer .= "<a href=\"?".Request::recycle_get()."&amp;$this->start_str=$next_start\">Next $next_group_count</a>";
 				break;
@@ -513,8 +466,7 @@ qq;*/
 		Request::set_recycle($this->search_str, Request::safe_get($_GET[$this->search_str]));
 		$c .= "</table>";
 		($start < $this->list_limit ? $prev_start = 0 : $prev_start = $start - $this->list_limit);
-		if($start > 0)
-		{
+		if($start > 0){
 			$c .= "<a href=\"?".Request::recycle_get()."&amp;$this->start_str=$prev_start\">Prev $this->list_limit</a> ";
 		}
 		($result_count == 0 ? $c .= "No records found." : $c .= ($start+1)." thru ".($start+$r-1)." of $result_count $footer");
@@ -548,8 +500,7 @@ qq;*/
 	}
 	
 	function edit_form($row=null){
-		if(file_exists($this->edit_template))
-		{
+		if(file_exists($this->edit_template)){
 			return $this->get_edit_template($row);
 		}else{
 			return $this->get_edit_form($row);
@@ -566,8 +517,7 @@ qq;*/
 		$c = $this->feedback;
 		$c .= $this->error_str;
 		$pks = $this->get_primary_keys();
-		foreach($pks as $pk)
-		{
+		foreach($pks as $pk){
 			$q_str .= "&amp;".$pk->get_name()."=".$row[$pk->get_name()];
 			$q_input .= "<input type=\"hidden\" name=\"".$pk->get_name()."\" value=\"".$row[$pk->get_name()]."\" />".Request::recycle_post();
 		}
@@ -585,8 +535,7 @@ qq;*/
 		$cols = $this->columns;
 		
 		
-		foreach($cols as $col)
-		{
+		foreach($cols as $col){
 			if(!in_array($col->get_name(), $this->no_access)) //
 			{
 				
@@ -594,8 +543,7 @@ qq;*/
 				{
 					$c .= "
 				<tr>";
-					if(!$col->is_hidden())
-					{
+					if(!$col->is_hidden()){
 						$c .= "
 					<td>".DB_Editor::format_name($col->get_name()).":</td>";
 					}
@@ -617,8 +565,7 @@ qq;*/
 					//print_r($row);
 					$c .= "
 					<td>".(is_array($row) && !in_array($pks, $row) || in_array($col->get_name(), $this->no_edit) ? $row[$col->get_name()].$this->get_hidden($col, $row[$col->get_name()])->render() : 'Auto')."</td>";
-					if(!in_array($col->get_name(), $this->no_edit))
-					{
+					if(!in_array($col->get_name(), $this->no_edit)){
 						$c .= "
 				</tr>";
 					}
@@ -626,8 +573,7 @@ qq;*/
 			}
 		}
 
-		foreach($this->additional_inputs as $input_key => $input)
-		{
+		foreach($this->additional_inputs as $input_key => $input){
 			$input->set_attribute('value', $row[$input_key]);
 			$c .= "
 				<tr>
@@ -640,8 +586,7 @@ qq;*/
 					<td>";
 		//if(isset($row))
 		
-		if(get_action() == $this->edit_str)
-		{
+		if(get_action() == $this->edit_str){
 			$c .= $this->action_button(DB_Table::$save_str);
 			
 		}else{
@@ -655,8 +600,7 @@ qq;*/
 		</form>
 qq;
 		isset($referer) ? $c .= "<input type=\"button\" onclick=\"window.location='$referer'\" value=\"Exit\">" : '';
-		if(isset($row))
-		{
+		if(isset($row)){
 			!$this->no_delete ? $c .= "
 		<form method=\"post\" action=\"\">$q_input<input type=\"submit\" name=\"action\" value=\"$del_str\" />" :'';
 			isset($_SERVER['HTTP_REFERER']) ? $c .= "<input type=\"hidden\" name=\"referer\" value=\"$_SERVER[HTTP_REFERER]\" />" : '';
@@ -676,8 +620,7 @@ qq;
 ?>
 <script type="text/javascript">
 	function confirm_delete(del_form){
-		if(confirm('Are you sure you want to delete this record?'))
-		{
+		if(confirm('Are you sure you want to delete this record?')){
 			var f = document.getElementById(del_form);
 			f.submit();
 		}

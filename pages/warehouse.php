@@ -175,32 +175,37 @@ class warehouse_table extends dts_table{
 		$sql = "SELECT CONCAT('D',warehouse_id) id, warehouse_id, address, name, city, state, phone, fax, contact_name FROM warehouse ";
 		$clause = 'WHERE';
 		$where='';
-		
+		$binds = [];
 		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0){
-			$where .= " $clause warehouse_id = ".intval(trim($_REQUEST['warehouse_id'], 'd D'));
-			$clause = 'AND';
+                    $binds[] = intval(trim($_REQUEST['warehouse_id'], 'd D'));
+                    $where .= " $clause warehouse_id = ?";
+                    $clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '%".addslashes($_REQUEST['name'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['name'])."%";
+                            $where .= " $clause name like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
-				$where .= " $clause address like '%".addslashes($_REQUEST['address'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['address'])."%";
+                            $where .= " $clause address like ?";
+                            $clause = 'AND';
 			}
 			
 			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
-				$where .= " $clause city like '%".addslashes($_REQUEST['city'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['city'])."%";
+                            $where .= " $clause city like ?";
+                            $clause = 'AND';
 			}
 			
 			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
-				$where .= " $clause state like '%".addslashes($_REQUEST['state'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['state'])."%";
+                            $where .= " $clause state like ?";
+                            $clause = 'AND';
 			}
 		}
 		$sql .= $where;
-		$re = DB::query($sql);
+		$re = DB::query($sql, $binds);
 		return $re;
 		
 	}
@@ -410,8 +415,8 @@ class warehouse_table extends dts_table{
 		$sql = "INSERT INTO warehouse(name, address, city, state, zip, phone, fax, contact_name)
 				SELECT name, address, city, state, zip, phone, fax, contact_name
 				FROM customer
-				WHERE customer_id = $_REQUEST[customer_id]";
-		$r = db_query($sql);
+				WHERE customer_id = ?";
+		$r = db_query($sql, [$_REQUEST['customer_id']]);
 		if(db_error()){
 			echo db_error();
 		}

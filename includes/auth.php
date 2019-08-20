@@ -198,7 +198,11 @@ function user_getemail(){
 	global $G_USER_RESULT;
 	//see if we have already fetched this user from the db, if not, fetch it
 	if (!$G_USER_RESULT){
-		$G_USER_RESULT=DB::query("SELECT * FROM users WHERE username='" . user_getname() . "'");
+            $binds = [user_getname()];
+            $sql = "    SELECT *
+                        FROM users 
+                        WHERE username = ?";
+            $G_USER_RESULT=DB::query($sql, $binds);
 	}
 	if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){
 		return DB::result($G_USER_RESULT,0,'email');

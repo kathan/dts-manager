@@ -94,12 +94,13 @@ $sql = "SELECT	l.load_id,
 					FROM warehouse w, load_warehouse lwd
 					WHERE lwd.type ='DEST' 
 					AND w.warehouse_id = lwd.warehouse_id) dest
-				WHERE l.load_id = $_REQUEST[load_id]
+				WHERE l.load_id = ?
 				AND lc.load_id = l.load_id
 				AND c.carrier_id = lc.carrier_id
 				AND origin.load_id = l.load_id
 				AND dest.load_id = l.load_id";
-$re = DB::query($sql);
+$binds = [$_REQUEST['load_id']];
+$re = DB::query($sql, $binds);
 $t = new Template();
 $load = DB::to_array($re, true);
 $t->assign('load', $load);

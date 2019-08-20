@@ -138,33 +138,40 @@ class carrier_table extends dts_table{
 		$sql = "SELECT CONCAT('S', carrier_id) id, c.* FROM carrier c ";
 		$clause = 'WHERE';
 		$where='';
+                $binds = [];
 		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0) {
-			$where .= " $clause carrier_id = ".intval(trim($_REQUEST['carrier_id'], 's S'));
+                    $binds[] = intval(trim($_REQUEST['carrier_id'], 's S'));
+			$where .= " $clause carrier_id = ?";
 			$clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-				$where .= " $clause name like '%".addslashes($_REQUEST['name'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['name'])."%";
+                            $where .= " $clause name like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !='') {
-				$where .= " $clause phys_address like '%".addslashes($_REQUEST['phys_address'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['phys_address'])."%";
+                            $where .= " $clause phys_address like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !='') {
-				$where .= " $clause phys_city like '%".addslashes($_REQUEST['phys_city'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['phys_city'])."%";
+                            $where .= " $clause phys_city like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !='') {
-				$where .= " $clause phys_state like '%".addslashes($_REQUEST['phys_state'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['phys_state'])."%";
+                            $where .= " $clause phys_state like ?";
+                            $clause = 'AND';
 			}
 			if(isset($_REQUEST['mc_number']) && $_REQUEST['mc_number'] !='') {
-				$where .= " $clause mc_number like '%".addslashes($_REQUEST['mc_number'])."%'";
-				$clause = 'AND';
+                            $binds[] = "%".addslashes($_REQUEST['mc_number'])."%";
+                            $where .= " $clause mc_number like ?";
+                            $clause = 'AND';
 			}
 		}
 		$sql .= $where;
-		$re = DB::query($sql);
+		$re = DB::query($sql, $binds);
 		
 		return $re;
 	}
@@ -190,7 +197,7 @@ class carrier_table extends dts_table{
 	}
 	
 	function get_loads() {
-		
+		$binds = [$_REQUEST[carrier_id]];
 		
 		$p = new portal("SELECT 	l.load_id,
 								IFNULL(
@@ -212,8 +219,8 @@ class carrier_table extends dts_table{
 									limit 1) 
 								, '$this->null_str') dest
 							FROM `load` l, load_carrier lc
-							WHERE lc.carrier_id = $_REQUEST[carrier_id]
-							AND l.load_id = lc.load_id");
+							WHERE lc.carrier_id = ?
+							AND l.load_id = lc.load_id", $binds);
 		$p->set_table($this->load);
 		$p->hide_column('load_id');
 		$p->set_primary_key('load_id');
@@ -221,47 +228,44 @@ class carrier_table extends dts_table{
 		return $p->render();
 	}
 	function get_carrier_menu() {
-		$t = new Template();
-		return $t->fetch(App::getTempDir().'carrier_menu.tpl');
+            $t = new Template();
+            return $t->fetch(App::getTempDir().'carrier_menu.tpl');
 	}
 	
 	function get_carrier_list() {
-		$p = new portal("	SELECT carrier_id, CONCAT('$this->prefix', carrier_id) id, name, phys_city city, phys_state state
+            $p = new portal("	SELECT carrier_id, CONCAT('$this->prefix', carrier_id) id, name, phys_city city, phys_state state
 							FROM `carrier`");
-		$p->set_table($this->carrier);
-		$p->set_row_action("\"row_clicked('\$id', '\$pk', '\carrier')\";");
-		$p->set_primary_key('carrier_id');
-		$p->hide_column('carrier_id');
-		return $p->render();
+            $p->set_table($this->carrier);
+            $p->set_row_action("\"row_clicked('\$id', '\$pk', '\carrier')\";");
+            $p->set_primary_key('carrier_id');
+            $p->hide_column('carrier_id');
+            return $p->render();
 	}
 	
 	function get_carrier_edit() {
+            $r = $this->get_row($_GET['carrier_id']);
 		
-		
-		$r = $this->get_row($_GET['carrier_id']);
-		
-		$temp = new Template();
-		$temp->assign('carrier', $r);
-		$temp->assign('users', $this->get_users());
-		$temp->assign('admin', logged_in_as('admin'));
-		$temp->assign('prefix', $this->prefix);
-		return $temp->fetch(App::getTempDir().'carrier_edit.tpl');
+            $temp = new Template();
+            $temp->assign('carrier', $r);
+            $temp->assign('users', $this->get_users());
+            $temp->assign('admin', logged_in_as('admin'));
+            $temp->assign('prefix', $this->prefix);
+            return $temp->fetch(App::getTempDir().'carrier_edit.tpl');
 	}
 	
 	
 	
 	function fetch_edit($name, $value, $protected=false) {
-		$c =& $this->get_column($name);
-		$pk_obj =& $this->get_primary_key();
-		$pk_name = $pk_obj->get_name();
-		if($protected) {
-			return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
-			
-		}else{
-			$o = $c->get_edit_html($value);
-			$o->set_id("action=update&table=$_REQUEST[page]&".$pk_name."=".$_REQUEST[$pk_name]."&".$name."=");
-			$o->add_attribute('onchange', 'db_save(this);');
-			$script = "<script>
+            $c =& $this->get_column($name);
+            $pk_obj =& $this->get_primary_key();
+            $pk_name = $pk_obj->get_name();
+            if($protected) {
+                return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
+            }else{
+		$o = $c->get_edit_html($value);
+		$o->set_id("action=update&table=$_REQUEST[page]&".$pk_name."=".$_REQUEST[$pk_name]."&".$name."=");
+		$o->add_attribute('onchange', 'db_save(this);');
+		$script = "<script>
 		var i = document.getElementById('$name');
 		i.setReturnFunction(onchange);
 		</script>";
