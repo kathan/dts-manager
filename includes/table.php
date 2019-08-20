@@ -2,6 +2,7 @@
 require_once('global.php');
 require_once('database.php');
 require_once("column.php");
+require_once('DB_Table.php');
 class table{
 	/*
 		Field Options:
