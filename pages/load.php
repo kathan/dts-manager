@@ -82,9 +82,7 @@ class load_table extends dts_table{
 		$sql = "SELECT l.*, (select acct_owner from customer where customer_id = l.customer_id) acct_owner
 				FROM `load` l
 				WHERE load_id = $this->load_id";
-		//echo $sql;
 		$re = DB::query($sql);
-		//echo DB::error();
 		$r = DB::fetch_assoc($re);
 		return $r;
 	}
@@ -163,12 +161,10 @@ class load_table extends dts_table{
 					case $this->customer_search_result:
 						$code .= $this->get_customer_search_result_module();
 						$code .= "<input type='button' onclick='window.close();' value='Close'>";
-						//$code .= $this->check_size();
 						break;
 					case $this->customer_search_edit:
 						$code .= $this->get_customer_search_edit_module();
 						$code .= "<input type='button' onclick='window.close();' value='Close'>";
-						//$code .= $this->check_size();
 						break;
 					case $this->view_str:
 						switch (safe_get($_REQUEST[$this->mod_str]))
@@ -243,13 +239,13 @@ class load_table extends dts_table{
 						break;
 					case $this->repeat:
 						$this->repeat_load();
-						header("location: http://".HTTP_ROOT."/?page=$this->page&action=$this->view_str&load_id=$this->load_id");
+						header("location: ?page=$this->page&action=$this->view_str&load_id=$this->load_id");
 						break;
 					case $this->new_str:
 						$this->create_new();
 						if($this->load_id)
 						{
-							header("location: http://".HTTP_ROOT."/?page=$this->page&action=$this->view_str&load_id=$this->load_id");
+							header("location: ?page=$this->page&action=$this->view_str&load_id=$this->load_id");
 						}else{
 							echo DB::error();
 						}
@@ -384,8 +380,8 @@ class load_table extends dts_table{
 		$c ='';
 		
 		$sql = "SELECT	c.carrier_id, phys_address,
-						CONCAT('<a href=\"#\" onclick=\"javascript:popUp(\'http://".HTTP_ROOT."/?page=load_carrier&action=$this->edit_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\', 960, 350)\">',name,'</a>') name,
-						CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'http://".HTTP_ROOT."/?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
+						CONCAT('<a href=\"#\" onclick=\"javascript:popUp(\'?page=load_carrier&action=$this->edit_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\', 960, 350)\">',name,'</a>') name,
+						CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
 
 		
 		if(logged_in_as('admin'))
@@ -456,8 +452,6 @@ class load_table extends dts_table{
 			WHERE lw.warehouse_id = w.warehouse_id
 			AND load_id = $this->load_id
 			ORDER BY type desc, lw.creation_date asc";
-		//echo $sql;
-		//echo "b";
 		$r = DB::query($sql);
 		return $r;
 	}
@@ -655,7 +649,6 @@ class load_table extends dts_table{
 	function get_problem_edit_module(){
 		$r = $this->current_row();
 		$c ='';
-		//$c .= $this->check_size();
 		$c .= "<table width='100%' border=0>";
 		$c .= '<tr><td>Problem</td><td>'.$this->fetch_edit('problem', $r['problem']).'</td><tr>';
 		$c .= '<tr><td>Solution</td><td>'.$this->fetch_edit('solution', $r['solution']).'</td></tr>';
@@ -690,9 +683,7 @@ class load_table extends dts_table{
 							var obj=new Object();
 							obj.id = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".get_user_id()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
 							obj.value = $this->load_id;
-							//var param_str = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".get_user_id()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
 							db_save(obj);
-							//db_save(param_str,$this->load_id);
 							refresh_close();
 						}else{
 							alert('You already closed the parent window.');
@@ -701,7 +692,6 @@ class load_table extends dts_table{
 					function refresh_close()
 					{
 						window.opener.update_warehouse_portal();
-						//window.close();
 					}");
 		$sql = "SELECT CONCAT('D',warehouse_id) warehouse_id, name, address, city, state, CONCAT('<input type=\"button\" value=\"Add\" onclick=\"add_load_warehouse(',warehouse_id,')\">') `add` FROM warehouse ";
 		$clause = 'WHERE';
@@ -732,7 +722,6 @@ class load_table extends dts_table{
 			}
 		}
 		$sql .= $where;
-		//echo $sql;
 		$p = new portal($sql);
 		$c .= $p->render();
 		
@@ -792,7 +781,6 @@ class load_table extends dts_table{
 						ins_exp.setMonth(ins_exp_str[1]);
 						ins_exp.setDate(ins_exp_str[2]);
 						today = new Date();
-						//alert('insurance_expires:'+ins_exp.toString()+' today:'+today.toString());
 						if(ins_exp > today)
 						{
 							return true;
@@ -810,7 +798,6 @@ class load_table extends dts_table{
 							obj.id  = param_str;
 							obj.value = $this->load_id;
 							db_save(obj);
-							//db_save(param_str,$this->load_id);
 							refresh_close();
 						}else{
 							alert(\"Carrier's insurance expired on \"+insurance_expires+\".\")
@@ -819,14 +806,12 @@ class load_table extends dts_table{
 					function refresh_close()
 					{
 						window.opener.update_carrier_portal();
-						//window.close();
 					}");
 		$sql = "SELECT	CONCAT('S', carrier_id) carrier_id,
 						name,
 						phys_city,
 						phys_state,";
 		$sql .= "		IF(insurance_expires > NOW(), IF(!do_not_load, CONCAT('<input type=\"button\" value=\"Add\" onclick=\"add_load_carrier(',carrier_id,',\'',insurance_expires,'\')\">'), null), 'Insurance Expired') `add` ";
-		//$sql .= "		CONCAT('<input type=\"button\" value=\"Add\" onclick=\"add_load_carrier(',carrier_id,',\'',insurance_expires,'\')\">') `add` ";
 		$sql .= "FROM carrier ";
 		$clause = 'WHERE';
 		$where='';
@@ -857,7 +842,6 @@ class load_table extends dts_table{
 			}
 		}
 		$sql .= $where;
-		//echo $sql;
 		$p = new portal($sql);
 		$c .= $p->render();
 		
@@ -996,7 +980,6 @@ class load_table extends dts_table{
 		$cust_other_total = $r['cust_other'] * $r['cust_other_amount'];
 		
 		$customer_total = $cust_line_haul_total + $cust_detention_total + $cust_tonu_total + $cust_unload_load_total + $cust_fuel_total + $cust_other_total;
-		//echo $customer_total;
 		$carrier_line_haul_total = $r['carrier_line_haul'] * $r['carrier_line_haul_amount'];
 		$carrier_detention_total = $r['carrier_detention'] * $r['carrier_detention_amount'];
 		$carrier_tonu_total = $r['carrier_tonu'] * $r['carrier_tonu_amount'];
@@ -1034,7 +1017,6 @@ class load_table extends dts_table{
 		
 		$dtsp = round($gp - $wcp, 2);
 		$t->assign('gp', $gp);
-		//$t->assign('gpp', $gpp);
 		$t->assign('wcp', $wcp);
 		$t->assign('dtsp', $dtsp);
 		return $t->fetch(App::getTempDir().'money_load.tpl');
@@ -1188,7 +1170,6 @@ class load_table extends dts_table{
 				.load_content, .content{background-color:#EEEEEE}");
 		}
 		$auth_edit=false;
-		//print_r($r);
 		if(!$this->been_delivered() && (logged_in_as('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']))
 		{
 			$auth_edit=true;
@@ -1262,29 +1243,6 @@ class load_table extends dts_table{
 			</div>
 		</fieldset>";
 		
-		//====Rating====
-		/*$col = $this->get_column('rating');
-		$rating_list = Array('Standard' => 'Standard', 'Expedited' => 'Expedited');
-		$col->set_value_list($rating_list);
-		$c .= "
-		<fieldset style='height:$this->row_height'>
-			<legend>Rating</legend>";
-		$c .= "
-			<div id='rating_module'>";
-		$c .= "
-				<table width='100%' border=0>
-					<tr>
-						<td class='right'>Rating Code:</td>
-						<td class='left'>".$this->fetch_edit('rating', $r['rating'])."</td>
-					<tr>
-					<tr>
-						<td class='right'>".$this->fetch_edit('cancelled', $r['cancelled'])."</td>
-						<td class='left'>Cancel</td>
-					</tr>
-				</table>
-			</div>
-		</fieldset>";*/
-		
 		$c .= $this->script("
 				set_content_color();
 				var cont;
@@ -1297,24 +1255,16 @@ class load_table extends dts_table{
 					var cancelled = document.getElementsByName('cancelled');
 					cancelled = cancelled[0];
 					
-					//var rating = document.getElementsByName('rating');
-					//alert(rating.count)
-					//rating = rating[0];
-					
 					if(cancelled.checked)
 					{
 						cont.style.backgroundColor = '$this->cancel_color';
-						//cont.setAttribute('background-color', '$this->content_color');
 					}/*else if(rating.value == 'Expedited')
 					{
 						cont.style.backgroundColor = '$this->expedited_color';
-						//cont.setAttribute('background-color', '$this->content_color');
 					}*/else
 					{
 						cont.style.backgroundColor = '$this->content_color';
-						//cont.setAttribute('background-color', '$this->content_color');
 					}
-					//alert(cont.style.backgroundColor);
 					return true;
 				}");
 		
@@ -1357,13 +1307,6 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
-		//if($auth_edit)
-		//{
-			$c .= "<a href='#' onclick=\"javascript:popUp('http://".HTTP_ROOT."/?page=$this->page&action=$this->customer_search_edit&load_id=$this->load_id&".SMALL_VIEW."', 700,550);return false;\">Customer</a>";
-		//}else{
-		//	$c .= 'Customer';
-		//}
-		//$c .= $r['customer_id'];
 		$c .="</legend>
 			<div id='customer_module'></div>
 		</fieldset>";
@@ -1408,7 +1351,7 @@ class load_table extends dts_table{
 				<legend>";
 		if($auth_edit)
 		{
-			$c .= "<a href='#' onclick=\"javascript:popUp('http://".HTTP_ROOT."/?page=$this->page&load_id=$this->load_id&action=$this->warehouse_search_edit&customer_id=$r[customer_id]&".SMALL_VIEW."', 700, 550);return false;\">Warehouse</a>";
+			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&load_id=$this->load_id&action=$this->warehouse_search_edit&customer_id=$r[customer_id]&".SMALL_VIEW."', 700, 550);return false;\">Warehouse</a>";
 		}else{
 			$c .= 'Warehouse';
 		}
@@ -1425,7 +1368,6 @@ class load_table extends dts_table{
 				obj.id = param_str;
 				obj.value = load_id;
 				db_save(obj);
-				//db_save(param_str,load_id);
 				update_warehouse_portal();
 			}
 			
@@ -1443,9 +1385,7 @@ class load_table extends dts_table{
 					obj.id = 'action=$this->delete&table=load_warehouse&load_id=$this->load_id&warehouse_id=';
 					obj.value = warehouse_id;
 					db_save(obj);
-					//db_save('action=$this->delete&table=load_warehouse&load_id=$this->load_id&warehouse_id=', warehouse_id);
 					update_warehouse_portal();
-					//alert('success');
 				}
 			}
 			var cal_act_dates = Array();
@@ -1458,7 +1398,6 @@ class load_table extends dts_table{
 				{
 					cal_act_dates[i] = new CalendarPopup(cals[i].id);
 					cal_act_dates[i].id = cals[i].id+'_cal';
-					//alert(cal_act_dates[i]);
 				}
 			}
 			jQuery().ready(function(){
@@ -1475,7 +1414,7 @@ class load_table extends dts_table{
 				<legend>";
 		if(!$this->been_delivered() || logged_in_as('admin'))
 		{
-			$c .= "<a href='#' onclick=\"javascript:popUp('http://".HTTP_ROOT."/?page=$this->page&action=$this->edit_str&module=$this->money_str&load_id=$this->load_id&".SMALL_VIEW."',0,1064,240);return false;\">Money</a>";
+			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&action=$this->edit_str&module=$this->money_str&load_id=$this->load_id&".SMALL_VIEW."',0,1064,240);return false;\">Money</a>";
 		}else{
 			$c .= 'Money';
 		}
@@ -1501,20 +1440,15 @@ class load_table extends dts_table{
 							gp = gp_el.innerHTML;
 							
 							var wc_perc = wc_perc_el.innerHTML * .01;
-							//wc_perc_el.style.visibility = 'visible';
 							
 							wcp = Math.round(gp * wc_perc *100)/100;
-							//alert(wcp)
 							wcp_el.style.visibility = 'visible';
 							wcp_el.innerHTML = wcp;
 							
-							//dtsp_el.style.visibility = 'visible';
 							
 						}else{
 							wcp = 0;
-							//wc_perc_el.style.visibility = 'hidden';
 							wcp_el.style.visibility = 'hidden';
-							//dtsp_el.style.visibility = 'hidden';
 						}
 						setDtsp();
 					}
@@ -1533,26 +1467,17 @@ class load_table extends dts_table{
 							gp = gp_el.innerHTML;
 							
 							var dls_perc = dls_perc_el.innerHTML * .01;
-							//dls_perc_el.style.visibility = 'visible';
 							
 							dlsp = Math.round(gp * dls_perc *100)/100;
-							//alert(dlsp)
 							dlsp_el.style.visibility = 'visible';
-							
-							
-							//dtsp_el.style.visibility = 'visible';
-							
 						}else{
 							dlsp = 0;
-							//dls_perc_el.style.visibility = 'hidden';
 							dlsp_el.style.visibility = 'hidden';
-							//dtsp_el.style.visibility = 'hidden';
 						}
 						setDtsp();
 					}
 					
 					function setDtsp(){
-						//jQuery('#wcp').text(wcp);
 						jQuery('#dlsp').text(dlsp);
 						var gp_val = parseInt(gp) - (parseInt(wcp) + parseInt(dlsp));
 						jQuery('#dtsp').text(gp_val).css('visibility', 'visible');
@@ -1573,12 +1498,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
-		//if($auth_edit)
-		//{
-			$c .= "<a href='#' onclick=\"javascript:popUp('http://".HTTP_ROOT."/?page=$this->page&load_id=$this->load_id&action=$this->carrier_search_edit&".SMALL_VIEW."','carrier_search_'+$this->load_id, 700, 550);return false;\">Carrier</a>";
-		//}else{
-		//	$c .= 'Carrier';
-		//}
+			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&load_id=$this->load_id&action=$this->carrier_search_edit&".SMALL_VIEW."','carrier_search_'+$this->load_id, 700, 550);return false;\">Carrier</a>";
 		$c .= "</legend><div id='load_carrier_portal'></div>";
 		$c .= "</fieldset>";
 		$c .= $this->script("
@@ -1596,7 +1516,6 @@ class load_table extends dts_table{
 						obj.id = param_str;
 						obj.value = load_id;
 						db_save(obj);
-						//db_save(param_str,load_id);
 						update_carrier_portal();
 					}
 					function update_carrier_portal()
@@ -1612,9 +1531,7 @@ class load_table extends dts_table{
 							obj.id = 'action=$this->delete&table=load_carrier&load_id=$this->load_id&carrier_id=';
 							obj.value = carrier_id;
 							db_save(obj);
-							//db_save('action=$this->delete&table=load_carrier&load_id=$this->load_id&carrier_id=', carrier_id);
 							update_carrier_portal();
-							//alert('success');
 						}
 					}
 					jQuery().ready(function(){
@@ -1713,8 +1630,6 @@ class load_table extends dts_table{
 		$c .= '<tr><td>Rating</td><td>'.$this->fetch_new('rating').'</td></tr>';
 		$c .= '<tr><td>Ordered</td><td>'.$this->fetch_new('ordered').'</td></tr>';
 		$c .= '<tr><td>Customer</td><td>'.$this->fetch_new('customer_id', safe_get($_REQUEST['customer_id'])).'</td></tr>';
-		//$c .= '<tr><td>Origin</td><td>'.$this->fetch_new('origin').'</td></tr>';
-		//$c .= '<tr><td>Dest</td><td>'.$this->fetch_new('dest').'</td></tr>';
 		$c .= '<tr><td>Customer Total</td><td>'.$this->fetch_new('customer_total').'</td></tr>';
 		$c .= '<tr><td>Carrier Total</td><td>'.$this->fetch_new('carrier_total').'</td></tr>';
 		$c .= '<tr><td>Trailer Type</td><td>'.$this->fetch_new('trailer_type').'</td></tr>';
@@ -1739,7 +1654,7 @@ class load_table extends dts_table{
 	}
 
 	function get_customer($customer_id){
-		$sql ="SELECT *, CONCAT('<a href=\"http://".HTTP_ROOT."/?page=customer&action=$this->edit_str&customer_id=',customer_id,'\">', name, '</a>') name FROM customer WHERE customer_id = $customer_id";
+		$sql ="SELECT *, CONCAT('<a href=\"?page=customer&action=$this->edit_str&customer_id=',customer_id,'\">', name, '</a>') name FROM customer WHERE customer_id = $customer_id";
 		$r = DB::query($sql);
 		return DB::fetch_assoc($r);
 	}
@@ -1765,9 +1680,8 @@ class load_table extends dts_table{
 		$c = $this->get_column($name);
 		$pk_obj = $this->get_primary_key();
 		$pk_name = $pk_obj->get_name();
-		if($protected)
-		{
-			return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
+		if($protected){
+                    return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
 		}else{
 			if(isset($c)){
 			$o = $c->get_edit_html($value);
@@ -1850,7 +1764,6 @@ class load_table extends dts_table{
 			echo DB::error();
 			echo $sql;
 		}
-		//echo $sql;
 		$r = DB::fetch_assoc($result);
 		
 		return $r['profit'];
@@ -1862,10 +1775,8 @@ class load_table extends dts_table{
 		$re = DB::query($sql);
 		$a = Array('');
 		while($r = DB::fetch_assoc($re)){
-			//Var_dump($r);
 			$a[$r['id']] = $r['name'];
 		}
-		//var_dump($a);
 		return $a;
 	}
 	
@@ -1880,7 +1791,6 @@ class load_table extends dts_table{
 			$new_row = Array();
 			$new_row['name'] = $rr['name'];
 			$new_row['region_id'] = $rr['id'];
-			//echo $rul;
 			$rul[] = $new_row;
 			$sql = "SELECT *
 					FROM users
@@ -1889,7 +1799,6 @@ class load_table extends dts_table{
 										WHERE region_list_id = $rr[id])
 					ORDER BY username";
 										
-			//echo $sql;
 			$ru = DB::query($sql);
 			while($u = DB::fetch_assoc($ru)){
 				$new_row = Array();
@@ -1897,9 +1806,7 @@ class load_table extends dts_table{
 				$new_row['user_id'] = $u['user_id'];
 				$rul[] = $new_row;
 			}
-			//$rul[] = Array('name'=>'&nbsp;');
 		}
-		//print_r($rul);
 		$t->assign('region_users', $rul);
 	
 		return $t->fetch(App::getTempDir().'region_user_list.tpl');
@@ -1930,9 +1837,6 @@ class load_table extends dts_table{
 		
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		//var_dump($smarty->config_dir);
-		//$t->register_function("array2query", "array2query");
-		//$t->register_modifier("in_array", "in_array");
 		if(logged_in_as('admin')){
 			$t->assign('admin', true);
 			$t->assign('daily_profit', $this->get_daily_profit($db_date, $_GET));
@@ -1943,7 +1847,6 @@ class load_table extends dts_table{
 		$t->assign('ordered', $this->get_loads($db_date, $this->ordered, $_GET));
 		$t->assign('booked', $this->get_loads($db_date, $this->booked, $_GET));
 		$t->assign('loaded', $this->get_loads($db_date, $this->loaded, $_GET));
-		//$t->assign('checked_in', $this->get_loads($db_date, $this->checked_in, $_GET));
 		$t->assign('delivered', $this->get_loads($db_date, $this->delivered, $_GET));
 		return $t->fetch(App::getTempDir().'load_board.tpl');
 	}
@@ -1976,27 +1879,13 @@ class load_table extends dts_table{
 								, '$this->null_str') dest
 							FROM `load` l
 							WHERE l.activity_date = '$date'";
-		//echo $sql;
-		/*if(!logged_in_as('admin')){
-			$sql .= " AND (l.order_by = ".get_user_id()." OR l.customer_id in (SELECT customer_id from customer where acct_owner = ".get_user_id()."))";
-		}*/
-		//var_dump($filter);
 		if(isset($filter) && is_array($filter)){
 			if(isset($filter['user_id'])){
-			//echo "user+id";
 				$sql .= " AND (l.order_by = $filter[user_id]
 							OR l.customer_id in (SELECT customer_id 
 												FROM customer 
 												WHERE acct_owner = $filter[user_id]))";
 			}elseif(isset($filter['region_id'])){
-				/*$sql .= "	AND (l.order_by in (SELECT user_id
-												FROM user_region_list
-												WHERE region_list_id = $filter[region_id])
-							OR l.customer_id in (SELECT customer_id 
-												FROM customer 
-												WHERE acct_owner in (SELECT user_id
-																	FROM user_region_list
-																	WHERE region_list_id = $filter[region_id])))";*/
 				$sql .= "AND l.zone = $filter[region_id]";
 			}
 		}
@@ -2055,7 +1944,6 @@ class load_table extends dts_table{
 		if($type == $this->booked){
 			//A carrier has been booked...
 			$sql .= $has_been_booked;
-			//echo $sql;
 			
 			// AND NOT loaded
 			$sql .=	$not_loaded;
@@ -2071,20 +1959,16 @@ class load_table extends dts_table{
 			$sql .=	$not_loaded;
 			//OR NOT delivered 
 			$sql .= $not_delivered;
-			//echo $sql;
 		}
 		
 		
 		$re = DB::query($sql);
-		//echo "rows:".DB::num_rows($re)."<br>";
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
 		$t->assign('loads', DB::to_array($re));
-    $path = App::getTempDir().'load_list.tpl';
-    //var_dump(DB::to_array($re));
+            $path = App::getTempDir().'load_list.tpl';
 		$temp = $t->fetch($path);
 		
-		//echo "<textarea>".$temp."</textarea>";
 		return $temp;
 	}
 	
@@ -2127,13 +2011,11 @@ class load_table extends dts_table{
 		return $this->script("
 			function column_updated(t)
 			{
-				//alert(t.name);
 				if (t.name == 'customer_total' || t.name == 'carrier_total')
 				{
 					update_gp();
 				}else if(t.name == 'cancelled' || t.name == 'rating')
 				{
-					//alert('snood');
 					return set_content_color();
 				}
 			}
@@ -2141,7 +2023,6 @@ class load_table extends dts_table{
 			function update_gp()
 			{
 				var gp = document.getElementById('gp');
-				//var gpp = document.getElementById('gpp');
 				
 				var cust_total_el = document.getElementById('customer_total');
 				var car_total_el = document.getElementById('carrier_total');
@@ -2149,22 +2030,12 @@ class load_table extends dts_table{
 				var car_total = car_total_el.innerHTML.valueOf();
 				
 				var gp_val = (cust_total - car_total).toFixed(2)||0;
-				//alert(cust_total);
-				//var gp_val = (parseInt(cust_total.innerHTML) - parseInt(car_total.innerHTML)) ||0;
 				gp.innerHTML = gp_val;
-				
-				//if(Math.round(gp_val*100) != 0 && Math.round(gp_val) > 0)
-				if(Math.round(gp_val*100) != 0 && Math.round(gp_val) > 0)
-				{
-					//gpp.innerHTML = ((gp_val*100)/ (cust_total)).toFixed(2);
-				}else{
-					//gpp.innerHTML = 0;
-				}
 				
 				wc_change();
 				dls_change();
 			}
-			//update_gp();");
+                        ");
 	}
 	
 	function get_rate_conf_new(){
@@ -2260,7 +2131,6 @@ class load_table extends dts_table{
 				AND dest.load_id = l.load_id
 				";
 		$res = DB::query($sql);
-		//echo $sql."<br>";
 		if(DB::error())
 		{
 			echo $sql."<br>";
@@ -2372,7 +2242,6 @@ class load_table extends dts_table{
 				AND dest.load_id = l.load_id
 				";
 		$res = DB::query($sql);
-		//echo $sql."<br>";
 		if(DB::error())
 		{
 			echo $sql."<br>";
@@ -2400,7 +2269,7 @@ class load_table extends dts_table{
 					<table border=0 width=100%>
 						<tr>
 							<td style='vertical-align:middle' width=1%>
-								<img src='http://".IMG_ROOT."/dts.gif'>
+								<img src='".App::getImgRoot()."/dts.gif'>
 							</td>
 							<td style='vertical-align:middle'>
 							<center><div style='font-size:16pt;padding:3pt;width:4em;' class='bold heavy_frame'>$_REQUEST[load_id]</div>
@@ -2445,21 +2314,17 @@ class load_table extends dts_table{
 			$origin .= "</tr><tr>";
 			$origin .= "<td width='$gutter'></td>";
 			$origin .= "<td>Pick #:</td><td class='bold'>$pick[pick_num]</td>";
-			//$origin .= "<td></td><td></td>";
 			$origin .= "</tr><tr>";
 			$origin .= "<td>Phone:</td><td class='bold'>$pick[origin_phone]</td>";
 			$origin .= "<td width='$gutter'></td>";
 			$origin .= "<td>Notes:</td><td class= bold'>$pick[origin_notes]</td>";
-			//$origin .= "</tr></table>";
 			$origin .= "</tr><tr>";
 			$origin .= "<td colspan=5><hr></td>";
-			//$origin .= "<hr>";
 			$origin .= "</tr><tr>";
 		}
 		$drops = $this->get_drops($_REQUEST['load_id']);
 		while($drop = DB::fetch_assoc($drops))
 		{
-			//$dest = "<table width='80%'><tr>";
 			$dest .= "<td>CONS:</td><td class='bold'>$drop[dest_name]</td>";
 			$dest .= "<td width='$gutter'></td>";
 			$dest .= "<td>Delivery Date:</td><td class='bold'>$drop[delivery_date]</td>";
@@ -2570,7 +2435,6 @@ class load_table extends dts_table{
 		$carrier .= "</tr><tr>";
 		$carrier .= "<td>Carrier:</td><td class='bold'>$r[carrier_name]</td>";
 		$carrier .= "<td>Booked With:</td><td class='bold'>$r[booked_with]</td>";
-		//$carrier .= "<td>Temp Control:</td><td class='bold'>????</td>";
 		$carrier .= "</tr><tr>";
 		$carrier .= "<td>Phone:</td><td class='bold'>$r[carrier_phone]</td>";
 		$carrier .= "<td>Booked Sales:</td><td class='bold'>$r[booked_salesperson]</td>";
@@ -2595,7 +2459,6 @@ class load_table extends dts_table{
 							Print Name And Title
 						</td>
 					</tr></table>";
-		//$body .= $this->check_size();
 		$footer .= "<input type='button' id='print_button' value='Print' onclick='print();'";
 		return $header.$origin.$dest.$body.$carrier.$legal.$footer;
 		
