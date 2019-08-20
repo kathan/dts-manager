@@ -1,8 +1,8 @@
 <?php
 date_default_timezone_set('America/Chicago');
-	require_once('includes/app.php');
-	require_once('includes/DB_Table.php');
-	$sql = "SELECT *
+require_once('includes/app.php');
+require_once('includes/DB_Table.php');
+$sql = "SELECT *
 FROM `load_restore`
 WHERE field != ''
 ORDER BY `load_restore`.`time_entered` ASC";
