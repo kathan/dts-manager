@@ -133,90 +133,71 @@ function logged_in()
 	}
 }
 
-function getHash($username)
-{
-	return md5($username . time() . PRIVATE_KEY);
+function getHash($username){
+    return md5($username . time() . PRIVATE_KEY);
 }
 
-function logout()
-{	
-	//require_once('pre.php');
-	$expires = time() + PHP_COOKIE_LENGTH;
+function logout(){	
+    $expires = time() + PHP_COOKIE_LENGTH;
 	
-	if(setcookie(COOKIE_USERNAME,'',$expires,App::getAppRoot(),'',0) && setcookie(COOKIE_HASH,'',$expires,App::getAppRoot(),'',0)){
-		define('LOGGED_IN', false);
-		return true;
-	}else{
-		echo "error";
-		return false;
-	}
+    if(setcookie(COOKIE_USERNAME,'',$expires,App::getAppRoot(),'',0) && setcookie(COOKIE_HASH,'',$expires,App::getAppRoot(),'',0)){
+	define('LOGGED_IN', false);
+	return true;
+    }else{
+        echo "error";
+	return false;
+    }
 }
 
-function user_set_tokens($username)
-{
-	if (!$username)
-	{
-		$feedback .=  ' ERROR - User Name Missing When Setting Tokens ';
-		return false;
-	}
-	$username=strtolower($username);
-	$id_hash= getHash($username);
+function user_set_tokens($username){
+    if (!$username){
+	$feedback .=  ' ERROR - User Name Missing When Setting Tokens ';
+	return false;
+    }
+    $username=strtolower($username);
+    $id_hash= getHash($username);
 	
-	$expires = time()+PHP_COOKIE_LENGTH;
-	//debug("<br>expires=". $expires);
-	//debug("<br>time+=" . (time() + 2592000));
-	setcookie(COOKIE_USERNAME,$username, $expires, APP_ROOT, '', 0);
-	setcookie(COOKIE_HASH, $id_hash, $expires, APP_ROOT, '', 0);
+    $expires = time()+PHP_COOKIE_LENGTH;
+    setcookie(COOKIE_USERNAME,$username, $expires, APP_ROOT, '', 0);
+    setcookie(COOKIE_HASH, $id_hash, $expires, APP_ROOT, '', 0);
 	
-	$sql="	UPDATE users
-			SET hash = '$id_hash',
-			hash_expires = ADDDATE(NOW(),
-			".MYSQL_COOKIE_LENGTH.")
-			WHERE username = '$username'";
-	DB::query($sql);
-	
+    $sql="	UPDATE users
+		SET hash = '$id_hash',
+		hash_expires = ADDDATE(NOW(),
+		".MYSQL_COOKIE_LENGTH.")
+		WHERE username = '$username'";
+    DB::query($sql);	
 }
 
-function get_user_ID()
-{
-	//print_r($_COOKIE);
-	//if (logged_in_as(safe_get($_COOKIE[COOKIE_USERNAME])))
-	//{
-		$sql = "	SELECT *
-					FROM users
-					WHERE username='".$_COOKIE[COOKIE_USERNAME]."'";
-		//echo $sql;
-		$result = DB::query($sql);
-		if(DB::error())
-		{
-			global $feedback;
-			$feedback .= DB::error()."<br>";
-			$feedback .= $sql;
-		}
-		if ($result && DB::numrows($result) > 0)
-		{
-			return DB::result($result,0,'user_id');
-		} else {
-			return false;
-		}
-	//}else{
-	//	return false;
-	//}
-	
+function get_user_ID(){
+    $sql = "	SELECT *
+		FROM users
+		WHERE username='".$_COOKIE[COOKIE_USERNAME]."'";
+    $result = DB::query($sql);
+    if(DB::error()){
+	global $feedback;
+	$feedback .= DB::error()."<br>";
+	$feedback .= $sql;
+    }
+
+    if ($result && DB::numrows($result) > 0){
+	return DB::result($result,0,'user_id');
+    } else {
+	return false;
+    }
 }
 
-//??
 function user_getrealname() {
-	global $G_USER_RESULT;
-	//see if we have already fetched this user from the db, if not, fetch it
-	if (!$G_USER_RESULT) {
-		$G_USER_RESULT = DB::query("SELECT * FROM users WHERE username='" . user_getname() . "'");
-	}
-	if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0) {
-		return DB::result($G_USER_RESULT,0,'real_name');
-	} else {
-		return false;
-	}
+    global $G_USER_RESULT;
+    //see if we have already fetched this user from the db, if not, fetch it
+    if (!$G_USER_RESULT) {
+	$G_USER_RESULT = DB::query("SELECT * FROM users WHERE username='" . user_getname() . "'");
+    }
+    if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0) {
+	return DB::result($G_USER_RESULT,0,'real_name');
+    } else {
+	return false;
+    }
 }
 
 //?

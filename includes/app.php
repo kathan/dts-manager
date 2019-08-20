@@ -5,11 +5,6 @@ error_reporting(E_ALL);
 //error_reporting(E_ALL & ~E_NOTICE & ~E_DEPRECATED);
 date_default_timezone_set('America/Chicago');
 //==========App Settings===========
-define('SITE_NAME', 'DTS');
-define('IMG_ROOT', HTTP_ROOT."/images");
-define('CGI_ROOT', "$_SERVER[HTTP_HOST]/cgi-bin");
-define('PRIVATE_ROOT', "$_SERVER[HTTP_HOST]/members");
-ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/lib/:..");
 //=================================
 ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/includes/:..");
 
