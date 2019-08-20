@@ -39,7 +39,6 @@ class DB{
                         break;
                 }
             }
-            $stmt->bind_para
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         return $stmt->execute();
