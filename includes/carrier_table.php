@@ -1,81 +1,66 @@
 <?php
-require_once "dts_table.php";
-class carrier_table extends dts_table
-{
+require_once("dts_table.php");
+require_once("includes/hidden_input.php");
+require_once("includes/portal.php");
+require_once("includes/submit_input.php");
+
+class carrier_table extends dts_table{
 	var $carrier_id;
-	function carrier_table()
-	{
-		$this->dts_table('carrier');
+	function __construct(){
+		parent::__construct('carrier');
 		$this->prefix='S';
 		$this->hide_delete();
 		$this->hide_column('carrier_id');
 		$this->add_table_params('page', 'carrier');
 			
-		require_once"includes/hidden_input.php";
 		$i = new hidden_input('page', 'carrier');
 		$this->add_other_inputs($i);
 		
 		
 		$c =& $this->get_column('carrier_rep');
 		$c->set_value_list($this->get_users());
-		//$c->set_parent_label_column('username');
 		
-		$this->tab_menu->add_tab("http://".HTTP_ROOT."/?page=carrier", 'List');
-		$this->tab_menu->add_tab("http://".HTTP_ROOT."/?page=carrier&action=$this->search_edit", 'Search');
+		$this->tab_menu->add_tab("?page=carrier", 'List');
+		$this->tab_menu->add_tab("?page=carrier&action=$this->search_edit", 'Search');
 	}
 	
 	
-	function render()
-	{
+	function render(){
 		$code = '';
-		if(isset($_REQUEST[$this->portal]))
-		{
-			switch(safe_get($_REQUEST[$this->portal]))
-			{
+		if(isset($_REQUEST[$this->portal])){
+			switch(safe_get($_REQUEST[$this->portal])){
 				case $this->load:
 					$code .= $this->get_loads();
 					break;
 			}			
 		}else{
-			$code = "<title>".SITE_NAME."-Carriers</title>";
+			$code = "<title>".App::getSiteName()."-Carriers</title>";
 		
-		if(logged_in())
-		{
-			$code .= "<title>".SITE_NAME."-Carriers</title>";
+		if(logged_in()){
+			$code .= "<title>".App::getSiteName()."-Carriers</title>";
 			$code .= "<script src='sortable.js'></script>
 				<script src='db_save.js.php'></script>
 				";
 				$code .= $this->portal_script();
 				$code .= $this->tab_menu->render();
 				$code .= "<div class='tab_sep'></div>";
-				//$code .= $this->get_carrier_menu();
 				$code .= "<div class='content load_content'>";
-				//include_once("includes/portal_style.php");
-				switch(get_action())
-				{
+				switch(get_action()){
 					case $this->add_str:
 						
-						if($this->add())
-						{
-							
-							//$code .= $this->get_carrier_list();
+						if($this->add()){
 							$code .= $this->get_search_results();
 						}else{
-							//$code .= "blah";
 							$code .= $this->error();
 							$code .= $this->feedback;
 							$code .= $this->_render_edit();
-							
 						}
 						break;
 					case $this->delete_str:
 						$this->delete();
-						//$code .= '<center><h2>Carrier List</h2>';
-						//$code .= $this->get_carrier_list();
 						$code .= $this->get_search_results();
 						break;
 					case $this->search:
-						//$code .= '<center><h2>Supplier Search Results</h2>';
 						$code .= $this->get_search_results();	
 						break;
 					case $this->search_edit:
@@ -85,14 +70,10 @@ class carrier_table extends dts_table
 						$code .= $this->get_carrier_edit();
 						break;
 					case $this->new_str:
-						//$code .= '<center><h2>New Carrier</h2>';
-						//$code .= $this->_render_edit();
 						$this->create_new();
-						header("location: http://".HTTP_ROOT."/?page=carrier&action=$this->edit_str&carrier_id=$this->carrier_id&$this->new_str");
+						header("location: ?page=carrier&action=$this->edit_str&carrier_id=$this->carrier_id&$this->new_str");
 						break;
 					default:
-						//$code .= '<center><h2>Carrier List</h2>';
-						//$code .= $this->get_carrier_list();
 						$code .= $this->get_search_results();
 						break;
 				}
@@ -101,26 +82,12 @@ class carrier_table extends dts_table
 		}
 		return $code;
 	}
-	function create_new()
-	{
-		
+	function create_new(){
 		$this->add();
 		$this->carrier_id = $this->last_id;
 	}
-	function get_search_results_old()
-	{
-		$this->omit_all_columns();
-		$this->insert_column('CONCAT(\'S\',carrier_id) carrier_id');
-		$this->unhide_column('carrier_id');
-		$this->insert_column('name');
-		$this->insert_column('phys_city');
-		$this->insert_column('phys_state');
-		return $this->_render_list();
-	}
-	
-	function get_search_results()
-	{
-		require_once("includes/portal.php");
+        
+	function get_search_results(){
 		$c ='';
 		
 		$c .= "<center><h2>Carrier Search Results</h2><br>";
@@ -129,30 +96,24 @@ class carrier_table extends dts_table
 		$sql = "SELECT carrier_id, CONCAT('S', carrier_id) id, name, phys_city, phys_state FROM carrier ";
 		$clause = 'WHERE';
 		$where='';
-		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0)
-		{
+		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0){
 			$where .= " $clause carrier_id = ".intval(trim($_REQUEST['carrier_id'], 's S'));
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '$_REQUEST[name]'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !='')
-			{
+			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !=''){
 				$where .= " $clause phys_address like '$_REQUEST[phys_address]'";
 			}
-			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !='')
-			{
+			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !=''){
 				$where .= " $clause phys_city like '$_REQUEST[phys_city]'";
 			}
-			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !='')
-			{
+			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !=''){
 				$where .= " $clause phys_state like '$_REQUEST[phys_state]'";
 			}
 		}
 		$sql .= $where;
-		//echo $sql;
 		$p = new portal($sql);
 		$p->hide_column('carrier_id');
 		$p->set_primary_key('carrier_id');
@@ -161,9 +122,8 @@ class carrier_table extends dts_table
 		
 		return $c;
 	}
-	function get_search_edit()
-	{
-		require_once("includes/submit_input.php");
+        
+	function get_search_edit(){
 		$si = new submit_input($this->search, 'action');
 		$f =& $this->get_form();
 		$f->set_get();
@@ -218,9 +178,9 @@ class carrier_table extends dts_table
 	{
 		
 		$c = "<table><tr>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=carrier'><div class='menu'>All Carriers</div></a></td>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=carrier&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=carrier&action=New'><div class='menu'>New</div></a></td>";
+		$c .= "<td><a href='?page=carrier'><div class='menu'>All Carriers</div></a></td>";
+		$c .= "<td><a href='?page=carrier&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
+		$c .= "<td><a href='?page=carrier&action=New'><div class='menu'>New</div></a></td>";
 		$c .= $this->back_button();
 		$c .= "</tr></table>";
 		return $c;
@@ -249,8 +209,6 @@ class carrier_table extends dts_table
 		//====Carrier Contact====
 		$c .= "<fieldset><legend>Contact</legend>";
 		$c .= "<table width='100%' border=0>";
-		//$c .= "<tr><td>Carrier ID</td><td>$this->prefix$r[carrier_id]</td></tr>";
-		//$c .= '<td>Status</td><td>'.$this->fetch_edit('status', $r['status']).'</td>';
 		$c .= '<tr><td>Carrier Name</td><td>'.$this->fetch_edit('name', $r['name']).'</td></tr>';
 		$c .= '<tr><td>Contact Name</td><td>'.$this->fetch_edit('contact_name', $r['contact_name']).'</td>';
 		$c .= '<tr><td>Physical Address</td><td>'.$this->fetch_edit('phys_address', $r['phys_address']).'</td></tr>';
@@ -273,7 +231,6 @@ class carrier_table extends dts_table
 		$c .= "</table>";
 		$c .= "</fieldset>";
 		//====end Carrier Accounts Rec====
-		//$c .= "</td><td valign='top'>";
 		//====Carrier Notes====
 		$c .= "<fieldset><legend>Notes</legend>";
 		$c .= "<table width='100%' border=0>";
@@ -315,13 +272,13 @@ class carrier_table extends dts_table
 		if(isset($_REQUEST[$this->new_str]))
 		{
 			$c .= "<input type='button' onclick='cancel();' value='Cancel'>";
-			$c .= "<input type='button' onclick='window.location = \"http://".HTTP_ROOT."/?page=$this->name\";' value='Save'>";
+			$c .= "<input type='button' onclick='window.location = \"?page=$this->name\";' value='Save'>";
 			$c .= $this->script("
 						function cancel()
 						{
 							if(confirm('Are you sure you want to cancel?'))
 							{
-								window.location=\"http://".HTTP_ROOT."/?action=$this->delete_str&page=$this->name&carrier_id=$_REQUEST[carrier_id]\";
+								window.location=\"?action=$this->delete_str&page=$this->name&carrier_id=$_REQUEST[carrier_id]\";
 							}
 						}");
 		}
@@ -357,7 +314,7 @@ class carrier_table extends dts_table
 			{
 				var d = document.getElementById(table);
 				d.innerHTML = 'Loading '+table;
-				var portal = getFromURL('http://".HTTP_ROOT."/?page=$this->name&portal='+table+'&carrier_id=".safe_get($_REQUEST['carrier_id'])."&action=portal&".SMALL_VIEW."');
+				var portal = getFromURL('?page=$this->name&portal='+table+'&carrier_id=".safe_get($_REQUEST['carrier_id'])."&action=portal&".SMALL_VIEW."');
 				d.innerHTML = '';
 				d.innerHTML = portal;
 			}
