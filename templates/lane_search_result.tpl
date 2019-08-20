@@ -1,4 +1,3 @@
-<center>
 	<h2>Lane Search Results</h2>
 	<div class="tableContainer" id="tableContainer" style="height: 295px;overflow: auto;margin: 0 auto;">
 		<table class="view list scrollTable" id="_portal" style="width: 99%;border: none;background-color: #f7f7f7;">
@@ -52,7 +51,6 @@
 	.normalRow
 	{ldelim}
 		background-color:white;
-		color:color;
 	{rdelim}
 	.altRow
 	{ldelim}

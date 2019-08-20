@@ -10,7 +10,7 @@
 					<h5 style="margin:0px">Available Lists:</h5>
 					{html_options name="unlinkedcontacts[]" multiple="multiple" style="width:15em;height:5em" options=$unlinked_options}
 				</td>
-				<td style="width:1%;vertical-align=middle">
+				<td style="width:1%;vertical-align:middle">
 					<input type="submit" name="action" value="Add" /><br/>
 					<input type="submit" name="action" value="Remove" />
 				</td>

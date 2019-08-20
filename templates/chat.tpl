@@ -20,24 +20,20 @@ $(window).load(function(e){
 	//var n=chatBoxes.push(document.getElementById('online_users'));
 	
 	$.get('chat.php', d);
-	window.setInterval(function()
-	{
+	window.setInterval(function(){
 		get_users();
 	}, 1000);
 });
 
-function get_users()
-{
+function get_users(){
 	$.getJSON('chat.php?action=getUsers', function(d){
 		var ou = document.getElementById('user_list');
 		$(ou).html('');
-		for(var i in d)
-		{
+		for(var i in d){
 			var li = document.createElement('li');
 			ou.appendChild(li);
 			
-			if(d[i]['available'] ==1)
-			{
+			if(d[i]['available'] ==1){
 				var a = '<a href="javascript:void(0)" onclick="javascript:chatWith(\''+d[i]['username']+'\')">'+d[i]['username']+'</a>';
 			}else{
 				var a = d[i]['username'];
@@ -55,8 +51,7 @@ Online Users
 </div>
 <style>
 	#online_users ul{list-style:none;margin:3px;padding:0px;height:100px;overflow:scroll}
-	#online_users
-	{
+	#online_users{
 		background-color:white;
 		padding:3px;
 		border:#eee solid 1px;

@@ -1,7 +1,5 @@
 <?php
-
 require_once('includes/Template.php');
-
 $GLOBALS['page_title'] = 'Customer Reports';
 $t = new Template();
 $t->register_modifier("array2query", "array2query");
@@ -16,8 +14,7 @@ $t->assign('end_date', $end_date);
 $t->assign('cust', DB::to_array(get_report($start_date, $end_date, $user_id)));
 echo $t->fetch(App::$temp.'cust_report.tpl');
 
-function get_report($start, $end, $user_id=null)
-{
+function get_report($start, $end, $user_id=null){
 	$sql .= "select customer_id
 					, name
 					, (select username from users u where user_id = c.acct_owner) cust_rep
@@ -52,38 +49,31 @@ function get_report($start, $end, $user_id=null)
 						and load_id in (select lw.load_id from load_warehouse lw where lw.type = 'PICK' and lw.complete = 1)
 						) > 0";
 	isset($_GET['user_id']) && $_GET['user_id']>0 ? $sql .= " and c.acct_owner = $_GET[user_id]" : '';
-	if(isset($_GET['order']))
-	{
+	if(isset($_GET['order'])){
 		$sql .= " ORDER BY $_GET[order]";
 		isset($_GET['dir']) ? $sql .= " $_GET[dir]" : '';
 	}
 	
 	$re = DB::query($sql);
-	//echo $sql;
-	if(DB::error())
-	{
+	if(DB::error()){
 		echo "$sql<br>";
 		echo DB::error();
 	}
 	return $re;
 }
 
-function get_users()
-{
+function get_users(){
 	$sql = "SELECT *
 			FROM users";
 	$re = DB::query($sql);
 	$ary = Array('');
-	while($r = DB::fetch_assoc($re))
-	{
+	while($r = DB::fetch_assoc($re)){
 		$ary[$r['user_id']] = $r['username'];
 	}
-	//print_r($ary);
 	return $ary;
 }
 
-function get_username($user_id)
-{
+function get_username($user_id){
 	$sql = "SELECT username
 			FROM users
 			WHERE user_id = $user_id";

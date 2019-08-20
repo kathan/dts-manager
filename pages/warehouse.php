@@ -1,5 +1,4 @@
 <?php
-//ini_set('display_errors', 'On');//Debug only
 require_once"includes/global.php";
 require_once"includes/dts_table.php";
 require_once"includes/hidden_input.php";
@@ -7,18 +6,12 @@ require_once"includes/portal.php";
 require_once("includes/Template.php");
 require_once"includes/DB.php";
 require_once"includes/Paginator.php";
-/*
-	
-*/
 
-class warehouse_table extends dts_table
-{
+class warehouse_table extends dts_table{
 	var $warehouse_id;
-	function warehouse_table()
-	{
-		$this->dts_table("warehouse");
-		if(isset($_REQUEST['warehouse_id']))
-		{
+	function __construct(){
+		parent::__construct("warehouse");
+		if(isset($_REQUEST['warehouse_id'])){
 			$this->warehouse_id = $_REQUEST['warehouse_id'];
 			$this->current_row();
 		}
@@ -26,14 +19,11 @@ class warehouse_table extends dts_table
 		$this->hide_delete();
 		$this->hide_column('warehouse_id');
 		
-		//$this->set_label('customer_id', 'Customer');
-		
 		$this->add_table_params('page', 'warehouse');
 	
 		
 		$i = new hidden_input('page', 'warehouse');
 		$this->add_other_inputs($i);
-		//print_r($this->times);
 		
 		$c =& $this->get_column('sun_open_time');
 		$c->set_value_list($this->times);
@@ -80,35 +70,26 @@ class warehouse_table extends dts_table
 		
 	}
 	
-	function current_row()
-	{
-		if(!isset($this->current_row))
-		{
+	function current_row(){
+		if(!isset($this->current_row)){
 			$this->current_row = $this->get_row($this->warehouse_id);
 		}
 		return $this->current_row;
 	}
 	
-	function render()
-	{
+	function render(){
 		$code = '';
-		//$code = "<title>".SITE_NAME."-Warehouse</title>";
 		$code .= $this->db_script();
 		$code .= $this->portal_script();
 		$code .= $this->sortable_script();
-		if(logged_in())
-		{
-			//$code .= "<div class='tab_sep'></div>";
+		if(logged_in()){
 			$code .= "<div class='content load_content'>";
 			$GLOBALS['page_title'] = 'Warehouses';
-			switch(get_action())
-			{
+			switch(get_action()){
 				case $this->add_str:
-					if($this->add())
-					{
+					if($this->add()){
 						$code .= $this->get_warehouses();
 					}else{
-						//$code .= "blah";
 						$code .= $this->error();
 						$code .= $this->feedback;
 						$code .= $this->_render_edit();
@@ -121,9 +102,7 @@ class warehouse_table extends dts_table
 					break;
 				case $this->delete_str:
 					$this->delete();
-					//$code .= '<center><h2>Warehouse List</h2>';
 					$code .= $this->show_search_results($this->get_search_results());
-					//$code .= $this->get_warehouses();
 					break;
 				case $this->search_edit:
 					$code .= $this->get_search();
@@ -136,8 +115,7 @@ class warehouse_table extends dts_table
 					break;
 				case $this->add_str:
 					$code .= "<script>
-					function refresh_close()
-					{
+					function refresh_close(){
 						window.opener.get_portal('warehouse');
 						window.close();
 					}
@@ -146,23 +124,18 @@ class warehouse_table extends dts_table
 					$this->add();
 					break;
 				case $this->new_str:
-					//$code .=  '<center><h2>New Warehouse</h2>';
-					//$code .= $this->new_warehouse();
 					$this->create_new();
-					header("location: http://".HTTP_ROOT."/?page=warehouse&action=$this->edit_str&warehouse_id=$this->warehouse_id&$this->new_str");
+					header("location: ?page=warehouse&action=$this->edit_str&warehouse_id=$this->warehouse_id&$this->new_str");
 					break;
 				case $this->print:
 					
-						if(logged_in_as('admin'))
-						{
+						if(logged_in_as('admin')){
 							$code .= $this->show_warehouse_print($this->get_search_results());
 						}else{
 							$code .= "No access.";
 						}
 						break;
 				default:
-					//$code .= '<center><h2>Warehouse List</h2>';
-					//$code .= $this->get_warehouses();
 					$code .= $this->show_search_results($this->get_search_results());
 					break;
 			}		
@@ -172,35 +145,22 @@ class warehouse_table extends dts_table
 		return $code;
 	}
 	
-	function show_warehouse_print($warehouse)
-	{
+	function show_warehouse_print($warehouse){
 		require_once('Template.php');
 		require_once('Paginator.php');
 		$t = new Template();
 		
-		//isset($_GET['acct_owner']) ? $t->assign('acct_owner_name', App::get_username($_GET['acct_owner'])) : '';
-		//print_r(DB::to_array($warehouse));
 		$t->assign('warehouse', DB::to_array($warehouse));
 		
 		$c .= $t->fetch(App::getTempDir().'warehouse_print.tpl');
 		return $c;
 	}
 	
-	function show_search_results($warehouse)
-	{
-		//require_once('Template.php');
-		//require_once('Paginator.php');
+	function show_search_results($warehouse){
 		$t = new Template();
-		//echo $sql;
-		//$t->register_modifier("array2query", "array2query");
-		//$t->register_modifier("in_array", "in_array");
 		$t->assign('filters', $_GET);
 		isset($_GET['start']) ? $start = $_GET['start'] : $start = 1;
 		$p = new Paginator($warehouse, $start);
-		//$acct_owners = Array('');
-		//$acct_owners = array_merge($acct_owners, $this->get_acct_owners());
-		//isset($_GET['acct_owner']) ? $t->assign('sel_acct_owner', $_GET['acct_owner']) : '';
-		//$t->assign('acct_owners', $acct_owners);
 		$t->assign('pag', $p->get());
 		$t->assign('warehouse', $p->to_array($warehouse));
 		$t->assign('admin', logged_in_as('admin'));
@@ -209,63 +169,49 @@ class warehouse_table extends dts_table
 		return $c;
 	}
 	
-	function get_search_results()
-	{
-		
-		//require_once("Paginator.php");
+	function get_search_results(){
 		$c ='';
-		
-		//$c .= '<center><h2>Warehouse Search Results</h2></center>';
 		
 		$sql = "SELECT CONCAT('D',warehouse_id) id, warehouse_id, address, name, city, state, phone, fax, contact_name FROM warehouse ";
 		$clause = 'WHERE';
 		$where='';
 		
-		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0)
-		{
+		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0){
 			$where .= " $clause warehouse_id = ".intval(trim($_REQUEST['warehouse_id'], 'd D'));
 			$clause = 'AND';
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '%".addslashes($_REQUEST['name'])."%'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['address']) && $_REQUEST['address'] !='')
-			{
+			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
 				$where .= " $clause address like '%".addslashes($_REQUEST['address'])."%'";
 				$clause = 'AND';
 			}
 			
-			if(isset($_REQUEST['city']) && $_REQUEST['city'] !='')
-			{
+			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
 				$where .= " $clause city like '%".addslashes($_REQUEST['city'])."%'";
 				$clause = 'AND';
 			}
 			
-			if(isset($_REQUEST['state']) && $_REQUEST['state'] !='')
-			{
+			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
 				$where .= " $clause state like '%".addslashes($_REQUEST['state'])."%'";
 				$clause = 'AND';
 			}
 		}
 		$sql .= $where;
-		//echo $sql;
 		$re = DB::query($sql);
-		//echo DB::error();
 		return $re;
 		
 	}
 	
 	
-	function create_new()
-	{
+	function create_new(){
 		$this->add();
 		$this->warehouse_id = $this->last_id;
 		echo $this->error_str;
 	}
-	function get_search()
-	{
+	function get_search(){
 		$c = '<!-- warehouse search start --><center><h2>Warehouse Search</h2>';
 		$c .= "Use % as a wildcard character";
 		require_once("includes/submit_input.php");
@@ -288,8 +234,7 @@ class warehouse_table extends dts_table
 		return $c;
 	}
 	
-	function get_warehouses()
-	{
+	function get_warehouses(){
 		require_once"includes/portal.php";
 		$p = new portal("	SELECT warehouse_id, CONCAT('$this->prefix', warehouse_id) id, name, address, city, state	
 							FROM warehouse w
@@ -300,27 +245,23 @@ class warehouse_table extends dts_table
 		$p->set_primary_key('warehouse_id');
 		return $p->render();
 	}
-	function get_warehouse_menu()
-	{
+	function get_warehouse_menu(){
 		$c = "<table><tr>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=warehouse'><div class='menu'>All Warehouses</div></a></td>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=warehouse&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
-		$c .= "<td><a href='http://".HTTP_ROOT."/?page=warehouse&action=$this->new_str'><div class='menu'>New</div></a></td>";
+		$c .= "<td><a href='?page=warehouse'><div class='menu'>All Warehouses</div></a></td>";
+		$c .= "<td><a href='?page=warehouse&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
+		$c .= "<td><a href='?page=warehouse&action=$this->new_str'><div class='menu'>New</div></a></td>";
 		$c .= $this->back_button();
 		$c .= "</tr></table>";
 		return $c;
 	}
 	
-	function new_warehouse()
-	{
+	function new_warehouse(){
 		$c ='<script>
-				function submit_close()
-				{
+				function submit_close(){
 					var f = document.getElementById("new_form");
 					f.submit();
 				}
-				function cancel_close()
-				{
+				function cancel_close(){
 					window.close();
 				}
 				</script>';
@@ -403,21 +344,18 @@ class warehouse_table extends dts_table
 	
 	
 	
-	function fetch_edit($name, $value=null)
-	{
+	function fetch_edit($name, $value=null){
 		$c =& $this->get_column($name);
 		$pk_obj =& $this->get_primary_key();
 		$pk_name = $pk_obj->get_name();
 		
-		if(isset($value))
-		{
+		if(isset($value)){
 			$o = $c->get_edit_html($value);
 			
 		}else{
 			$o = $c->get_edit_html();
 		}
-		if(isset($_REQUEST[$pk_name]))
-		{
+		if(isset($_REQUEST[$pk_name])){
 			$o->set_id("action=$this->update&table=$this->name&".$pk_name."=".$_REQUEST[$pk_name]."&".$name."=");
 			$o->add_attribute('onchange', 'db_save(this);column_updated(this);');
 			//$o->add_attribute('onchange', 'db_save(this.id, this.value);column_updated(this);');
@@ -432,8 +370,7 @@ class warehouse_table extends dts_table
 	}
 	
 
-	function edit_warehouse()
-	{
+	function edit_warehouse(){
 		$sql = "SELECT	w.*,
 					DATE_FORMAT(sun_open_time, '$this->time_format') sun_open_time,
 					DATE_FORMAT(sun_close_time, '$this->time_format') sun_close_time,
@@ -452,16 +389,12 @@ class warehouse_table extends dts_table
 				FROM warehouse w
 				WHERE warehouse_id = $this->warehouse_id";
 		$r = DB::query($sql);
-		//echo $sql;
 		$w = DB::fetch_assoc($r);
 		$t = new Template();
 		$t->assign('w', $w);
 		$t->assign('wh_to_cust', $this->wh_to_cust);
-		//echo $w['sun_open_time'];
 		$t->assign('times', $this->times);
-		//$t->assign('action', $this->times);
-		if(isset($_REQUEST[$this->new_str]))
-		{
+		if(isset($_REQUEST[$this->new_str])){
 			
 			$t->assign('new', true);
 			$t->assign('delete_str', $this->delete_str);
@@ -473,15 +406,13 @@ class warehouse_table extends dts_table
 	}
 	
 	
-	function add_as_warehouse()
-	{
+	function add_as_warehouse(){
 		$sql = "INSERT INTO warehouse(name, address, city, state, zip, phone, fax, contact_name)
 				SELECT name, address, city, state, zip, phone, fax, contact_name
 				FROM customer
 				WHERE customer_id = $_REQUEST[customer_id]";
 		$r = db_query($sql);
-		if(db_error())
-		{
+		if(db_error()){
 			echo db_error();
 		}
 		$this->warehouse_id = db_insertid();
@@ -489,7 +420,5 @@ class warehouse_table extends dts_table
 }
 
 $w = new warehouse_table();
-//$w->add_virtual_column("DATE_FORMAT(sun_open_time, '%l:%i %r')", 'sun_open_time');
 echo $w->render();
-//echo $w->sql;
 ?>

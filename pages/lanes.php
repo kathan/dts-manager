@@ -12,15 +12,12 @@ class lane //extends dts_table
 {
 	var $search = 'Search';
 	
-	function lane()
-	{
+	function __construct(){
 		
 	}
 	
-	function render()
-	{
-		if(isset($_REQUEST[$this->search]))
-		{
+	function render(){
+		if(isset($_REQUEST[$this->search])){
 			$c = $this->get_search_edit();
 			$c .= $this->get_search_results();
 			return $c;
@@ -29,19 +26,13 @@ class lane //extends dts_table
 		}
 	}
 	
-	function get_search_edit()
-	{
-		/*if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != '')
-		{
-			$where .= " $clause load_type = '$_REQUEST[load_type]'";
-		}*/
+	function get_search_edit(){
 		$t = new Template();
 		$t->assign('load_types', dts_table::$load_type);
 		$t->assign('form', $_REQUEST);
 		return $t->fetch(App::getTempDir().'lane_search_form.tpl');
 	}
-	function get_search_edit_old()
-	{
+	function get_search_edit_old(){
 	
 		
 		//require_once('includes/date_input.php');
@@ -74,8 +65,7 @@ class lane //extends dts_table
 		$c .= $f->render();
 		return $c;
 	}
-	function get_search_results()
-	{
+	function get_search_results(){
 		$c ='';
 		
 		$c .= '<center><h2>Lane Search Results</h2>';
@@ -92,65 +82,52 @@ class lane //extends dts_table
 		$clause = 'AND';
 		$where='';
 		
-		if(isset($_REQUEST['start_activity_date']) && $_REQUEST['start_activity_date'] != '')
-		{
+		if(isset($_REQUEST['start_activity_date']) && $_REQUEST['start_activity_date'] != ''){
 			$where .= " $clause l.activity_date >= '".dateToMySQL($_REQUEST['start_activity_date'])."'";
 		}else{
 			$c .= 'Please select an starting activity date.<br>';
 		}
 		
-		if(isset($_REQUEST['end_activity_date']) && $_REQUEST['end_activity_date'] != '')
-		{
+		if(isset($_REQUEST['end_activity_date']) && $_REQUEST['end_activity_date'] != ''){
 			$where .= " $clause l.activity_date <= '".dateToMySQL($_REQUEST['end_activity_date'])."'";
 		}else{
 			$c .= 'Please select an ending activity date.<br>';
 		}
 					
-		if(isset($_REQUEST['pickup_city']) && $_REQUEST['pickup_city'] !='')
-		{
+		if(isset($_REQUEST['pickup_city']) && $_REQUEST['pickup_city'] !=''){
 			$where .= " $clause pw.city like '$_REQUEST[pickup_city]'";
 		}else{
 			$c .= 'Please select a pickup city.<br>';
 		}
 			
-		if(isset($_REQUEST['pickup_state']) && $_REQUEST['pickup_state'] !='')
-		{
+		if(isset($_REQUEST['pickup_state']) && $_REQUEST['pickup_state'] !=''){
 			$where .= " $clause pw.state like '$_REQUEST[pickup_state]'";
 		}else{
 			$c .= 'Please select a pickup state.<br>';
 		}
 		
-		if(isset($_REQUEST['dest_city']) && $_REQUEST['dest_city'] !='')
-		{
+		if(isset($_REQUEST['dest_city']) && $_REQUEST['dest_city'] !=''){
 			$where .= " $clause dw.city like '$_REQUEST[dest_city]'";
 		}else{
 			$c .= 'Please select a destintion city.<br>';
 		}
 			
-		if(isset($_REQUEST['dest_state']) && $_REQUEST['dest_state'] !='')
-		{
+		if(isset($_REQUEST['dest_state']) && $_REQUEST['dest_state'] !=''){
 			$where .= " $clause dw.state like '$_REQUEST[dest_state]'";
 		}else{
 			$c .= 'Please select a destintion state.<br>';
 		}
 		
-		if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != '')
-		{
+		if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != ''){
 			$where .= " $clause l.load_type = '$_REQUEST[load_type]'";
 		}
 		$sql .= $where;
 		$sql .= ' ORDER BY l.activity_date';
-		//echo $sql;
 		$t = new Template();
 		$re = DB::query($sql);
 		$t->assign('loads', DB::to_array($re));
 		
 		return $t->fetch(App::getTempDir().'lane_search_result.tpl');
-		/*$p = new portal($sql);
-		$p->hide_column('load_id');
-		$p->set_primary_key('load_id');
-		$p->set_row_action("\"row_clicked('\$id', '\$pk', '\load')\";");
-		$c .= $p->render();*/
 		return $c;
 	}
 }

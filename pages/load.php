@@ -38,8 +38,7 @@ class load_table extends dts_table{
 		parent::__construct('load');
 		isset($_REQUEST['page']) ? $this->page = $_REQUEST['page'] : $this->page = 'load';
 		
-		if(isset($_REQUEST['load_id']))
-		{
+		if(isset($_REQUEST['load_id'])){
 			$this->load_id = $_REQUEST['load_id'];
 			$this->current_row();
 		}
@@ -122,8 +121,7 @@ class load_table extends dts_table{
 				
 				switch(get_action()){//3
 					case $this->add_str:
-						if($this->add())
-						{
+						if($this->add()){
 							$this->load_id = $this->last_id;
 							$code .= $this->get_load_edit();
 						}else{
@@ -167,8 +165,7 @@ class load_table extends dts_table{
 						$code .= "<input type='button' onclick='window.close();' value='Close'>";
 						break;
 					case $this->view_str:
-						switch (safe_get($_REQUEST[$this->mod_str]))
-						{
+						switch (safe_get($_REQUEST[$this->mod_str])){
 							case $this->load_str:
 								$code .= $this->get_load_module();
 								break;
@@ -199,8 +196,7 @@ class load_table extends dts_table{
 						}
 						break;
 					case $this->edit_str:
-						switch (safe_get($_REQUEST[$this->mod_str]))
-						{
+						switch (safe_get($_REQUEST[$this->mod_str])){
 							case $this->load_str:
 								$code .= $this->get_load_edit_module();
 								break;
@@ -229,8 +225,7 @@ class load_table extends dts_table{
 						break;
 					case $this->add_str:
 						$code .= $this->script("
-						function refresh_close()
-						{
+						function refresh_close(){
 							window.opener.get_portal('load', 'load_id=$this->load_id');
 							window.close();
 						}
@@ -243,8 +238,7 @@ class load_table extends dts_table{
 						break;
 					case $this->new_str:
 						$this->create_new();
-						if($this->load_id)
-						{
+						if($this->load_id){
 							header("location: ?page=$this->page&action=$this->view_str&load_id=$this->load_id");
 						}else{
 							echo DB::error();
@@ -270,8 +264,7 @@ class load_table extends dts_table{
 		$sql = "INSERT INTO `load`(customer_id,trailer_type,pallets,length,size,weight,class,commodity, order_date, order_by)
 				SELECT customer_id,trailer_type,pallets,length,size,weight,class,commodity, NOW(), ".get_user_id()." FROM `load` WHERE load_id = $old_load_id";
 		$r = DB::query($sql);
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo DB::error();
 			$this->add_error();
 			$this->add_error($sql);
@@ -283,8 +276,7 @@ class load_table extends dts_table{
 		$sql = "INSERT INTO `load_warehouse`(load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,creation_date)
 				SELECT $this->load_id,open_time,close_time,warehouse_id,NOW(),activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = $old_load_id";
 		$r = DB::query($sql);
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo DB::error();
 			$this->add_error();
 			$this->add_error($sql);
@@ -343,16 +335,13 @@ class load_table extends dts_table{
 		$clause = 'WHERE';
 		$where='';
 		
-		if(isset($_REQUEST['load_id']) && intval($_REQUEST['load_id']) > 0)
-		{
+		if(isset($_REQUEST['load_id']) && intval($_REQUEST['load_id']) > 0){
 			$where .= " $clause load_id = ".intval($_REQUEST['load_id']);
 			$clause = 'AND';
-		}elseif(isset($_REQUEST['order_number']) && $_REQUEST['order_number'] != '')
-		{
+		}elseif(isset($_REQUEST['order_number']) && $_REQUEST['order_number'] != ''){
 			$where .= " $clause load_id in (SELECT load_id FROM load_warehouse WHERE pick_dest_num like '$_REQUEST[order_number]')";
 			$clause = 'AND';
-		}elseif(isset($_REQUEST['bol']) && $_REQUEST['bol'] != '')
-		{
+		}elseif(isset($_REQUEST['bol']) && $_REQUEST['bol'] != ''){
 			$where .= " $clause ltl_number = '$_REQUEST[bol]'";
 			$clause = 'AND';
 		}
@@ -384,8 +373,7 @@ class load_table extends dts_table{
 						CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
 
 		
-		if(logged_in_as('admin'))
-		{
+		if(logged_in_as('admin')){
 			$sql .= " ,CONCAT(	'<a href=\"#\" onclick=\"delete_carrier(',
 							c.carrier_id,
 							')\">$this->delete_icon</a>') `delete`";
@@ -404,8 +392,7 @@ class load_table extends dts_table{
 		$c .= "<th>Phone<br>Fax</td>\n";
 		$c .= "<th>Booked With</td>\n";
 		$c .= "<th>Rate Confirmation</td>\n";
-		if(logged_in_as('admin'))
-		{
+		if(logged_in_as('admin')){
 			$c .= "<th>Delete</td>\n";
 		}
 		$c .= "</tr><tr>";
@@ -414,8 +401,7 @@ class load_table extends dts_table{
 		$c .= "<td class='faux_edit'>$r[phone_fax]</td>\n";
 		$c .= "<td class='faux_edit'>$r[booked_with]</td>\n";
 		$c .= "<td class=''>$r[rate_conf_button]</td>\n";
-		if(logged_in_as('admin'))
-		{
+		if(logged_in_as('admin')){
 			$c .= "<td class='border'>$r[delete]</td>\n";
 		}
 		$c .= "</tr></table>\n";
@@ -575,58 +561,43 @@ class load_table extends dts_table{
 		$c .= "</tr></table>";	
 		$c .= "<input type='button' onclick='refresh_close()' value='Close'>";
 		$c .= $this->script("
-				function column_updated(o)
-				{
-					if(o.name == 'cust_line_haul_amount' || o.name == 'cust_line_haul')
-					{
+				function column_updated(o){
+					if(o.name == 'cust_line_haul_amount' || o.name == 'cust_line_haul'){
 						update_ext('cust_line_haul_extended', 'cust_line_haul_amount', 'cust_line_haul');
-					}else if(o.name == 'carrier_line_haul_amount' || o.name == 'carrier_line_haul')
-					{
+					}else if(o.name == 'carrier_line_haul_amount' || o.name == 'carrier_line_haul'){
 						update_ext('carrier_line_haul_extended', 'carrier_line_haul_amount', 'carrier_line_haul');
-					}else if(o.name == 'cust_detention_amount' || o.name == 'cust_detention')
-					{
+					}else if(o.name == 'cust_detention_amount' || o.name == 'cust_detention'){
 						update_ext('cust_detention_extended', 'cust_detention_amount', 'cust_detention');
-					}else if(o.name == 'carrier_detention_amount' || o.name == 'carrier_detention')
-					{
+					}else if(o.name == 'carrier_detention_amount' || o.name == 'carrier_detention'){
 						update_ext('carrier_detention_extended', 'carrier_detention_amount', 'carrier_detention');
-					}else if(o.name == 'cust_tonu_amount' || o.name == 'cust_tonu')
-					{
+					}else if(o.name == 'cust_tonu_amount' || o.name == 'cust_tonu'){
 						update_ext('cust_tonu_extended', 'cust_tonu_amount', 'cust_tonu');
-					}else if(o.name == 'carrier_tonu_amount' || o.name == 'carrier_tonu')
-					{
+					}else if(o.name == 'carrier_tonu_amount' || o.name == 'carrier_tonu'){
 						update_ext('carrier_tonu_extended', 'carrier_tonu_amount', 'carrier_tonu');
-					}else if(o.name == 'cust_unload_load_amount' || o.name == 'cust_unload_load')
-					{
+					}else if(o.name == 'cust_unload_load_amount' || o.name == 'cust_unload_load'){
 						update_ext('cust_unload_load_extended', 'cust_unload_load_amount', 'cust_unload_load');
-					}else if(o.name == 'carrier_unload_load_amount' || o.name == 'carrier_unload_load')
-					{
+					}else if(o.name == 'carrier_unload_load_amount' || o.name == 'carrier_unload_load'){
 						update_ext('carrier_unload_load_extended', 'carrier_unload_load_amount', 'carrier_unload_load');
 					}
-					else if(o.name == 'cust_fuel_amount' || o.name == 'cust_fuel')
-					{
+					else if(o.name == 'cust_fuel_amount' || o.name == 'cust_fuel'){
 						update_ext('cust_fuel_extended', 'cust_fuel_amount', 'cust_fuel');
-					}else if(o.name == 'carrier_fuel_amount' || o.name == 'carrier_fuel')
-					{
+					}else if(o.name == 'carrier_fuel_amount' || o.name == 'carrier_fuel'){
 						update_ext('carrier_fuel_extended', 'carrier_fuel_amount', 'carrier_fuel');
-					}else if(o.name == 'cust_other_amount' || o.name == 'cust_other')
-					{
+					}else if(o.name == 'cust_other_amount' || o.name == 'cust_other'){
 						update_ext('cust_other_extended', 'cust_other_amount', 'cust_other');
-					}else if(o.name == 'carrier_other_amount' || o.name == 'carrier_other')
-					{
+					}else if(o.name == 'carrier_other_amount' || o.name == 'carrier_other'){
 						update_ext('carrier_other_extended', 'carrier_other_amount', 'carrier_other');
 					}
 				}
 				
-				function update_ext(ext_name, amt_name, rate_name)
-				{
+				function update_ext(ext_name, amt_name, rate_name){
 					var ext = document.getElementById(ext_name);
 					var rate = document.getElementsByName(rate_name)[0];
 					var amount = document.getElementsByName(amt_name)[0];
 					ext.innerHTML = '$' + amount.value * rate.value;
 					
 				}
-				function refresh_close()
-				{
+				function refresh_close(){
 					window.opener.update_money_module();
 					window.close();
 				}
@@ -657,8 +628,7 @@ class load_table extends dts_table{
 					<input type='button' onclick='refresh_close()' value='Close'>
 					</form>";
 		$c .= $this->script("
-				function refresh_close()
-				{
+				function refresh_close(){
 					db_save(document.getElementsByName('problem')[0]);
 					window.opener.update_problem_module();
 					window.close();
@@ -675,10 +645,8 @@ class load_table extends dts_table{
 		$c .= "Select Type: ".$this->get_warehouse_type_select();
 		$c .= $this->script("
 					
-					function add_load_warehouse(warehouse_id)
-					{
-						if(window.opener)
-						{
+					function add_load_warehouse(warehouse_id){
+						if(window.opener){
 							var type = document.getElementById('warehouse_type');
 							var obj=new Object();
 							obj.id = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".get_user_id()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
@@ -689,35 +657,29 @@ class load_table extends dts_table{
 							alert('You already closed the parent window.');
 						}
 					}
-					function refresh_close()
-					{
+					function refresh_close(){
 						window.opener.update_warehouse_portal();
 					}");
 		$sql = "SELECT CONCAT('D',warehouse_id) warehouse_id, name, address, city, state, CONCAT('<input type=\"button\" value=\"Add\" onclick=\"add_load_warehouse(',warehouse_id,')\">') `add` FROM warehouse ";
 		$clause = 'WHERE';
 		$where='';
 		
-		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0)
-		{
+		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0){
 			$where .= " $clause warehouse_id = ".intval(trim($_REQUEST['warehouse_id'], 'd D'));
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '$_REQUEST[name]'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['address']) && $_REQUEST['address'] !='')
-			{
+			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
 				$where .= " $clause address like '$_REQUEST[address]'";
 			}
 			
-			if(isset($_REQUEST['city']) && $_REQUEST['city'] !='')
-			{
+			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
 				$where .= " $clause city like '$_REQUEST[city]'";
 			}
 			
-			if(isset($_REQUEST['state']) && $_REQUEST['state'] !='')
-			{
+			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
 				$where .= " $clause state like '$_REQUEST[state]'";
 			}
 		}
@@ -772,8 +734,7 @@ class load_table extends dts_table{
 		$c .= "Carrier Search Results<br>";
 		
 		$c .= $this->script("
-					function check_carrier(insurance_expires)
-					{
+					function check_carrier(insurance_expires){
 						
 						ins_exp_str = insurance_expires.split('-');
 						ins_exp = new Date();
@@ -781,18 +742,15 @@ class load_table extends dts_table{
 						ins_exp.setMonth(ins_exp_str[1]);
 						ins_exp.setDate(ins_exp_str[2]);
 						today = new Date();
-						if(ins_exp > today)
-						{
+						if(ins_exp > today){
 							return true;
 						}else
 						{
 							return false;
 						}
 					}
-					function add_load_carrier(carrier_id, insurance_expires)
-					{
-						if(check_carrier(insurance_expires))
-						{
+					function add_load_carrier(carrier_id, insurance_expires){
+						if(check_carrier(insurance_expires)){
 							var param_str = 'table=load_carrier&carrier_id='+carrier_id+'&load_id=';
 							var obj=new Object();
 							obj.id  = param_str;
@@ -803,8 +761,7 @@ class load_table extends dts_table{
 							alert(\"Carrier's insurance expired on \"+insurance_expires+\".\")
 						}
 					}
-					function refresh_close()
-					{
+					function refresh_close(){
 						window.opener.update_carrier_portal();
 					}");
 		$sql = "SELECT	CONCAT('S', carrier_id) carrier_id,
@@ -815,29 +772,23 @@ class load_table extends dts_table{
 		$sql .= "FROM carrier ";
 		$clause = 'WHERE';
 		$where='';
-		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0)
-		{
+		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0){
 			$where .= " $clause carrier_id = ".intval(trim($_REQUEST['carrier_id'], 's S'));
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '$_REQUEST[name]'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !='')
-			{
+			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !=''){
 				$where .= " $clause phys_address like '$_REQUEST[phys_address]'";
 			}
-			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !='')
-			{
+			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !=''){
 				$where .= " $clause phys_city like '$_REQUEST[phys_city]'";
 			}
-			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !='')
-			{
+			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !=''){
 				$where .= " $clause phys_state like '$_REQUEST[phys_state]'";
 			}
-			if(isset($_REQUEST['mc_number']) && $_REQUEST['mc_number'] !='')
-			{
+			if(isset($_REQUEST['mc_number']) && $_REQUEST['mc_number'] !=''){
 				$where .= " $clause mc_number like '$_REQUEST[mc_number]'";
 			}
 		}
@@ -889,25 +840,20 @@ class load_table extends dts_table{
 						CONCAT('<input type=\"button\" value=\"Add\" onclick=\"set_customer(',customer_id,')\">') `add` FROM customer ";
 		$clause = 'WHERE';
 		$where='';
-		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0)
-		{
+		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0){
 			$where .= " $clause customer_id = ".intval(trim($_REQUEST['customer_id'], 't T'));
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '$_REQUEST[name]'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['address']) && $_REQUEST['address'] !='')
-			{
+			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
 				$where .= " $clause address like '$_REQUEST[address]'";
 			}
-			if(isset($_REQUEST['city']) && $_REQUEST['city'] !='')
-			{
+			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
 				$where .= " $clause city like '$_REQUEST[city]'";
 			}
-			if(isset($_REQUEST['state']) && $_REQUEST['state'] !='')
-			{
+			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
 				$where .= " $clause state like '$_REQUEST[state]'";
 			}
 			
@@ -1025,8 +971,7 @@ class load_table extends dts_table{
 	function get_cust_module(){
 		$r = $this->current_row();
 		$c = "<table style='width:100%;border:1px solid black;' class='content'><tr>";
-		if(isset($r['customer_id']))
-		{
+		if(isset($r['customer_id'])){
 			$cust = $this->get_customer($r['customer_id']);
 			
 			$c .= "<th>ID</td>";
@@ -1064,8 +1009,7 @@ class load_table extends dts_table{
 					<input type='button' onclick='refresh_close()' value='Close'>
 					</form>";
 		$c .= $this->script("
-				function refresh_close()
-				{
+				function refresh_close(){
 					window.opener.update_rating_module();
 					window.close();
 				}");
@@ -1075,8 +1019,7 @@ class load_table extends dts_table{
 	
 	function get_rating_module(){
 		$r = $this->current_row();
-		if($r['cancelled'])
-		{
+		if($r['cancelled']){
 			$cancelled = 'Yes';
 		}else{
 			$cancelled = 'No';
@@ -1099,8 +1042,7 @@ class load_table extends dts_table{
 					<input type='button' onclick='refresh_close()' value='Close'>
 					</form>";
 		$c .= $this->script("
-				function refresh_close()
-				{
+				function refresh_close(){
 					window.opener.update_cust_module();
 					window.close();
 				}");
@@ -1122,8 +1064,7 @@ class load_table extends dts_table{
 					<input type='button' onclick='refresh_close()' value='Close'>
 					</form>";
 		$c .= $this->script("
-				function refresh_close()
-				{
+				function refresh_close(){
 					window.opener.update_load_module();
 					window.close();
 				}");
@@ -1139,8 +1080,7 @@ class load_table extends dts_table{
 					<input type='button' onclick='refresh_close()' value='Close'>
 					</form>";
 		$c .= $this->script("
-				function refresh_close()
-				{
+				function refresh_close(){
 					window.opener.update_order_module();
 					window.close();
 				}");
@@ -1160,7 +1100,6 @@ class load_table extends dts_table{
 	function get_load_edit(){
 		
 		$r = $this->current_row();
-                var_dump($r);
 		if($r['cancelled']){
 			$c = $this->style("
 				.load_content{background-color:$this->cancel_color}");
@@ -1265,8 +1204,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset style='height:$this->row_height'>
 				<legend>";
-		if($auth_edit)
-		{
+		if($auth_edit){
 			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&action=$this->edit_str&module=$this->problem_str&load_id=$this->load_id&".SMALL_VIEW."');return false;\">Problem</a>";
 		}else{
 			$c .= 'Problem';
@@ -1275,8 +1213,7 @@ class load_table extends dts_table{
 				<div id='problem_module'></div>
 		</fieldset>";
 		$c .= $this->script("
-					function update_problem_module()
-					{
+					function update_problem_module(){
 						get_module('problem', 'action=view&load_id=$this->load_id');
 					}
 					jQuery().ready(function(){
@@ -1292,8 +1229,7 @@ class load_table extends dts_table{
 				<tr>
 				<td colspan=3 class='bottom_pad'>";
 		//==== Customer ====
-		if(logged_in_as('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner'])
-		{
+		if(logged_in_as('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']){
 		$c .= "
 		<fieldset>
 				<legend>";
@@ -1338,8 +1274,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
-		if($auth_edit)
-		{
+		if($auth_edit){
 			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&load_id=$this->load_id&action=$this->warehouse_search_edit&customer_id=$r[customer_id]&".SMALL_VIEW."', 700, 550);return false;\">Warehouse</a>";
 		}else{
 			$c .= 'Warehouse';
@@ -1395,8 +1330,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
-		if(!$this->been_delivered() || logged_in_as('admin'))
-		{
+		if(!$this->been_delivered() || logged_in_as('admin')){
 			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&action=$this->edit_str&module=$this->money_str&load_id=$this->load_id&".SMALL_VIEW."',0,1064,240);return false;\">Money</a>";
 		}else{
 			$c .= 'Money';
@@ -1409,16 +1343,14 @@ class load_table extends dts_table{
 						wcp=0,
 						dlsp=0;
 						
-					function wc_change(o)
-					{
+					function wc_change(o){
 						var o = document.getElementsByName('wc_active')[0];
 						var gp_el = document.getElementById('gp');
 						var wc_perc_el = document.getElementById('wc_percent');
 						var wcp_el = document.getElementById('wcp');
 						var dtsp_el = document.getElementById('dtsp');
 						
-						if(o && o.checked)
-						{
+						if(o && o.checked){
 							var gp_el = document.getElementById('gp');
 							gp = gp_el.innerHTML;
 							
@@ -1436,16 +1368,14 @@ class load_table extends dts_table{
 						setDtsp();
 					}
 					
-					function dls_change(o)
-					{
+					function dls_change(o){
 						var o = document.getElementsByName('dls_active')[0];
 						var gp_el = document.getElementById('gp');
 						var dls_perc_el = document.getElementById('dls_percent');
 						var dlsp_el = document.getElementById('dlsp');
 						var dtsp_el = document.getElementById('dtsp');
 						
-						if(o && o.checked)
-						{
+						if(o && o.checked){
 							var gp_el = document.getElementById('gp');
 							gp = gp_el.innerHTML;
 							
@@ -1466,8 +1396,7 @@ class load_table extends dts_table{
 						jQuery('#dtsp').text(gp_val).css('visibility', 'visible');
 					}
 					
-					function update_money_module()
-					{
+					function update_money_module(){
 						get_module('$this->money_str', 'action=view&load_id=$this->load_id');
 						update_gp();
 					}
@@ -1485,14 +1414,13 @@ class load_table extends dts_table{
 		$c .= "</legend><div id='load_carrier_portal'></div>";
 		$c .= "</fieldset>";
 		$c .= $this->script("
-					function cancel()
-					{
+					function cancel(){
 						alert(this.value);
 						var c = document.getElementById('content');
 						c.style.color = '$this->cancel_color';
 					}
-					function add_load_carrier(load_id)
-					{
+					
+                                         function add_load_carrier(load_id){
 						var carrier_selection = document.getElementById('carrier_selection');
 						var param_str = 'table=load_carrier&carrier_id='+carrier_selection.value+'&load_id=';
 						var obj=new Object();
@@ -1501,16 +1429,14 @@ class load_table extends dts_table{
 						db_save(obj);
 						update_carrier_portal();
 					}
-					function update_carrier_portal()
-					{
+                                        
+					function update_carrier_portal(){
 						get_portal('load_carrier', 'load_id=$this->load_id');
 					}
 					
-					function delete_carrier(carrier_id)
-					{
-						if(confirm('Are you sure you want to delete carrier '+carrier_id+' from this load?'))
-						{
-							var obj=new Object();
+					function delete_carrier(carrier_id){
+						if(confirm('Are you sure you want to delete carrier '+carrier_id+' from this load?')){
+							var obj = {};
 							obj.id = 'action=$this->delete&table=load_carrier&load_id=$this->load_id&carrier_id=';
 							obj.value = carrier_id;
 							db_save(obj);
@@ -1594,13 +1520,11 @@ class load_table extends dts_table{
 	function get_new(){
 		
 		$c = $this->script("
-				function submit_close()
-				{
+				function submit_close(){
 					var f = document.getElementById('new_form');
 					f.submit();
 				}
-				function cancel_close()
-				{
+				function cancel_close(){
 					window.close();
 				}");
 		$c .= '<center><table>';
@@ -1621,8 +1545,7 @@ class load_table extends dts_table{
 		$c .= '<tr><td>Class</td><td>'.$this->fetch_new('class').'</td></tr>';
 		$c .= '<tr><td>Carrier</td><td>'.$this->fetch_new('carrier_id').'</td></tr>';
 		$c .= '<tr><td>Order By</td><td>'.$this->fetch_new('order_by', safe_get(get_user_id($_REQUEST[COOKIE_USERNAME]))).'</td></tr>';
-		if(isset($_REQUEST[SMALL_VIEW]))
-		{
+		if(isset($_REQUEST[SMALL_VIEW])){
 			$c .= '<tr><td><input type="button" onclick="submit_close()" value="$this->add_str"></td></tr>';
 			$c .= '<tr><td><input type="button" onclick="cancel_close()" value="$this->cancel_str"></td></tr>';
 		}else{
@@ -1659,6 +1582,7 @@ class load_table extends dts_table{
 	
 	function fetch_edit($name, $value=null, $protected=false){
 		$c = $this->get_column($name);
+                
 		$pk_obj = $this->get_primary_key();
 		$pk_name = $pk_obj->get_name();
 		if($protected){
@@ -1741,7 +1665,7 @@ class load_table extends dts_table{
 			}
 		}
 		$result = DB::query($sql);
-		if(DB::error())	{
+		if(DB::error()){
 			echo DB::error();
 			echo $sql;
 		}
@@ -1990,19 +1914,15 @@ class load_table extends dts_table{
 	
 	function gp_script(){
 		return $this->script("
-			function column_updated(t)
-			{
-				if (t.name == 'customer_total' || t.name == 'carrier_total')
-				{
+			function column_updated(t){
+				if (t.name == 'customer_total' || t.name == 'carrier_total'){
 					update_gp();
-				}else if(t.name == 'cancelled' || t.name == 'rating')
-				{
+				}else if(t.name == 'cancelled' || t.name == 'rating'){
 					return set_content_color();
 				}
 			}
 			
-			function update_gp()
-			{
+			function update_gp(){
 				var gp = document.getElementById('gp');
 				
 				var cust_total_el = document.getElementById('customer_total');
@@ -2112,8 +2032,7 @@ class load_table extends dts_table{
 				AND dest.load_id = l.load_id
 				";
 		$res = DB::query($sql);
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo $sql."<br>";
 			echo DB::error();
 		}
@@ -2223,8 +2142,7 @@ class load_table extends dts_table{
 				AND dest.load_id = l.load_id
 				";
 		$res = DB::query($sql);
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo $sql."<br>";
 			echo DB::error();
 		}
@@ -2256,8 +2174,7 @@ class load_table extends dts_table{
 							<center><div style='font-size:16pt;padding:3pt;width:4em;' class='bold heavy_frame'>$_REQUEST[load_id]</div>
 							</td>
 							<td width=30% style='vertical-align:middle'>";
-		if($r['ltl_number'])
-		{
+		if($r['ltl_number']){
 		$header .= "				
 							
 								<center><div style='padding:6pt;' class='bold heavy_frame'>$r[pro_number]</div><div style='padding:6pt;font-size:.8em' class='bold heavy_frame'>$r[ltl_number]
@@ -2280,8 +2197,7 @@ class load_table extends dts_table{
 		$origin = "<table width='80%' border=0><tr>";
 		$origin .= "<td colspan=5>Our Contract Carrier Agreement is amended as follows:</td>";
 		$picks = $this->get_pickups($_REQUEST['load_id']);
-		while($pick = DB::fetch_assoc($picks))
-		{
+		while($pick = DB::fetch_assoc($picks)){
 			
 			$origin .= "</tr><tr>";
 			$origin .= "<td>Shipper:</td><td class='bold'>$pick[origin_name]</td>";
@@ -2304,8 +2220,7 @@ class load_table extends dts_table{
 			$origin .= "</tr><tr>";
 		}
 		$drops = $this->get_drops($_REQUEST['load_id']);
-		while($drop = DB::fetch_assoc($drops))
-		{
+		while($drop = DB::fetch_assoc($drops)){
 			$dest .= "<td>CONS:</td><td class='bold'>$drop[dest_name]</td>";
 			$dest .= "<td width='$gutter'></td>";
 			$dest .= "<td>Delivery Date:</td><td class='bold'>$drop[delivery_date]</td>";
@@ -2339,8 +2254,7 @@ class load_table extends dts_table{
 				</tr>";
 		$line_haul_total = $this->money($r['line_haul_amount'] * $r['carrier_line_haul']);
 		//top right bottom left
-		if($line_haul_total > 0)
-		{
+		if($line_haul_total > 0){
 			$body .= "<tbody style='border:1px solid black'>
 					<tr style=''>
 						<td class='bold'>Line Haul</td>
@@ -2350,8 +2264,7 @@ class load_table extends dts_table{
 					</tr>";
 		}
 		$detention_total = $this->money($r['detention_amount']*$r['carrier_detention']);
-		if($detention_total > 0)
-		{
+		if($detention_total > 0){
 			$body .= "	<tr style=''>
 						<td class='bold '>Detention</td>
 						<td class='bold center' style='border:solid black;border-width: 1px 0px 1px 1px;'>".floatval($r['detention_amount'])."</td>
@@ -2360,8 +2273,7 @@ class load_table extends dts_table{
 					</tr>";
 		}
 		$tonu_total = $this->money($r['tonu_amount']*$r['carrier_tonu']);
-		if($tonu_total > 0)
-		{
+		if($tonu_total > 0){
 			$body .= "	<tr style=''>
 						<td class='bold '>TONU</td>
 						<td class='bold center' style='border:solid black;border-width: 1px 0px 1px 1px;'>".floatval($r['tonu_amount'])."</td>
@@ -2370,8 +2282,7 @@ class load_table extends dts_table{
 					</tr>";
 		}
 		$unload_load_total = $this->money($r['unload_load_amount']*$r['carrier_unload_load']);
-		if($unload_load_total > 0)
-		{
+		if($unload_load_total > 0){
 			$body .= "	<tr style=''>
 						<td class='bold '>Unload/Load</td>
 						<td class='bold center' style='border:solid black;border-width: 1px 0px 1px 1px;'>".floatval($r['unload_load_amount'])."</td>
@@ -2380,8 +2291,7 @@ class load_table extends dts_table{
 					</tr>";
 		}
 		$fuel_total = $this->money($r['fuel_amount']*$r['carrier_fuel']);
-		if($fuel_total > 0)
-		{
+		if($fuel_total > 0){
 			$body .= "	<tr style=''>
 						<td class='bold '>Fuel</td>
 						<td class='bold center' style='border:solid black;border-width: 1px 0px 1px 1px;'>".floatval($r['fuel_amount'])."</td>
@@ -2390,8 +2300,7 @@ class load_table extends dts_table{
 					</tr>";
 		}
 		$other_total = $this->money($r['other_amount']*$r['carrier_other']);
-		if($other_total > 0)
-		{
+		if($other_total > 0){
 			$body .= "	<tr style=''>
 						<td class='bold '>Other</td>
 						<td class='bold center' style='border:solid black;border-width: 1px 0px 1px 1px;'>".floatval($r['other_amount'])."</td>

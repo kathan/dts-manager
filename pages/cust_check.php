@@ -1,8 +1,7 @@
 <?php
 require_once('app.php');
 $_SERVER['REQUEST_METHOD'] == 'POST' ? check_for_existing($_POST) : '';
-function check_for_existing($cust)
-{
+function check_for_existing($cust){
 		$sql = "SELECT c.*, '$cust[address]' REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
 				FROM customer c
 				WHERE (soundex(name) like CONCAT(soundex('$cust[name]'), '%')
@@ -14,11 +13,9 @@ function check_for_existing($cust)
 		$re = DB::query($sql);
 		echo DB::error();
 		echo "Results<table>";
-		while($r = DB::fetch_assoc($re))
-		{
+		while($r = DB::fetch_assoc($re)){
 			echo "<tr>";
-			foreach($r as $i)
-			{
+			foreach($r as $i){
 				echo "<td>$i</td>";
 			}
 			echo "</tr>";

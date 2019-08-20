@@ -1,7 +1,6 @@
 <?php
-
-	require_once"/home/dts2828/include/Template.php";
-	require_once"/home/dts2828/include/DB.php";
+	require_once("Template.php");
+	require_once("DB.php");
 
 $sql = "SELECT	l.load_id,
 						l.class,
@@ -103,10 +102,7 @@ $sql = "SELECT	l.load_id,
 $re = DB::query($sql);
 $t = new Template();
 $load = DB::to_array($re, true);
-//print_r($load);
 $t->assign('load', $load);
-echo $t->fetch('/home/dts2828/www/dts/templates/bol.tpl');
-
-
+echo $t->fetch(App::getTempDir().'bol.tpl');
 
 ?>

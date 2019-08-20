@@ -51,12 +51,10 @@
 			.normalRow
 			{ldelim}
 				background-color:white;
-				color:color;
 			{rdelim}
 			.altRow
 			{ldelim}
 				background-color:silver;
-				color:color;
 			{rdelim}
 		</style>
 <!-- end search result -->

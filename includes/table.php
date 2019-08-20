@@ -729,14 +729,11 @@ class table
 		$this->form->add_input($input);
 	}
 	
-	function &get_primary_key()
-	{
+	function &get_primary_key(){
 		$column_keys = array_keys($this->columns);
-		foreach($column_keys as $key)
-		{
+		foreach($column_keys as $key){
 			$column =& $this->columns[$key];
-			if($column->is_primary())
-			{
+			if($column->is_primary()){
 				return $this->columns[$key];
 			}
 		}

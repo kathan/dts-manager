@@ -1,5 +1,4 @@
 <?php
-//ini_set('display_errors', 'On');//Debug only
 require_once('includes/app.php');
 require_once('includes/DB.php');
 require_once('includes/auth.php');
@@ -11,16 +10,13 @@ require_once('includes/Template.php');
 require_once('includes/submit_input.php');
 require_once('includes/Paginator.php');
 
-class customer_table extends dts_table
-{
+class customer_table extends dts_table{
 	var $customer_id;
-	function customer_table()
-	{
+	function __construct(){
 		
-		$this->dts_table("customer");
+		parent::__construct("customer");
 		$this->page = $_GET['page'];
-		if(isset($_REQUEST['customer_id']))
-		{
+		if(isset($_REQUEST['customer_id'])){
 			$this->customer_id = $_REQUEST['customer_id'];
 			$this->current_row();
 		}
@@ -45,16 +41,12 @@ class customer_table extends dts_table
 		$c->set_value_list($this->get_users());
 	}
 	
-	function render()
-	{
+	function render(){
 		$code ='';
-		if(logged_in())
-		{
+		if(logged_in()){
 			
-			if(isset($_REQUEST[$this->portal]))
-			{
-				switch(safe_get($_REQUEST[$this->portal]))
-				{
+			if(isset($_REQUEST[$this->portal])){
+				switch(safe_get($_REQUEST[$this->portal])){
 					
 					case $this->customer_notes:
 						$code .= $this->get_notes();
@@ -69,15 +61,13 @@ class customer_table extends dts_table
 			}else{
 				$GLOBALS['page_title'] = 'Customers';
 				
-				switch(get_action())
-				{
+				switch(get_action()){
 					case $this->wh_to_cust:
 						$this->add_as_customer();
 						header("location: ?page=$this->page&action=$this->edit_str&customer_id=$this->customer_id&$this->new_str");
 						break;
 					case $this->add_str:
-						if($this->add())
-						{			
+						if($this->add()){			
 							$code .= $this->show_search_results($this->get_search_results());
 						}else{
 							$code .= $this->error_str;
@@ -103,8 +93,7 @@ class customer_table extends dts_table
 						$code .= $this->get_edit();
 						break;
 					case $this->new_str:
-						if($this->add())
-						{
+						if($this->add()){
 							$this->customer_id = $this->last_id;
 							$code .= $this->get_edit();
 						}else{
@@ -112,8 +101,7 @@ class customer_table extends dts_table
 						}
 						break;
 					case $this->print:
-						if(logged_in_as('admin'))
-						{
+						if(logged_in_as('admin')){
 							$code .= $this->show_cust_print($this->get_search_results());
 						}else{
 							$code .= "No access.";
@@ -124,38 +112,32 @@ class customer_table extends dts_table
 						$code .= $this->show_search_results($this->get_search_results());
 						break;
 				}
-				if(!isset($_GET['sml_view']))
-				{
-					//$code .= "<title>".SITE_NAME."-Customers</title>";
+				if(!isset($_GET['sml_view'])){
 					$code .= $this->portal_script();
 					$code .= "<head><script src='sortable.js'></script>
 							<script src='db_save.js.php'></script>
 							<script type=\"text/javascript\">
 			
-							function popUp(URL)
-							{
+							function popUp(URL){
 								day = new Date();
 								id = day.getTime();
 								eval(\"page\" + id + \" = window.open(URL, '\" + id + \"', 		'toolbar=0,location=0,statusbar=0,menubar=0,resizable=1,width=600,height=600,left = 640,top = 225');\");
 							}
 							</script>";
 			
-					//$code .= "<div class='tab_sep'></div>";
 					$code .= "<div class='content load_content'>";
 				}
 				$code .= "</div>";
 			}
 		}
 		$feedback='';
-		if($this->error())
-		{
+		if($this->error()){
 			$feedback = $this->error();
 		}
 		return $feedback.$code;
 	}
 	
-	function check_for_existing($cust)
-	{
+	function check_for_existing($cust){
 		$sql = "SELECT c.*, '$cust[address]' REGEXP '^[0-9]+', address REGEXP '^[0-9]+', soundex(address) 
 				FROM customer c
 				WHERE (soundex(name) like CONCAT(soundex('$cust[name]'), '%')
@@ -168,15 +150,13 @@ class customer_table extends dts_table
 		return $re;
 	}
 	
-	function create_new()
-	{
+	function create_new(){
 		
 		set_post('acct_owner', get_user_ID());
 		$this->add();
 		$this->customer_id = $this->last_id;
 	}
-	function get_customers()
-	{
+	function get_customers(){
 		
 		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM users u WHERE u.user_id = c.acct_owner) acct_owner
 							FROM customer c
@@ -192,8 +172,7 @@ class customer_table extends dts_table
 		return $p->render();
 	}
 	
-	function get_loads_old()
-	{
+	function get_loads_old(){
 		if($this->customer_id>0){
 			
 			$p = new portal("SELECT load_id,
@@ -245,8 +224,7 @@ class customer_table extends dts_table
 		}
 		return $t->fetch(App::getTempDir().'cust_load_list.tpl');
 	}
-	function get_warehouses()
-	{
+	function get_warehouses(){
 		echo $_REQUEST['customer_id'];
 		
 		$p = new portal("	SELECT warehouse_id, name, city, state
@@ -260,8 +238,7 @@ class customer_table extends dts_table
 	
 	
 	
-	function get_notes()
-	{
+	function get_notes(){
 		$sql = "SELECT note_id, notes, last_updated
 								FROM customer_notes cn WHERE cn.customer_id = $this->customer_id
 								ORDER BY last_updated";
@@ -274,12 +251,10 @@ class customer_table extends dts_table
 		return $t->fetch(App::getTempDir().'cust_notes.tpl');
 	}
 	
-	function get_search()
-	{
+	function get_search(){
 		
 		
 		$c = '<center><h2>Customer Search</h2>';
-		//$c .= "Use % as a wildcard character";
 		
 		$si = new submit_input($this->search, $this->action);
 		$f =& $this->get_form();
@@ -298,8 +273,7 @@ class customer_table extends dts_table
 		return $c;
 	}
 	
-	function show_cust_print($cust)
-	{
+	function show_cust_print($cust){
 		
 		$t = new Template();
 		
@@ -311,39 +285,32 @@ class customer_table extends dts_table
 	}
 	
 	
-	function get_search_results()
-	{
+	function get_search_results(){
 		$sql = "SELECT CONCAT('T', customer_id) p_customer_id, customer_id, name, address, city
 				, phone, fax, state, contact_name FROM customer ";
 		$clause = 'WHERE';
 		$where='';
-		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0)
-		{
+		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0){
 			$where .= " $clause customer_id = ".intval(trim($_REQUEST['customer_id'], 't T'));
 			$clause = 'AND';
 		}else{
-			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '')
-			{
+			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
 				$where .= " $clause name like '%".addslashes($_REQUEST['name'])."%'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['address']) && $_REQUEST['address'] !='')
-			{
+			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
 				$where .= " $clause address like '%".addslashes($_REQUEST['address'])."%'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['city']) && $_REQUEST['city'] !='')
-			{
+			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
 				$where .= " $clause city like '%".addslashes($_REQUEST['city'])."%'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['state']) && $_REQUEST['state'] !='')
-			{
+			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
 				$where .= " $clause state like '%".addslashes($_REQUEST['state'])."%'";
 				$clause = 'AND';
 			}
-			if(isset($_REQUEST['acct_owner']) && $_REQUEST['acct_owner'] >0)
-			{
+			if(isset($_REQUEST['acct_owner']) && $_REQUEST['acct_owner'] >0){
 				$where .= " $clause acct_owner = $_REQUEST[acct_owner]";
 				$clause = 'AND';
 			}
@@ -354,21 +321,15 @@ class customer_table extends dts_table
 		}
 		$sql .= $where;
 		$re = DB::query($sql);
-		//echo $sql;
 		return $re;
 	}
 	
-	function show_search_results($cust)
-	{
+	function show_search_results($cust){
 		
 		$t = new Template();
-		//echo $sql;
-		//$t->register_modifier("array2query", "array2query");
-		//$t->register_modifier("in_array", "in_array");
 		$t->assign('filters', $_GET);
 		isset($_GET['start']) ? $start = $_GET['start'] : $start = 1;
 		$p = new Paginator($cust, $start);
-		//$acct_owners = Array('');
 		$acct_owners = $this->get_acct_owners();
 		isset($_GET['acct_owner']) ? $t->assign('sel_acct_owner', $_GET['acct_owner']) : '';
 		$t->assign('acct_owners', $acct_owners);
@@ -380,16 +341,13 @@ class customer_table extends dts_table
 		return $c;
 	}
 	
-	function current_row()
-	{
-		if(!isset($this->current_row))
-		{
+	function current_row(){
+		if(!isset($this->current_row)){
 			$this->current_row = $this->get_row($this->customer_id);
 		}
 		return $this->current_row;
 	}
-	function get_edit()
-	{
+	function get_edit(){
 		
 		$r = $this->current_row();
 		$t = new Template();
@@ -403,22 +361,19 @@ class customer_table extends dts_table
 		return $t->fetch(App::getTempDir().'customer_edit.tpl');
 	}
 	
-	function get_acct_owners()
-	{
+	function get_acct_owners(){
 		$sql = "SELECT user_id, username
 				FROM users";
 		$re = DB::query($sql);
 		$ary = Array('');
-		while($r = DB::fetch_assoc($re))
-		{
+		while($r = DB::fetch_assoc($re)){
 			$ary[$r['user_id']] = $r['username'];
 		}
 		return $ary;
 	}
 	
 	
-	function get_customer_menu()
-	{
+	function get_customer_menu(){
 		$c = "<table><tr>";
 		$c .= "<td><a href='?page=customer'><div class='menu'>All Accounts</div></a></td>";
 		$c .= "<td><a href='?page=customer&action=$this->search_edit'><div class='menu'>Search</div></a></td>";
@@ -428,15 +383,13 @@ class customer_table extends dts_table
 		return $c;
 	}
 	
-	function fetch_edit($name, $value)
-	{
+	function fetch_edit($name, $value){
 		$c =& $this->get_column($name);
 		$pk_obj =& $this->get_primary_key();
 		$pk_name = $pk_obj->get_name();
 		
 		$o = $c->get_edit_html($value);
 		$o->set_id("action=update&table=customer&".$pk_name."=".$_REQUEST[$pk_name]."&".$name."=");
-		//$o->add_attribute('onchange', 'db_save(this.id, this.value);');
 		$o->add_attribute('onchange', 'db_save(this);');
 		$script = "
 		<script type=\"text/javascript\">
@@ -446,12 +399,10 @@ class customer_table extends dts_table
 		
 		return $o->render();
 	}
-	function portal_script()
-	{
+	function portal_script(){
 		return "
 			<script type=\"text/javascript\">
-			function get_portal(table)
-			{
+			function get_portal(table){
 				var d = document.getElementById(table);
 				d.innerHTML = 'Loading '+table;
 				var portal = getFromURL('?page=$this->page&portal='+table+'&customer_id=$this->customer_id&action=portal&".SMALL_VIEW."');
@@ -462,15 +413,13 @@ class customer_table extends dts_table
 			
 	}
 	
-	function add_as_customer()
-	{
+	function add_as_customer(){
 		$sql = "INSERT INTO customer(name, address, city, state, zip, phone, fax, contact_name, acct_owner)
 				SELECT name, address, city, state, zip, phone, fax, contact_name, ".get_user_id()."
 				FROM warehouse
 				WHERE warehouse_id = $_REQUEST[warehouse_id]";
 		$r = db_query($sql);
-		if(db_error())
-		{
+		if(db_error()){
 			echo db_error();
 		}
 		$this->customer_id = db_insertid();

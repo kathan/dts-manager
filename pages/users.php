@@ -60,7 +60,6 @@ function process_users(){
 			$user_id = $this->save_user();
 		}
 	}
-	//echo "user_id: $user_id";
 	if(!isset($user_id) && isset($_GET['user_id'])){
 		$user_id = $_GET['user_id'];
 	}
@@ -91,13 +90,11 @@ function process_users(){
 	return $content;
 }
 	
-function check_user_form()
-{
+function check_user_form(){
 }
 
 function save_user(){
 	global $feedback;
-	//echo 'active:'.$_POST['active'];
 	if (logged_in_as('super admin') || logged_in_as($_COOKIE[COOKIE_USERNAME])){
 		$t = new DB_Table('users');
 		if(isset($_REQUEST['user_id'])){
@@ -140,26 +137,21 @@ function save_user(){
 	}
 }
 
-function add_groups($user_id, $group_ids)
-{
+function add_groups($user_id, $group_ids){
 	global $feedback;
-	if (logged_in_as('super admin'))
-	{
-		foreach($group_ids as $group_id)
-		{
+	if (logged_in_as('super admin')){
+		foreach($group_ids as $group_id){
 			$sql = "	INSERT INTO user_group(user_id, group_id) 
 						VALUES($user_id, $group_id)";
 			
 			$r = db_query($sql);
-			if(db_error())
-			{
+			if(db_error()){
 				$feedback .= db_error()."<br>";
 				$feedback .= $sql;
 				$failed = true;
 			}
 		}
-		if(isset($failed) && !$failed)
-		{
+		if(isset($failed) && !$failed){
 			$feedback .= "User added to group.<br>";
 		}
 	}else{
@@ -167,26 +159,21 @@ function add_groups($user_id, $group_ids)
 	}
 }
 
-function add_contacts($user_id, $contact_list_ids)
-{
+function add_contacts($user_id, $contact_list_ids){
 	global $feedback;
-	if (logged_in_as('super admin'))
-	{
-		foreach($contact_list_ids as $contact_list_id)
-		{
+	if (logged_in_as('super admin')){
+		foreach($contact_list_ids as $contact_list_id){
 			$sql = "	INSERT INTO user_contact_list(user_id, contact_list_id)
 						VALUES($user_id, $contact_list_id)";
 			
 			$r = db_query($sql);
-			if(db_error())
-        	{
+			if(db_error()){
 				$feedback .= db_error()."<br>";
 				$feedback .= $sql;
 				$failed = true;
 			}
 		}
-		if(isset($failed) && !$failed)
-		{
+		if(isset($failed) && !$failed){
 			$feedback .=  "User added to contact list.<br>";
 		}
 	}else{
@@ -194,27 +181,22 @@ function add_contacts($user_id, $contact_list_ids)
 	}
 }
 
-function remove_groups($user_id, $group_ids)
-{
+function remove_groups($user_id, $group_ids){
 	global $feedback;
-	if (logged_in_as('super admin'))
-	{
-		foreach($group_ids as $group_id)
-		{
+	if (logged_in_as('super admin')){
+		foreach($group_ids as $group_id){
 			$sql = "	DELETE FROM user_group
 						WHERE user_id = $user_id
 						AND group_id=$group_id";
 			
         	$r = db_query($sql);
-        	if(db_error())
-        	{
+        	if(db_error()){
 				$feedback .= db_error()."<br>";
 				
 				$failed = true;
 			}
 		}
-		if(isset($failed) && !$failed)
-		{
+		if(isset($failed) && !$failed){
 			$feedback .= "User removed from group.<br>";
 		}
 	}else{
@@ -222,25 +204,20 @@ function remove_groups($user_id, $group_ids)
 	}
 }
 
-function remove_contacts($user_id, $contact_list_ids)
-{
+function remove_contacts($user_id, $contact_list_ids){
 	global $feedback;
-	if (logged_in_as('super admin'))
-	{
-		foreach($contact_list_ids as $contact_list_id)
-		{
+	if (logged_in_as('super admin')){
+		foreach($contact_list_ids as $contact_list_id){
 			$sql = "	DELETE FROM user_contact_list
 							WHERE user_id = $user_id
 							AND contact_list_id = $contact_list_id";
         	$r = db_query($sql);
-			if(db_error())
-        	{
+			if(db_error()){
 				$feedback .= db_error()."<br>";
 				$failed = true;
 			}
 		}
-		if(isset($failed) && !$failed)
-		{
+		if(isset($failed) && !$failed){
 			$feedback .= "User removed from contact list.<br>";
 		}
 	}else{
@@ -284,13 +261,11 @@ function remove_regions($user_id, $region_list_ids){
 		$feedback .= "You do not have enough permission to remove a user from a region list.<br/>";
 	}
 }
-function new_user()
-{
+function new_user(){
 	return $this->edit_user();
 }
 
-function get_user($user_id)
-{
+function get_user($user_id){
 	$sql = "	SELECT *
 				FROM users
 				WHERE user_id = $user_id";
@@ -327,7 +302,6 @@ function edit_user($user=null){
 			}
 			$t->assign('user', $user);
 		}else{
-			//echo "No user";
 		}
 		$content = $t->fetch(App::getTempDir().'user_edit.tpl');
 	}else{
@@ -377,9 +351,7 @@ function region_form($user_id){
 		$t->assign('linked_options', $linked_options);
 		
 		return $t->fetch(App::getTempDir().'region_form.tpl');
-	}/*else{
-		echo "Not super admin";
-	}*/
+	}
 }
 
 function contact_form($user_id){
@@ -408,7 +380,6 @@ function contact_form($user_id){
 					WHERE contact_list_id IN(	SELECT ucl.contact_list_id
 												FROM user_contact_list ucl
 												WHERE ucl.user_id = $user_id)";
-		//echo $sql;
 		$re = DB::query($sql);
 		if(DB::error()){
 			$feedback .= DB::error();
@@ -493,8 +464,7 @@ function show_list(){
 	if(isset($_GET['filter'])){
 		$filter = $_GET['filter'];
 		$filter_str = "&filter=$_GET[filter]";
-		if ($filter == "inactive")
-		{
+		if ($filter == "inactive"){
 			$sql .= "where active = 0 ";
 			
 		}elseif($filter == "active"){
@@ -571,8 +541,7 @@ function show_list(){
 	return $t->fetch(App::getTempDir().'user_list.tpl');
 }
 
-function get_customers()
-{
+function get_customers(){
 	global $feedback;
 	$sql = "SELECT customer_id, name customer_name, city, state FROM customer WHERE acct_owner = ". get_user_ID();
 	
@@ -596,8 +565,7 @@ function get_customers()
 	return $c;
 }
 
-function get_cust_notes($cust_id)
-{
+function get_cust_notes($cust_id){
 	global $feedback;
 	$sql = "SELECT cust_note_id, note, note_date
 			FROM cust_owner_notes

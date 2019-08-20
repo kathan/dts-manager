@@ -1,5 +1,4 @@
 <?php
-ini_set('display_errors', 'On');//Debug only
 require_once('includes/Template.php');
 require_once('includes/global.php');
 require_once('includes/dts_table.php');
@@ -20,7 +19,6 @@ function month_report_form(){
 	$t = new Template();
 	$t->assign('users', get_users());
 	$t->assign('year', date('Y'));
-	//echo $_REQUEST['user_id'];
 	isset($_REQUEST['user_id']) ? $t->assign('user_id', $_REQUEST['user_id']) : '';
 	
 	$t->assign('page', $_REQUEST['page']);
@@ -35,17 +33,14 @@ function get_users(){
 			FROM users";
 	$re = DB::query($sql);
 	$ary = Array('');
-	while($r = DB::fetch_assoc($re))
-	{
+	while($r = DB::fetch_assoc($re)){
 		$ary[$r['user_id']] = $r['username'];
 	}
-	//print_r($ary);
 	return $ary;
 }
 
 function get_report(){
 	$start_month = intval($_REQUEST['start_Month']);
-	//echo $start_month;
 	$month_str = get_month($start_month);
 	$first_day_str = "1-$month_str-".$_REQUEST['start_Year'];
 	$debug='';
@@ -80,18 +75,15 @@ function get_report(){
 	$end_week_day = date ('j', strtotime($first_sat_str));
 	$debug.="end_week_day = $end_week_day<br/>";
 	
-	//$month = date ('j', strtotime($first_day_str));
 	$debug.="start_Month = $_REQUEST[start_Month]<br/>";
 	
 	$first_week = date('W', strtotime($first_day_str));
-	//$first_week = date('W', strtotime($first_sat_str));
 	$debug.="first_week = $first_week<br/>";
 	
 	$first_mon_date = date('Y-m-d', strtotime($first_mon_str));
 	$debug.="first_mon_date = $first_mon_date<br/>";
 	
 	$day_count =date('t', strtotime($first_day_str));
-	//echo $day_count;
 	$debug.="day_count = $day_count<br/>";
 	
 	$last_day_week_str = ($day_count)."-".$start_month."-".$_REQUEST['start_Year'];
@@ -113,17 +105,12 @@ function get_report(){
 	}
 	$debug.="first_week = $first_week<br/>";
 	$week_count = ceil(($day_count + $first_day_num)/7);
-	//$week_count = ceil($day_count/7);
-	//$week_count = ($last_week+1)- ($first_week);
 	$debug.="week_count = $week_count<br/>";
 	
-	//echo $debug;
-	//echo $week_count;
 	for($w=1;$w <= $week_count; $w++){
 		$week = get_weekly($start_date, $end_date);
 		
 		$month[] = $week;
-		//$weeks .= get_summary($start_date, $end_date);
 		if(date('N', strtotime($start_date." + 7 days")) == 7){
 			//echo "not sun";
 			$start_week_day = date('j', strtotime($start_date." + 7 days"));
@@ -144,19 +131,12 @@ function get_report(){
 	}
 	
 
-	//print_r($month);
-	//echo "$first_of_month, $last_of_month";
-	//$summary= get_summary($first_of_month, $last_of_month);
 	$t = new Template();
 	isset($_GET['user_id']) ? $t->assign('user_id', $_GET['user_id']) : '';
 	$t->assign('month', $month);
 	$t->assign('month_str', get_month($_GET['start_Month']));
 	$t->assign('start_year', $_GET['start_Year']);
-	//$t->assign('weeks', $weeks);
-	//$t->assign('summary', $summary);
 	if(isset($_GET['user_id'])){
-		
-		//echo "user:".App::get_username($_GET['user_id']);
 		$t->assign('user', App::get_username($_GET['user_id']));
 		$t->assign('user_id', $_GET['user_id']);
 	}
@@ -164,14 +144,12 @@ function get_report(){
 	return $c;
 }
 
-function get_occur($n)
-{
+function get_occur($n){
 	$occ = array("first", "second", "third", "fourth", "fifth");
 	return $occ[$n];
 }
 
-function get_weekly($mon, $fri)
-{
+function get_weekly($mon, $fri){
 	
 $sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
 		, load_id
@@ -181,7 +159,6 @@ $sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
 		, l.carrier_rate carrier_rate
 		, wc_active
 		";
-	//isset($_GET['wcp']) ? $sql .= "	 , FORMAT(((profit * .01) * wc_percent), 2) wcp " : $sql .= ', FORMAT(IF(wc_active, profit-((profit * .01) * wc_percent), profit), 2) profit'; //old
 	/*1/20/14 Added case statement to set profit to 0 if the user is only the booked with agent*/
 	if(isset($_GET['user_id']) &&  $_GET['user_id'] > 0){
 		$sql .= ", CASE WHEN c.acct_owner != $_GET[user_id] THEN 0 ";
@@ -199,12 +176,8 @@ $sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
 						ELSE profit
 					END profit";
 	
-	//isset($_GET['wcp']) ? $sql .= "	ELSE ((profit * .01) * wc_percent) END wcp " : $sql .= ' ELSE CASE WHEN wc_active=1 THEN profit-((profit * .01) * wc_percent) ELSE profit END END profit';//Removed 1/21/14 per Joe
 	
-	//$dec1 = new DateTime('12/01/2011');
-	//$mon_date = new DateTime($mon);
-	if(strtotime($mon) >= strtotime('12/01/2011'))
-	{
+	if(strtotime($mon) >= strtotime('12/01/2011')){
 		/*12/3/13 Joe requested "Darrel. Can you make a quick change to our DB?  In the reports, can you change the percentage so that the carrier rep commission equal the profit. And not the current 33%" 
 		old line ", IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .3 carrier_rep_comm"
 		*/
@@ -234,7 +207,6 @@ $sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
 						END total_comm
 				/*, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .4 total_comm*/";
 	}
-	//isset($_GET['wcp']) ? $sql .= "	 , FORMAT(((l.profit * .01) * wc_percent), 2) wcp " : $sql .= ', FORMAT(profit, 2) profit';
 		
 $sql .= " 
 		FROM load_report_totals ";
@@ -242,8 +214,7 @@ $sql .= "
 $sql .= " l
 		, customer c ";
 	$clause = 'WHERE';
-	if(isset($_GET['wcp']))
-	{
+	if(isset($_GET['wcp'])){
 		$sql .= "	$clause wc_active = 1 ";
 		$clause = 'AND';
 	}
@@ -258,7 +229,6 @@ $sql .= " l
 	
 	if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != ''){
 		$load_types = array_to_list($_REQUEST['load_type']);
-		//$sql .= " $clause load_type = '$_REQUEST[load_type]' ";
 		$sql .= " $clause load_type in ($load_types) ";
 		$clause = 'AND';
 	}
@@ -269,97 +239,28 @@ $sql .= " l
 					order by activity_date, load_id";
 		$result = DB::query($sql);
 		//echo $sql."<br><br>";
-		if(DB::error())
-		{
+		if(DB::error()){
 			echo "Error in get_weekly<br/>";
 			echo $sql."<br/>";
 			echo DB::error()."<br/>";
 		}
 		$t = new Template();
 		isset($_GET['user_id']) ? $t->assign('user_id', $_GET['user_id']) : '';
-		//echo App::get_username($_GET['user_id']);
 		
-		//isset($_GET['user_id']) ? $t->assign('user', App::get_username($_GET['user_id'])) : '';
 		$t->assign('start_month', $_REQUEST['start_Month']);
 		$t->assign('start_week_day', date('j', strtotime($mon)));
 		$t->assign('end_week_day', date('j', strtotime($fri)));
-		//$t->assign('weeks', DB::to_array($result));
-		//return $t->fetch('/home/dts2828/www/dts/templates/weekly.new.tpl');
 		$a['start_month'] = $_REQUEST['start_Month'];
 		$a['start_week_day'] = date('j', strtotime($mon));
 		$a['end_week_day'] = date('j', strtotime($fri));
 		$a['loads'] =  DB::to_array($result);
 		return $a;
 }
-/*function get_summary($start, $end)
-{
-	//require_once('includes/view.php');
-$sql = "	SELECT ''
-		, 'Total Loads:'
-		,  count(*)load_count
-		, FORMAT(sum(cust_rate), 2) 
-		, FORMAT(sum(carrier_rate), 2)
-		 ";
-//isset($_GET['wcp']) ? $sql .= "	 , FORMAT(((l.sum_profit * .01) * wc_percent), 2) wc_amount " : $sql .= ', FORMAT(sum_profit, 2)';
-isset($_GET['wcp']) ? $sql .= "	 , FORMAT(sum((profit * .01) * wc_percent), 2) wc_amount " : $sql .= ',FORMAT(sum(IF(wc_active,profit-((profit * .01) * wc_percent),profit)), 2) profit';
-if(strtotime($start) >= strtotime('12/01/2011'))
-	{
-$sql .= "	, '' carrier_rep
-			, FORMAT(SUM(IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .3), 2) carrier_rep_comm
-			, '' sales_rep
-			, FORMAT(SUM(IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .1), 2) sales_rep_comm
-			, FORMAT(SUM(IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .4), 2) total_comm";
-	}
-$sql .= "		FROM load_report_totals";
-	$clause = 'WHERE';
-if(isset($_GET['wcp']))
-{
-	$sql .= "	$clause wc_active = 1 ";
-	$clause = 'AND';
-}
 
-if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != '')
-	{
-		$load_types = array_to_list($_REQUEST['load_type']);
-		//$sql .= " $clause load_type = '$_REQUEST[load_type]' ";
-		$sql .= " $clause load_type in ($load_types) ";
-		$clause = 'AND';
-	}
-	
-	if($_REQUEST['user_id'] > 0)
-	{
-		$sql .= " $clause (customer_id in (SELECT customer_id FROM customer WHERE acct_owner = $_REQUEST[user_id])
-				OR load_id in (SELECT load_id FROM load_carrier WHERE booked_with = $_REQUEST[user_id]))";
-		$clause = 'AND';
-	}
-	
-	$sql .= " $clause activity_date >= '$start'
-	AND activity_date <= '$end'
-	";
-		//echo "$sql<br>";
-		$result = DB::query($sql);
-		if(DB::error())
-		{
-			echo "Error in get_summary<br>";
-			echo $sql."<br>";
-			echo DB::error();
-		}
-		$t = new Template();
-		
-		$summary = DB::to_array($result);
-		//print_r($summary);
-		$t->assign('summary', $summary);
-		$c = $t->fetch('/home/dts2828/www/dts/templates/summary.tpl');
-		return $c;
-}*/
-
-
-function array_to_list($ar)
-{
+function array_to_list($ar){
 	$l = '';
 	$i=0;
-	foreach($ar as $a)
-	{
+	foreach($ar as $a){
 		$i > 0 ? $l .= "," : '';
 		$l .= "'$a'";
 		
@@ -368,8 +269,7 @@ function array_to_list($ar)
 	return $l;
 }
 
-function get_month($num)
-{
+function get_month($num){
 	$months = Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September','October', 'November', 'December');
 	return $months[$num-1];
 }
