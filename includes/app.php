@@ -14,10 +14,16 @@ class App{
     public static $db;
     public static $templates_dir = '/templates/';
     public static $img_dir = '/images';
+    public static $site_name = 'DTS';
     
+    public static function getSiteName(){
+        return "$_SERVER[HTTP_HOST]";
+    }
+
     public static function getHttpRoot(){
         return "$_SERVER[HTTP_HOST]";
     }
+    
     public static function getTempDir(){
         return self::getAppRoot().self::$templates_dir;
     }
