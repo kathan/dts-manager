@@ -42,7 +42,7 @@ class DB{
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){
-            return $stmt;
+            return $stmt->get_result();
         }else{
             return false;
         }
