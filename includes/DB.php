@@ -20,8 +20,9 @@ class DB{
     public static function query($sql, $binds=null){
         $bind_ary = [];
         $bind_ary[0] = '';
+        $stmt = self::$db->prepare($sql);
 	if(isset($binds)){
-            $stmt = self::$db->prepare($sql);
+            
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
