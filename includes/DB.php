@@ -26,8 +26,8 @@ class DB{
     }
 	
     public static function num_rows($result){
-        if ($result){
-            return $result->num_rows($result);
+        if (isset($result)){
+            return $result->num_rows;
         }
     	return 0;
     }

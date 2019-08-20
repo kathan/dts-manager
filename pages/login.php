@@ -28,7 +28,7 @@
     
 function loginForm(){
 	$content = "
-	<img src='http://".IMG_ROOT."/dts.gif'>
+	<img src='".App::getImgRoot()."/dts.gif'>
 	<table class='center'>
 		<th colspan=2>Login</th>
 		<FORM ACTION='' METHOD='POST' target='_top'>
