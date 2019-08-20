@@ -271,7 +271,7 @@ class table{
         function add(){
             $t = new DB_Table($this->name);
             if($this->check_form()){
-                $fields = array_keys(array_merge($_REQUEST, $_FILES));
+                $fields = array_merge($_REQUEST, $_FILES);
                 if($t->add($fields)){
                     $this->add_feedback("New record was added.");
                     $this->last_id = DB::insertid();
