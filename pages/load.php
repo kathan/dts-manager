@@ -3,7 +3,6 @@ ini_set('display_errors', 'On');//Debug only
 require_once('includes/app.php');
 require_once('includes/auth.php');
 require_once('includes/dts_table.php');
-//require_once('includes/DB.php');
 require_once('includes/Template.php');
 require_once('includes/hidden_input.php');
 require_once('includes/portal.php');
