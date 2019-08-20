@@ -17,12 +17,30 @@ class DB{
         self::$db->close();
     }
 	
-    public static function query($sql, $limit=null, $start=null){
-	if(isset($limit)){
-            isset($start) ? $sql .= " LIMIT $start" : $sql .= " LIMIT 0";
-            $sql .= ", $limit";
-	}
-	return self::$db->query($sql);
+    public static function query($sql, $binds=null){
+        $bind_ary = [];
+        $type = '';
+	if(isset($binds)){
+            $stmt = self::$db->prepare($sql);
+            foreach($binds as $val){
+                switch(gettype($val)){
+                    case 'string':
+                        $type .= 's';
+                        $bind_ary[] = $val;
+                        break;
+                    case 'integer':
+                        $type .= 'i';
+                        $bind_ary[] = $val;
+                        break;
+                    case 'double':
+                        $type .= 'd';
+                        $bind_ary[] = $val;
+                        break;
+                }
+            }
+        }
+        call_user_func_array($stmt->bind_param, $bind_ary);
+	return $stmt->execute();
     }
 	
     public static function num_rows(mysqli_result $result){

@@ -15,6 +15,7 @@
             |forward him to the loggedin.php page
             |so the current cookie state is used.
             =================================*/
+            header("Location: ?page=loggedin");
 	}else{
             logError("not logged in", "login");
             loginform();
@@ -29,7 +30,7 @@
 function loginForm(){
     $t = new Template();
     $t->assign('imgRoot', App::getImgRoot());
-    return$t->fetch(App::getTempDir().'/login.tpl');
+    return $t->fetch(App::getTempDir().'/login.tpl');
 }	
 
 ?>
