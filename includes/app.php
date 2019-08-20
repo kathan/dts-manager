@@ -15,6 +15,8 @@ ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/lib/:.."
 //=================================
 ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/includes/:..");
 
+require_once('DB.php');
+
 class App{
     public static $db;
     public static $templates_dir = '/templates/';
