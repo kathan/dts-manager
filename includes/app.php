@@ -46,7 +46,6 @@ class App{
             self::$db = mysqli_init();
             $result = DB::connect($_ENV['RDS_USERNAME'], $_ENV['RDS_PASSWORD'], $_ENV['RDS_DB_NAME'], $_ENV['RDS_HOSTNAME']);
             if($result){
-                echo "connected";
                 if(!DB::query( "SET NAMES 'utf8'")){
                     return false;
 		}
