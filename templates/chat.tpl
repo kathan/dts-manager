@@ -5,8 +5,8 @@
 <link type="text/css" rel="stylesheet" media="all" href="css/screen_ie.css" />
 <![endif]-->
 
-<script type="text/javascript" src="jquery.js"></script>
-<script type="text/javascript" src="scripts/chat.js"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/chat.js"></script>
 <script type="text/javascript">
 $(window).unload(function(e){
 	

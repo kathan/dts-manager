@@ -80,8 +80,8 @@
 }
 {/literal}
 </style>
-<script type="text/javascript" src="jquery.js"></script>
-<script type="text/javascript" src="scripts/jquery.ui.js"></script>
+<script type="text/javascript" src="js/jquery.js"></script>
+<script type="text/javascript" src="js/jquery.ui.js"></script>
 <script type="text/javascript">
 {literal}
 $(document).ready(function(e){

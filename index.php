@@ -4,7 +4,6 @@ require_once('includes/Template.php');
 
 require_once("includes/global.php");
 define('SMALL_VIEW', "sml_view");
-//include_once("includes/hit.php");
 $t = new Template();
 //==========Process============
 $c ='';
@@ -33,9 +32,9 @@ if(isset($_GET['r'])){
 		<link rel="stylesheet" href="style.css" type="text/css" media="all">
 		<script type="text/javascript" src="js/events.js.php"></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
-		<script type="text/javascript" src="scripts/jquery.ui.js"></script>
-		<script type="text/javascript" src="scripts/jquery.datepick.js"></script>
-		<script src="base.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/jquery.ui.js"></script>
+		<script type="text/javascript" src="js/jquery.datepick.js"></script>
+		<script type="text/javascript" src="js/base.js" ></script>
 		<title>'.$GLOBALS['page_title'].'</title>
 	</head>
 	<body>';
@@ -58,17 +57,16 @@ if(isset($_GET['r'])){
     }
     $page_content = ob_get_output("pages/$page");
 
-    //$c.= '<!DOCTYPE HTML PUBLIC "ISO/IEC 15445:1999//DTD HTML//EN">';
     $c.= '<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">';
 $c .= '<html>
 	<head>';
     isset($GLOBALS['page_title']) ? $c .= '<title>DTS-'.$GLOBALS['page_title'].'</title>' : '';
 $c .= '	<link rel="stylesheet" href="style.css" type="text/css" media="all">
-		<script src="events.js.php" type="text/javascript"></script>
-		<script src="jquery.js" type="text/javascript"></script>
-		<script type="text/javascript" src="scripts/jquery.ui.js"></script>
-		<script type="text/javascript" src="scripts/jquery.datepick.js"></script>
-		<script src="base.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/events.js.php" ></script>
+		<script type="text/javascript" src="js/jquery.js"></script>
+		<script type="text/javascript" src="js/jquery.ui.js"></script>
+		<script type="text/javascript" src="js/jquery.datepick.js"></script>
+		<script type="text/javascript" src="js/base.js"></script>
 	</head>
 	<body>';
 $c .= '	<center>
@@ -88,10 +86,7 @@ $c .= '	<center>
 		</table>
 		</center>
 		';
-    //if(logged_in_as('admin')){
 	$c .= ob_get_output(App::getTempDir()."/overdue_load_mod.tpl");
-	//$c .= ob_get_output(App::$temp."/chat.tpl");
-    //}
 $c .= '
 	</body>
 </html>';
