@@ -41,7 +41,11 @@ class DB{
             }
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
-        return $stmt->execute();
+        if($stmt->execute()){
+            return $stmt;
+        }else{
+            return false;
+        }
     }
 	
     public static function num_rows($result){
