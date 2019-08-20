@@ -52,7 +52,7 @@ function ob_get_output($file){
     return ob_get_clean();
 }
 	
-function set_post(&$key, &$value){
+function set_post($key, $value){
     $_REQUEST[$key] = $value;
     $_POST[$key] = $value;
 }
