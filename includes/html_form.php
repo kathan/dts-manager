@@ -9,8 +9,7 @@ require_once("checkbox_input.php");
 require_once("radio_group.php");
 require_once("radio_input.php");
 require_once("cancel_input.php");
-class html_form
-{
+class html_form{
 	var $name;
 	var $inputs = [];
 	var $html_objects = [];

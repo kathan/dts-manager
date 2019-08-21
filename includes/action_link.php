@@ -6,7 +6,7 @@ class action_link{
 	var $action;
 	var $params = [];
 	
-	function action_link($location, $action, $id, $primary_key){
+	function __construct($location, $action, $id, $primary_key){
 		$this->location = $location;
 		$this->id = $id;
 		$this->primary_key = $primary_key;

@@ -3,6 +3,8 @@ require_once('global.php');
 require_once('database.php');
 require_once("column.php");
 require_once('DB_Table.php');
+require_once("html_form.php");
+
 class table{
 	/*
 		Field Options:
@@ -53,8 +55,6 @@ class table{
 	var $wildcard_search=false;
 	
 	function __construct($table=null, $desc=true){
-		
-		require_once("html_form.php");
 		$this->form = new html_form();
 		$this->orientation = 'vertical';
 		if(!$table){

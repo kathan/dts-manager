@@ -43,7 +43,7 @@ class customer_table extends dts_table{
 	
 	function render(){
 		$code ='';
-		if(logged_in()){
+		if(Auth::loggedIn()){
 			
 			if(isset($_REQUEST[$this->portal])){
 				switch(safe_get($_REQUEST[$this->portal])){
@@ -101,7 +101,7 @@ class customer_table extends dts_table{
 						}
 						break;
 					case $this->print:
-						if(logged_in_as('admin')){
+						if(Auth::loggedInAs('admin')){
 							$code .= $this->show_cust_print($this->get_search_results());
 						}else{
 							$code .= "No access.";
@@ -162,7 +162,7 @@ class customer_table extends dts_table{
 		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM users u WHERE u.user_id = c.acct_owner) acct_owner
 							FROM customer c
 							";
-		if(!logged_in_as('admin') && !logged_in_as('super admin')){
+		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
 			$sql .= " WHERE acct_owner = ?";
 		}
 		$p = new portal($sql, $binds);
@@ -323,7 +323,7 @@ class customer_table extends dts_table{
                             $clause = 'AND';
 			}
 		}
-		if(!logged_in_as('admin') && !logged_in_as('super admin')){
+		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
                     $binds[] = get_user_id();
                     $where .= " $clause acct_owner = ?";
                     $clause = 'AND';
@@ -344,7 +344,7 @@ class customer_table extends dts_table{
 		$t->assign('acct_owners', $acct_owners);
 		$t->assign('pag', $p->get());
 		$t->assign('cust', $p->to_array($cust));
-		$t->assign('admin', logged_in_as('admin'));
+		$t->assign('admin', Auth::loggedInAs('admin'));
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'cust_list.tpl');
 		return $c;
@@ -366,7 +366,7 @@ class customer_table extends dts_table{
 		$t->assign('customer_notes_portal', $this->get_notes());
 		$t->assign('account_statuses', $this->account_status_list);
 		$t->assign('acct_owners', $this->get_acct_owners());
-		$t->assign('admin', logged_in_as('admin'));
+		$t->assign('admin', Auth::loggedInAs('admin'));
 		return $t->fetch(App::getTempDir().'customer_edit.tpl');
 	}
 	

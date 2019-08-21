@@ -7,7 +7,7 @@ require_once('includes/hidden_input.php');
 require_once('includes/html_form.php');
 
 $menu = new menu();
-if(logged_in()){
+if(Auth::loggedIn()){
     $load = new menu_item("?page=load", "<img src='".App::getImgRoot()."/package.gif' border='0' width='40px' alt='' /><br />Loads");
     $menu->add_item($load);
 
@@ -23,14 +23,14 @@ if(logged_in()){
     $lanes = new menu_item("/?page=lanes", "<img src='".App::getImgRoot()."/lanes.gif' border='0' width='40px' alt='' /><br />Lanes");
     $menu->add_item($lanes);
 
-    if(logged_in_as('admin')){
+    if(Auth::loggedInAs('admin')){
 	$users = new menu_item("?page=users", "<img src='".App::getImgRoot()."/users.png' border='0' width='40px' alt='' /><br />Users");
 	$menu->add_item($users);
 		
 	$reports = new menu_item("?page=reports", "<img src='".App::getImgRoot()."/reports.jpg' border='0' width='40px' alt='' /><br />Reports");
 	$menu->add_item($reports);
     }
-    $user = new menu_item("?page=users&action=edit&user_id=".get_user_id(), "logged&nbsp;in&nbsp;as&nbsp;".$_COOKIE[COOKIE_USERNAME]);
+    $user = new menu_item("?page=users&action=edit&user_id=".get_user_id(), "logged&nbsp;in&nbsp;as&nbsp;".$_COOKIE[Auth::COOKIE_USERNAME]);
     $menu->add_item($user);
 	
     $logout = new menu_item("?page=logout", "Log out");

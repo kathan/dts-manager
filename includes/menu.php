@@ -1,8 +1,7 @@
 <?php
 require_once("auth.php");
 
-class menu
-{
+class menu{
 	var $items=[];
 	var $active;
 	var $active_class;

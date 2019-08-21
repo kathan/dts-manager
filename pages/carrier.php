@@ -41,7 +41,7 @@ class carrier_table extends dts_table{
 			$GLOBALS['page_title'] = "Carriers";
 			$code='';
 		
-		if(logged_in()) {
+		if(Auth::loggedIn()) {
 			$code .= "<script src='sortable.js'></script>
 				<script src='db_save.js.php'></script>
 				";
@@ -86,7 +86,7 @@ class carrier_table extends dts_table{
 						header("location: ?page=carrier&action=$this->edit_str&carrier_id=$this->carrier_id&$this->new_str");
 						break;
 					case $this->print:
-						if(logged_in_as('admin')) {
+						if(Auth::loggedInAs('admin')) {
 							$code .= $this->show_carrier_print($this->get_search_results());
 						}else{
 							$code .= "No access.";
@@ -128,7 +128,7 @@ class carrier_table extends dts_table{
 		$t->assign('acct_owners', $acct_owners);
 		$t->assign('pag', $p->get());
 		$t->assign('carrier', $p->to_array($carrier));
-		$t->assign('admin', logged_in_as('admin'));
+		$t->assign('admin', Auth::loggedInAs('admin'));
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'carrier_list.tpl');
 		return $c;
@@ -248,7 +248,7 @@ class carrier_table extends dts_table{
             $temp = new Template();
             $temp->assign('carrier', $r);
             $temp->assign('users', $this->get_users());
-            $temp->assign('admin', logged_in_as('admin'));
+            $temp->assign('admin', Auth::loggedInAs('admin'));
             $temp->assign('prefix', $this->prefix);
             return $temp->fetch(App::getTempDir().'carrier_edit.tpl');
 	}

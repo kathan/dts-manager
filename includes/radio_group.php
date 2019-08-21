@@ -1,27 +1,23 @@
 <?php
-
 require_once("html_input.php");
-class radio_group extends html_input
-{
-	
+require_once("radio_input.php");
+
+class radio_group extends html_input{
 	var $inputs = [];
 	
-	function __construct($name)
-	{
-		require_once("radio_input.php");
+	function __construct($name){
+		parent::__construct($name);
 		$this->name = $name;
 		$this->label = ucwords(str_replace('_',' ',$name));
 	}
 	
-	function render()
-	{
+	function render(){
 	
 		//echo count($this->inputs)."<BR>";
 		$code = "<fieldset>\n<legend>$this->label</legend>";
 		
 		//for($i=0; $i < count($this->inputs); $i++)
-		foreach($this->inputs as $input)
-		{
+		foreach($this->inputs as $input){
 			//$code .= $this->inputs[$i]->render();
 			$code .= $input->render();
 		}
@@ -29,8 +25,7 @@ class radio_group extends html_input
 		return $code;
 	}
 	
-	function &add_radio_input($value, $checked=false)
-	{
+	function &add_radio_input($value, $checked=false){
 		$new_radio_input = new radio_input($this->name, $value, $checked);
 		
 		//array_push($this->inputs, $new_radio_input);
@@ -41,8 +36,7 @@ class radio_group extends html_input
 	
 	
 	
-	/*function get_label()
-	{
+	/*function get_label(){
 		return $this->label;
 	}*/
 }

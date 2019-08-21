@@ -11,7 +11,6 @@ class date_input extends text_input{
 			$this->id = $this->name;
 		}
 		$code = "<INPUT TYPE=\"$this->type\" id=\"$this->id\" name=\"$this->name\" value=\"".htmlentities($this->value)."\" SIZE=10  readOnly=true datechange=\"function(y,m,d){db_save(this.id, this.value);};\"";
-		//$code = "<INPUT TYPE=\"$this->type\" id=\"$this->id\" name=\"$this->name\" value=\"".htmlentities($this->value)."\" SIZE=10 datechange=\"function(y,m,d){db_save(this.id, this.value);};\"";
 		
 		$keys = array_keys($this->custom_attributes);
 		foreach($keys as $name){

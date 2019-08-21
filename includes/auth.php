@@ -1,23 +1,24 @@
 <?php
 require_once("global.php");
 
-define('COOKIE_HASH', 'dts_hash');
-define('COOKIE_USERNAME', 'dts_username');
-define('COOKIE_NAME', 'dts_cookie');
-define('PRIVATE_KEY', 'bllop');
-define('MIN_PW_LENGTH', 6);
-define('MAX_PW_LENGTH', 15);
-define('MIN_UN_LENGTH', 4);
-define('MAX_UN_LENGTH', 15);
-define('PHP_COOKIE_LENGTH', 60*60*24*7);//7 days
-define('MYSQL_COOKIE_LENGTH', 'INTERVAL 7 day');
+class Auth{
+    const COOKIE_HASH = 'dts_hash';
+    const COOKIE_USERNAME = 'dts_username';
+    const COOKIE_NAME = 'dts_cookie';
+    const PRIVATE_KEY = 'bllop';
+    const MIN_PW_LENGTH = 6;
+    const MAX_PW_LENGTH = 15;
+    const MIN_UN_LENGTH = 4;
+    const MAX_UN_LENGTH = 15;
+    const PHP_COOKIE_LENGTH=  60*60*24*7;//7 days
+    const MYSQL_COOKIE_LENGTH = 'INTERVAL 7 day';
+    public static $LOGGED_IN = false;
 
-set_cookie();
-function logged_in_as($name){
+    static function loggedInAs($name){
 	global $feedback;
         
-	if ($name && isset($_COOKIE[COOKIE_HASH])){
-            $binds = [$name, $_COOKIE[COOKIE_HASH],$name, $_COOKIE[COOKIE_HASH]];
+	if ($name && isset($_COOKIE[self::COOKIE_HASH])){
+            $binds = [$name, $_COOKIE[self::COOKIE_HASH], $name, $_COOKIE[self::COOKIE_HASH]];
             $sql = "	
 				SELECT u.username
 				FROM users u
@@ -54,146 +55,148 @@ function logged_in_as($name){
 	}else{
 		return false;
 	}
-}
+    }
 
-function login($username, $password){
+    static function login($username, $password){
+        global $feedback;
+        
+        if (!$username || !$password){
+            $feedback .=  ' ERROR - Missing user name or password ';
+            return false;
+        } else {
+            $binds = [$username, $password];
+            $sql= "	SELECT count(*) user_count
+                    FROM users
+                    WHERE username = ?
+                    AND password = ?
+                    AND active = 1";
+            $result = DB::query($sql, $binds);
+            if(DB::error()){
+                global $feedback;
+                $feedback .= DB::error()."<br>";
+                $feedback .= $sql."<br>";
+            }
+                    $r = DB::fetch_array($result);
+            if (!$result || $r['user_count'] < 1){
+                $feedback .=  ' ERROR - User not found or password incorrect ';
+                return false;
+            } else {
+                            $binds = [$username];
+                $sql = "	UPDATE users
+                            SET last_login = NOW()
+                            WHERE user_id = ?";
+                $r = DB::query($sql, $binds);
+                
+                if(DB::error()){
+                    $feedback .= DB::error();
+                }
+                self::user_set_tokens($username);
+                $feedback .=  'You Are Now Logged In ';
+                self::$LOGGED_IN = true;
+                return true;
+            }
+        }
+    }
+
+    static function loggedIn(){
 	global $feedback;
-	
-	if (!$username || !$password){
-		$feedback .=  ' ERROR - Missing user name or password ';
-		return false;
-	} else {
-                $binds = [$username,$password];
-		$sql= "	SELECT count(*) user_count
-			FROM users
-			WHERE username = ?
-			AND password = ?
-			AND active = 1";
-		$result = DB::query($sql, $binds);
-		if(DB::error()){
-			global $feedback;
-			$feedback .= DB::error()."<br>";
-			$feedback .= $sql."<br>";
-		}
-                $r = DB::fetch_array($result);
-		if (!$result || $r['user_count'] < 1){
-			$feedback .=  ' ERROR - User not found or password incorrect ';
-			return false;
-		} else {
-                         $binds = [$username];
-			$sql = "	UPDATE users
-				SET last_login = NOW()
-                                 WHERE user_id = ?";
-			$r = DB::query($sql, $binds);
-			
-			if(DB::error()){
-			  $feedback .= DB::error();
-			}
-			user_set_tokens($username);
-			$feedback .=  'You Are Now Logged In ';
-			define('LOGGED_IN', true);
-			return true;
-		}
-	}
-
-}
-
-function logged_in(){
-	global $feedback;
-	
-	if (isset($_COOKIE[COOKIE_HASH])){
-                $binds = [$_COOKIE[COOKIE_USERNAME], $_COOKIE[COOKIE_HASH]];
-		$sql= "	SELECT *
+	if(self::$LOGGED_IN){
+            return true;
+        }
+        
+        if (isset($_COOKIE[self::COOKIE_USERNAME]) && isset($_COOKIE[self::COOKIE_HASH])){
+            //Find auth hash
+            $binds = [$_COOKIE[self::COOKIE_USERNAME], $_COOKIE[self::COOKIE_HASH]];
+            $sql= "	SELECT *
 				FROM users
 				WHERE username = ?
 				AND hash = ?
 				AND hash_expires > NOW()
 				AND active = 1";
-		$result=DB::query($sql);
+		$result = DB::query($sql);
 		if (!isset($result) || $result->num_rows < 1){
-			return false;
+                    self::logout();
+                    return false;
 		} else {
-			return true;
+                    self::$LOGGED_IN = true;
+                    return true;
 		}
-	}else{
-		return false;
 	}
-}
-
-function getHash($username){
-    return md5($username . time() . PRIVATE_KEY);
-}
-
-function logout(){	
-    $expires = time() + PHP_COOKIE_LENGTH;
-	
-    if(setcookie(COOKIE_USERNAME,'',$expires,App::getAppRoot(),'',0) && setcookie(COOKIE_HASH,'',$expires,App::getAppRoot(),'',0)){
-	define('LOGGED_IN', false);
-	return true;
-    }else{
-        echo "error";
-	return false;
+        return false;
     }
-}
 
-function user_set_tokens($username){
-    if (!$username){
-	$feedback .=  ' ERROR - User Name Missing When Setting Tokens ';
-	return false;
+    static function getHash($username){
+        return md5($username . time() . self::PRIVATE_KEY);
     }
-    $username=strtolower($username);
-    $id_hash= getHash($username);
+
+    static function logout(){	
+        $expires = time() + self::PHP_COOKIE_LENGTH;
 	
-    $expires = time()+PHP_COOKIE_LENGTH;
-    setcookie(COOKIE_USERNAME,$username, $expires, App::getHttpRoot(), '', 0);
-    setcookie(COOKIE_HASH, $id_hash, $expires, App::getHttpRoot(), '', 0);
-    $binds = [$id_hash, $username];
-    $sql = "	UPDATE users
+        if(setcookie(self::COOKIE_USERNAME, '', $expires, App::getAppRoot(), '', 0) && setcookie(self::COOKIE_HASH, '', $expires, App::getAppRoot(), '', 0)){
+            self::$LOGGED_IN = false;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    static function user_set_tokens($username){
+        if (!$username){
+            $feedback .=  ' ERROR - User Name Missing When Setting Tokens ';
+            return false;
+        }
+        $username = strtolower($username);
+        $id_hash = self::getHash($username);
+	
+        $expires = time()+self::PHP_COOKIE_LENGTH;
+        setcookie(self::COOKIE_USERNAME, $username, $expires, App::getHttpRoot(), '', 0);
+        setcookie(self::COOKIE_HASH, $id_hash, $expires, App::getHttpRoot(), '', 0);
+        $binds = [$id_hash, $username];
+        $sql = "	UPDATE users
 		SET hash = ?,
 		hash_expires = ADDDATE(NOW(),
-		".MYSQL_COOKIE_LENGTH.")
+		".self::MYSQL_COOKIE_LENGTH.")
 		WHERE username = ?";
-    DB::query($sql, $binds);	
-}
+        DB::query($sql, $binds);	
+    }
 
-function get_user_ID(){
-    $binds = [$_COOKIE[COOKIE_USERNAME]];
-    $sql = "	SELECT *
+    static function get_user_ID(){
+        $binds = [$_COOKIE[self::COOKIE_USERNAME]];
+        $sql = "	SELECT *
 		FROM users
 		WHERE username = ?";
-    $result = DB::query($sql, $binds);
-    if(DB::error()){
-	global $feedback;
-	$feedback .= DB::error()."<br>";
-	$feedback .= $sql;
+        $result = DB::query($sql, $binds);
+        if(DB::error()){
+            global $feedback;
+            $feedback .= DB::error()."<br>";
+            $feedback .= $sql;
+        }
+
+        if ($result && DB::numrows($result) > 0){
+            return DB::result($result,0,'user_id');
+        } else {
+            return false;
+        }
     }
 
-    if ($result && DB::numrows($result) > 0){
-	return DB::result($result,0,'user_id');
-    } else {
-	return false;
+    static function user_getrealname(){
+        global $G_USER_RESULT;
+        //see if we have already fetched this user from the db, if not, fetch it
+        if (!$G_USER_RESULT){
+            $binds = [self::user_getname()];
+            $sql = "    SELECT *
+                        FROM users 
+                        WHERE username = ?";
+            $G_USER_RESULT = DB::query($sql, $binds);
+        }
+        if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){
+            return DB::result($G_USER_RESULT,0,'real_name');
+        } else {
+            return false;
+        }
     }
-}
 
-function user_getrealname(){
-    global $G_USER_RESULT;
-    //see if we have already fetched this user from the db, if not, fetch it
-    if (!$G_USER_RESULT){
-        $binds = [user_getname()];
-        $sql = "    SELECT *
-                    FROM users 
-                    WHERE username = ?";
-	$G_USER_RESULT = DB::query($sql, $binds);
-    }
-    if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){
-	return DB::result($G_USER_RESULT,0,'real_name');
-    } else {
-	return false;
-    }
-}
-
-//?
-function user_getemail(){
+    static function user_getemail(){
 	global $G_USER_RESULT;
 	//see if we have already fetched this user from the db, if not, fetch it
 	if (!$G_USER_RESULT){
@@ -201,33 +204,25 @@ function user_getemail(){
             $sql = "    SELECT *
                         FROM users 
                         WHERE username = ?";
-            $G_USER_RESULT=DB::query($sql, $binds);
+            $G_USER_RESULT = DB::query($sql, $binds);
 	}
 	if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){
-		return DB::result($G_USER_RESULT,0,'email');
+            return DB::result($G_USER_RESULT,0,'email');
 	} else {
-		return false;
+            return false;
 	}
-}
+    }
 
-function getUserName(){
-    if (logged_in($_COOKIE[COOKIE_USERNAME], $_COOKIE[COOKIE_HASH])){
-	return $_COOKIE[COOKIE_USERNAME];
-    } else {
-	//look up the user some day when we need it
-	return ' ERROR - Not Logged In ';
+    static function getUserName(){
+        if (Auth::loggedIn($_COOKIE[self::COOKIE_USERNAME], $_COOKIE[self::COOKIE_HASH])){
+            return $_COOKIE[self::COOKIE_USERNAME];
+        } else {
+            //look up the user some day when we need it
+            return ' ERROR - Not Logged In ';
+        }
+    }
+
+    static function debug($s){
+        echo $s."<br>";
     }
 }
-
-function set_cookie(){
-    session_start();
-    $expires = time() + PHP_COOKIE_LENGTH;
-    $new_cookie = session_id();
-    setcookie(COOKIE_NAME, $new_cookie, $expires, App::getHttpRoot(),'',0);
-    $_COOKIE[COOKIE_NAME] = $new_cookie;
-}
-
-function debug($s){
-    echo $s."<br>";
-}
-?>

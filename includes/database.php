@@ -55,8 +55,6 @@ function &db_get_parent(&$table_obj, $column){
 	if(DB::num_rows($r)>0){
 		$row = DB::fetch_assoc($r);
 		
-		//echo "table:".$table_obj->get_name()."<br>column:".$column."<br>referenced column:".$row['REFERENCED_COLUMN_NAME']."<br><br>";
-		//print_r($row);
 		$t = new table($row['REFERENCED_TABLE_NAME'], true);
 		$new_col = new column($t, $row['REFERENCED_COLUMN_NAME'], true);
 				

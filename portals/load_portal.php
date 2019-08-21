@@ -2,12 +2,11 @@
 require_once "../includes/app.php";
 require_once "../includes/portal.php";
 echo "
-	<script src='http://".HTTP_ROOT."/base.js'></script>
+	<script src='js/base.js'></script>
 	<script>
 		include('../sortable.js');
-		function row_clicked(id, pk, name)
-		{
-			window.location=\"http://".HTTP_ROOT."/?action=Edit&page=\"+name+\"&\"+pk+\"=\"+id;
+		function row_clicked(id, pk, name){
+			window.location=\"?action=Edit&page=\"+name+\"&\"+pk+\"=\"+id;
 		}
 	</script>";
 	$q = new portal();

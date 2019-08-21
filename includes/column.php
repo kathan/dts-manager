@@ -1,7 +1,6 @@
 <?php
 require_once("select_input.php");
-class column
-{
+class column{
 	var $name;
 	var $length;
 	var $type;

@@ -1,9 +1,8 @@
 <?php
 require_once"app.php";
 echo "<script>
-		function row_clicked(id, pk, name)
-		{
-			window.location=\"http://".HTTP_ROOT."/?action=Edit&page=\"+name+\"&\"+pk+\"=\"+id;
+		function row_clicked(id, pk, name){
+			window.location=\"?action=Edit&page=\"+name+\"&\"+pk+\"=\"+id;
 		}
 	</script>";
 	$q = new query("	SELECT 	load_id,

@@ -88,7 +88,7 @@ class load_table extends dts_table{
 	
 	function render(){
 		$code = '';
-		if(logged_in()){
+		if(Auth::loggedIn()){
 		  
 			if(isset($_REQUEST[$this->portal])){
 				switch(safe_get($_REQUEST[$this->portal])){
@@ -376,7 +376,7 @@ class load_table extends dts_table{
                             CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
 
 		
-		if(logged_in_as('admin')){
+		if(Auth::loggedInAs('admin')){
 			$sql .= " ,CONCAT(	'<a href=\"#\" onclick=\"delete_carrier(',
 							c.carrier_id,
 							')\">$this->delete_icon</a>') `delete`";
@@ -395,7 +395,7 @@ class load_table extends dts_table{
 		$c .= "<th>Phone<br>Fax</td>\n";
 		$c .= "<th>Booked With</td>\n";
 		$c .= "<th>Rate Confirmation</td>\n";
-		if(logged_in_as('admin')){
+		if(Auth::loggedInAs('admin')){
 			$c .= "<th>Delete</td>\n";
 		}
 		$c .= "</tr><tr>";
@@ -404,7 +404,7 @@ class load_table extends dts_table{
 		$c .= "<td class='faux_edit'>$r[phone_fax]</td>\n";
 		$c .= "<td class='faux_edit'>$r[booked_with]</td>\n";
 		$c .= "<td class=''>$r[rate_conf_button]</td>\n";
-		if(logged_in_as('admin')){
+		if(Auth::loggedInAs('admin')){
 			$c .= "<td class='border'>$r[delete]</td>\n";
 		}
 		$c .= "</tr></table>\n";
@@ -450,7 +450,7 @@ class load_table extends dts_table{
 		$t->error_reporting = E_ALL & ~E_NOTICE;
 		$t->assign('lw', DB::to_array($this->fetch_warehouses()));
 		$t->assign('times', $this->times);
-		$t->assign('admin', logged_in_as('admin'));
+		$t->assign('admin', Auth::loggedInAs('admin'));
 		return $t->fetch(App::getTempDir().'load_warehouse_mod.tpl');
 	}
 	
@@ -861,7 +861,7 @@ class load_table extends dts_table{
 			}
 			
 		}
-		if(!logged_in_as('admin') && !logged_in_as('super admin')){
+		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
 			$where .= " $clause acct_owner = ".get_user_id();
 			$clause = 'AND';
 		}
@@ -1111,7 +1111,7 @@ class load_table extends dts_table{
 				.load_content, .content{background-color:#EEEEEE}");
 		}
 		$auth_edit=false;
-		if(!$this->been_delivered() && (logged_in_as('admin') || get_user_id() === $r['order_by'] || get_user_id() === $r['acct_owner'])){
+		if(!$this->been_delivered() && (Auth::loggedInAs('admin') || get_user_id() === $r['order_by'] || get_user_id() === $r['acct_owner'])){
 			$auth_edit=true;
 		}
 		$c .= $this->popup_script();
@@ -1132,7 +1132,7 @@ class load_table extends dts_table{
 				<table width='100%' border=0>
 					<tr>
 						<td>Order By:</td>";
-		if(logged_in_as('admin')){
+		if(Auth::loggedInAs('admin')){
 			$col = $this->get_column('order_by');
 			$col->set_value_list($this->get_users());
 			$c .= "				<td>".$this->fetch_edit('order_by', $r['order_by'])."</td>";
@@ -1232,7 +1232,7 @@ class load_table extends dts_table{
 				<tr>
 				<td colspan=3 class='bottom_pad'>";
 		//==== Customer ====
-		if(logged_in_as('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']){
+		if(Auth::loggedInAs('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']){
 		$c .= "
 		<fieldset>
 				<legend>";
@@ -1333,7 +1333,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
-		if(!$this->been_delivered() || logged_in_as('admin')){
+		if(!$this->been_delivered() || Auth::loggedInAs('admin')){
 			$c .= "<a href='#' onclick=\"javascript:popUp('?page=$this->page&action=$this->edit_str&module=$this->money_str&load_id=$this->load_id&".SMALL_VIEW."',0,1064,240);return false;\">Money</a>";
 		}else{
 			$c .= 'Money';
@@ -1545,7 +1545,7 @@ class load_table extends dts_table{
 		$c .= '<tr><td>Weigth</td><td>'.$this->fetch_new('weight').'</td></tr>';
 		$c .= '<tr><td>Class</td><td>'.$this->fetch_new('class').'</td></tr>';
 		$c .= '<tr><td>Carrier</td><td>'.$this->fetch_new('carrier_id').'</td></tr>';
-		$c .= '<tr><td>Order By</td><td>'.$this->fetch_new('order_by', safe_get(get_user_id($_REQUEST[COOKIE_USERNAME]))).'</td></tr>';
+		$c .= '<tr><td>Order By</td><td>'.$this->fetch_new('order_by', safe_get(get_user_id($_REQUEST[Auth::COOKIE_USERNAME]))).'</td></tr>';
 		if(isset($_REQUEST[SMALL_VIEW])){
 			$c .= '<tr><td><input type="button" onclick="submit_close()" value="$this->add_str"></td></tr>';
 			$c .= '<tr><td><input type="button" onclick="cancel_close()" value="$this->cancel_str"></td></tr>';
@@ -1743,7 +1743,7 @@ class load_table extends dts_table{
 		
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		if(logged_in_as('admin')){
+		if(Auth::loggedInAs('admin')){
 			$t->assign('admin', true);
 			$t->assign('daily_profit', $this->get_daily_profit($db_date, $_GET));
 		}

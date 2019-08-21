@@ -33,9 +33,6 @@ class lane //extends dts_table
 		return $t->fetch(App::getTempDir().'lane_search_form.tpl');
 	}
 	function get_search_edit_old(){
-	
-		
-		//require_once('includes/date_input.php');
 		$f = new html_form();
 		$f->set_get();
 		$i0 = new hidden_input('page', 'lanes');

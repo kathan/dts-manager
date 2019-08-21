@@ -27,9 +27,9 @@ class DB_Editor extends DB_Table{
 	var $list_sql;
 	var $edit_template;
 	
-	function DB_Editor($table=null){
+	function __construct($table=null){
 		//Version::add(__FILE__, .1);
-		$this->DB_Table($table);
+		self::__construct($table);
 	}
 	
 	function set_list_columns($cols){

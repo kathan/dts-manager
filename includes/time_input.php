@@ -1,23 +1,18 @@
 <?php
 
 require_once("html_input.php");
-class time_input extends text_input
-{
-	function time_input($name, $value="")
-	{
-		$this->text_input($name, $value);
+class time_input extends text_input{
+	function __construct($name, $value=""){
+		parent::__construct($name, $value);
 	}
 	
-	function render()
-	{
-		if($this->id == '')
-		{
+	function render(){
+		if($this->id == ''){
 			$this->id = $this->name;
 		}
 		$code = "<INPUT TYPE=\"$this->type\" id=\"$this->id\" name=\"$this->name\" value=\"".htmlentities($this->value)."\" SIZE=10  readOnly=true datechange=\"function(y,m,d){db_save(this.id, this.value);};\"";
 		$keys = array_keys($this->custom_attributes);
-		foreach($keys as $name)
-		{
+		foreach($keys as $name){
 			$code .= " $name=\"".$this->custom_attributes[$name]."\"";
 		}
 		$code .= ">

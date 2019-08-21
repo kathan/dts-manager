@@ -129,7 +129,7 @@ class warehouse_table extends dts_table{
 					break;
 				case $this->print:
 					
-						if(logged_in_as('admin')){
+						if(Auth::loggedInAs('admin')){
 							$code .= $this->show_warehouse_print($this->get_search_results());
 						}else{
 							$code .= "No access.";
@@ -163,7 +163,7 @@ class warehouse_table extends dts_table{
 		$p = new Paginator($warehouse, $start);
 		$t->assign('pag', $p->get());
 		$t->assign('warehouse', $p->to_array($warehouse));
-		$t->assign('admin', logged_in_as('admin'));
+		$t->assign('admin', Auth::loggedInAs('admin'));
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'warehouse_list.tpl');
 		return $c;

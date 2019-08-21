@@ -95,7 +95,7 @@ function check_user_form(){
 
 function save_user(){
 	global $feedback;
-	if (logged_in_as('super admin') || logged_in_as($_COOKIE[COOKIE_USERNAME])){
+	if (Auth::loggedInAs('super admin') || Auth::loggedInAs($_COOKIE[Auth::COOKIE_USERNAME])){
 		$t = new DB_Table('users');
 		if(isset($_REQUEST['user_id'])){
 			
@@ -139,7 +139,7 @@ function save_user(){
 
 function add_groups($user_id, $group_ids){
 	global $feedback;
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		foreach($group_ids as $group_id){
 			$sql = "	INSERT INTO user_group(user_id, group_id) 
 						VALUES($user_id, $group_id)";
@@ -161,7 +161,7 @@ function add_groups($user_id, $group_ids){
 
 function add_contacts($user_id, $contact_list_ids){
 	global $feedback;
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		foreach($contact_list_ids as $contact_list_id){
 			$sql = "	INSERT INTO user_contact_list(user_id, contact_list_id)
 						VALUES($user_id, $contact_list_id)";
@@ -183,7 +183,7 @@ function add_contacts($user_id, $contact_list_ids){
 
 function remove_groups($user_id, $group_ids){
 	global $feedback;
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		foreach($group_ids as $group_id){
 			$sql = "	DELETE FROM user_group
 						WHERE user_id = $user_id
@@ -206,7 +206,7 @@ function remove_groups($user_id, $group_ids){
 
 function remove_contacts($user_id, $contact_list_ids){
 	global $feedback;
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		foreach($contact_list_ids as $contact_list_id){
 			$sql = "	DELETE FROM user_contact_list
 							WHERE user_id = $user_id
@@ -228,7 +228,7 @@ function remove_contacts($user_id, $contact_list_ids){
 function add_regions($user_id, $region_list_ids){
 	global $feedback;
 	
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		$t = new DB_Table('user_region_list');
 		foreach($region_list_ids as $region_list_id){
 			if(!$t->insert(Array('user_id'=>$user_id, 'region_list_id'=>$region_list_id))){
@@ -246,7 +246,7 @@ function add_regions($user_id, $region_list_ids){
 function remove_regions($user_id, $region_list_ids){
 	global $feedback;
 	
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		$t = new DB_Table('user_region_list');
 		foreach($region_list_ids as $region_list_id){
 			if(!$t->delete(Array('user_id'=>$user_id, 'region_list_id'=>$region_list_id))){
@@ -290,8 +290,8 @@ function edit_user($user=null){
 	global $feedback;
 	$GLOBALS['page_title'] = 'Edit User';
 	$t = new Template();
-	$t->assign('admin', logged_in_as('super admin'));
-	if (get_user_id() == safe_get($_GET['user_id']) || logged_in_as('super admin')){
+	$t->assign('admin', Auth::loggedInAs('super admin'));
+	if (get_user_id() == safe_get($_GET['user_id']) || Auth::loggedInAs('super admin')){
 		if(isset($user)){
 			if(isset($user['user_id'])){
 				$t->assign('group_form', $this->group_form($user['user_id']));
@@ -312,7 +312,7 @@ function edit_user($user=null){
 
 function region_form($user_id){
 	global $feedback;
-	if (logged_in_as('super admin')){		
+	if (Auth::loggedInAs('super admin')){		
 		//Regions sub-form
 		
 		$t = new Template();
@@ -356,7 +356,7 @@ function region_form($user_id){
 
 function contact_form($user_id){
 	global $feedback;
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		$t = new Template();
 		$t->assign('user_id', $user_id);
 		$sql = "	SELECT *
@@ -399,7 +399,7 @@ function contact_form($user_id){
 function group_form($user_id){
 	global $feedback;
 	$content ='';
-	if (logged_in_as('super admin')){
+	if (Auth::loggedInAs('super admin')){
 		$t = new Template();
 		$t->assign('user_id', $user_id);
 		//Groups sub-form
@@ -441,7 +441,7 @@ function group_form($user_id){
 function show_list(){
 	global $feedback;
 	$t = new Template();
-	$super_admin = logged_in_as('super admin');
+	$super_admin = Auth::loggedInAs('super admin');
 	$t->assign('super_admin', $super_admin);
 	$sql = "SELECT	u.*,
 							IF(u.active, 'Yes', 'No') active,

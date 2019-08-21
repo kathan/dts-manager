@@ -6,26 +6,26 @@ require_once('includes/global.php');
 require_once('includes/auth.php');
 require_once"includes/dts_table.php";
 
-if(logged_in()){
+if(Auth::loggedIn()){
     $t = new dts_table($_REQUEST['table']);
     switch(get_action()){
 	case $t->update:
-            echo $t->update();
-            break;
+        echo $t->update();
+        break;
 	case $t->delete:
-            echo $t->delete();
-            break;
+        echo $t->delete();
+        break;
 	default:
-            if($_REQUEST['table'] == 'load_carrier'){
-		set_post('booked_with', get_user_id());
-            }
-            echo $t->add();
+        if($_REQUEST['table'] == 'load_carrier'){
+		    set_post('booked_with', get_user_id());
+        }
+        echo $t->add();
             break;
     }
     logError($t->sql, "db_save.php");
     if($t->error_str){
-	echo $t->error_str;
-	logError($t->error_str."\n".$t->sql, "db_save.php");
+	    echo $t->error_str;
+	    logError($t->error_str."\n".$t->sql, "db_save.php");
     }
 }
 

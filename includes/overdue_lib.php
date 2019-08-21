@@ -1,7 +1,6 @@
 <?php
 require_once('auth.php');
-function get_overdue()
-{
+function get_overdue(){
 	$sql = "SELECT load_id
 				, activity_date
 				,(select activity_date from `load` where load_id = lw.load_id) load_date
@@ -37,26 +36,24 @@ function get_overdue()
 			AND load_id in (SELECT load_id 
 							FROM `load`
 							WHERE (cancelled !=1 or cancelled is null)
-							AND (order_by = ".get_user_id()."
+							AND (order_by = ?
 								OR customer_id in (SELECT customer_id
 													FROM customer
-													WHERE acct_owner = ".get_user_id().") 
+													WHERE acct_owner = ?) 
 								)
 							)";
+	$binds = [get_user_id(), get_user_id()];
 	
-	//echo $sql;
-	$re = DB::query($sql);
+	$re = DB::query($sql, $binds);
 	echo DB::error();
 	$ary=[];
-	while($r = DB::fetch_assoc($re))
-	{
+	while($r = DB::fetch_assoc($re)){
 		$ary[]=$r;
 	}
 	return $ary;
 }
 
-function get_approaching()
-{
+function get_approaching(){
 	$sql = "SELECT load_id
 				, activity_date
 				,(select activity_date from `load` where load_id = lw.load_id) load_date
@@ -92,20 +89,20 @@ function get_approaching()
 			AND (complete != 1 or complete is null)
 			AND load_id in (SELECT load_id 
 							FROM `load`
-							WHERE (cancelled !=1 or cancelled is null)
-							AND (order_by = ".get_user_id()."
+							WHERE (cancelled != 1 or cancelled is null)
+							AND (order_by = ?
 								OR customer_id in (SELECT customer_id
 													FROM customer
-													WHERE acct_owner = ".get_user_id().") 
+													WHERE acct_owner = ?) 
 								)
 							)";
 	
-	//echo $sql;
-	$re = DB::query($sql);
+	$binds = [get_user_id(), get_user_id()];
+
+	$re = DB::query($sql, $binds);
 	echo DB::error();
 	$ary=[];
-	while($r = DB::fetch_assoc($re))
-	{
+	while($r = DB::fetch_assoc($re)){
 		$ary[]=$r;
 	}
 	return $ary;

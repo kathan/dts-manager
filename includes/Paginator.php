@@ -1,6 +1,5 @@
 <?php
-class Paginator
-{
+class Paginator{
 	var $start;//
 	var $next_start;//
 	var $next_count;
@@ -11,13 +10,11 @@ class Paginator
 	var $prev_count;
 	var $prev_start;
 	
-	function Paginator($result, $start=1, $limit=20)
-	{
+	function __construct($result, $start=1, $limit=20){
 		$this->db_result = $result;
 		$this->total = DB::num_rows($this->db_result);
 		$this->limit = $limit;
-		if($this->total == 0)
-		{
+		if($this->total == 0){
 			$this->start = 0;
 		}elseif($start == 0){
 			$this->start = 1;
@@ -25,10 +22,8 @@ class Paginator
 			$this->start = $start;
 		}
 		$this->next_start = $this->start + $this->limit;
-		//($this->start + $this->limit) > $this->total ? $this->next_start = 1 : $this->next_start = $this->start + $this->limit;
 		($this->start + $this->limit) > $this->total ? $this->end = $this->total: $this->end = $this->start + $this->limit - 1;
-		if($this->next_start == null)
-		{
+		if($this->next_start == null){
 			$this->next_count = null;
 		}else{
 			($this->next_start + $this->limit) > $this->total ? $this->next_count = $this->total - $this->end : $this->next_count = $this->limit;
@@ -38,8 +33,7 @@ class Paginator
 		$this->prev_count = $this->limit;
 	}
 	
-	function get()
-	{
+	function get(){
 		$a = [];
 		$a['start'] = $this->start;
 		$a['next_start'] = $this->next_start;
@@ -52,21 +46,17 @@ class Paginator
 		$a['total'] = $this->total;
 		$a['limit'] = $this->limit;
 		$pages = floor($this->total / $this->limit);
-		//($this->total / $this->limit) == round($this->total / $this->limit) * $this->limit ? $pages = round($this->total / $this->limit) - 1 : $pages = round($this->total / $this->limit);
 		$a['last_page_start'] = ($pages * $this->limit) +1;
 		return $a;
 	}
 	
 	
-	function to_array($re)
-	{
+	function to_array($re){
 		DB::data_seek($re, $this->start-1);
 		$ary = [];
 		$i = 0;
-		while($row = DB::fetch_assoc($re))
-		{
-			if($i >= $this->limit)
-			{
+		while($row = DB::fetch_assoc($re)){
+			if($i >= $this->limit){
 				break;
 			}
 			$ary[] = $row;

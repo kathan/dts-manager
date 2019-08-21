@@ -19,8 +19,7 @@ class select_input extends html_input{
 		$code = "
 			<select name=\"$this->name\" id=\"$this->id\" ";
 		$keys = array_keys($this->custom_attributes);
-		foreach($keys as $name)
-		{
+		foreach($keys as $name){
 			$code .= " $name='".$this->custom_attributes[$name]."'";
 		}
 		$code .= ">
@@ -51,7 +50,7 @@ class select_input extends html_input{
 		}elseif(is_array($this->options)){
 			$keys = array_keys($this->options);
 			foreach($keys as $key){
-				if($key == $this->selected)	{
+				if($key == $this->selected){
 					$code .= "
 					<option value=\"$key\" selected>".$this->options[$key]."</option>";
 				}else{

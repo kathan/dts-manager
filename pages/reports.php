@@ -6,7 +6,7 @@ require_once('includes/auth.php');
 require_once('includes/DB.php');
 require_once('includes/view.php');
 
-if(logged_in_as('super admin')){
+if(Auth::loggedInAs('super admin')){
 	echo "<title>DTS-Monthly Report</title>";
 	
 	echo month_report_form();

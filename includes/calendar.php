@@ -1,10 +1,7 @@
 <?php
 
 require_once "includes/global.php";
-//$c = new calendar();
-//echo $c->render();
-class calendar
-{
+class calendar{
 	var $year;
 	var $month;
 	var $day;
@@ -17,8 +14,7 @@ class calendar
 	var $attribs = [];
 	var $months = array("", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec");
 	var $days = array("", "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
-	function __construct($year=null, $month=null, $day=null)
-	{
+	function __construct($year=null, $month=null, $day=null){
 		$this->set_year($year);
 		$this->set_month($month);
 		$this->set_day($day);
@@ -26,36 +22,29 @@ class calendar
 		$this->set_next_date();
 	}
 	
-	function add_attrib($key, $value)
-	{
+	function add_attrib($key, $value){
 		$this->attribs[$key] = $value;
 	}
 	
-	function get_link_attribs()
-	{
+	function get_link_attribs(){
 		$keys = array_keys($this->attribs);
-		foreach($keys as $key)
-		{
+		foreach($keys as $key){
 			$code .= "&$key=".$this->attribs[$key];
 		}
 		return $code;
 	}
 	
-	function get_form_attribs()
-	{
+	function get_form_attribs(){
 		$keys = array_keys($this->attribs);
 		$code='';
-		foreach($keys as $key)
-		{
+		foreach($keys as $key){
 			$code .= "<input type='hidden' name='$key' value='".$this->attribs[$key]."'>";
 		}
 		return $code;
 	}
 	
-	function set_prev_date()
-	{
-		if($this->month == 1)
-		{
+	function set_prev_date(){
+		if($this->month == 1){
 			$this->prev_month = 12;
 			$this->prev_year = $this->year - 1;
 		}else{
@@ -67,15 +56,12 @@ class calendar
 		$this->prev_day = date("d", $prev_date);
 	}
 	
-	function get_date_str($delimiter=' ')
-	{
+	function get_date_str($delimiter=' '){
 		return $this->day . $delimiter . $this->month . $delimiter . $this->year;
 	}
 	
-	function set_next_date()
-	{
-		if($this->month == 12)
-		{
+	function set_next_date(){
+		if($this->month == 12){
 			$this->next_month = 1;
 			$this->next_year = $this->year+1;
 		}else{
@@ -87,28 +73,22 @@ class calendar
 		$this->next_day = date("d", $next_date);
 	}
 	
-	function set_day($day=null)
-	{
-		if(isset($day))
-		{
+	function set_day($day=null){
+		if(isset($day)){
 			$this->day = $_REQUEST['day'];
 		}
-		elseif(isset($_REQUEST['day']))
-		{
+		elseif(isset($_REQUEST['day'])){
 			$this->day = $_REQUEST['day'];
 		}else{
 			$this->day = date("j");
 		}
 	}
 	
-	function set_month($month=null)
-	{
-		if(isset($month))
-		{
+	function set_month($month=null){
+		if(isset($month)){
 			$this->month = $month;
 		}
-		elseif(isset($_REQUEST['month']))
-		{
+		elseif(isset($_REQUEST['month'])){
 			$this->month = $_REQUEST['month'];
 		}else{
 			$this->month = date("n");
@@ -117,34 +97,28 @@ class calendar
 		
 	}
 	
-	function set_year($year=null)
-	{
-		if(isset($year))
-		{
+	function set_year($year=null){
+		if(isset($year)){
 			$this->year = $year;
 		}
-		elseif(isset($_REQUEST['year']))
-		{
+		elseif(isset($_REQUEST['year'])){
 			$this->year = $_REQUEST['year'];
 		}else{
 			$this->year = date("Y");
 		}
 	}
 	
-	function get_days_in_month()
-	{
+	function get_days_in_month(){
 		$first_day = $this->get_first_day();
 		
 		return date("t", $first_day);
 	}
 	
-	function get_first_day()
-	{
+	function get_first_day(){
 		$first_day_str = "1 " . $this->months[intval($this->month)] . " $this->year";
 		return strtotime($first_day_str);
 	}
-	function get_navigator()
-	{
+	function get_navigator(){
 		$code = $this->months[intval($this->month)]." $this->day, $this->year<br>
 	        				Jump To:
 								<form method=get action='$_SERVER[SCRIPT_NAME]'>"
@@ -156,8 +130,7 @@ class calendar
 								</form>";
 		$code .= "
 					<script>
-						function set_days()
-						{
+						function set_days(){
 							var days_of_month   = Array( 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 							var days_of_month_LY = Array( 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
 							var year = document.getElementById('year');
@@ -166,8 +139,7 @@ class calendar
 							var cur_date = new Date()
 							cur_date.setMonth(month.value);
 							cur_date.setFullYear(year.value);
-							if (leap_year(year.value))
-							{
+							if (leap_year(year.value)){
 								days_of_month = days_of_month_LY;
 							}
 												
@@ -176,18 +148,15 @@ class calendar
 							//==== revove all options ====
 							var selected = day.selectedIndex+1;
 							//alert(selected);
-							while(day.options.length > 0)
-							{
+							while(day.options.length > 0){
 								day.remove(0);
 							}
 							
-							for(var i=1; i <= d_o_m;i++)
-							{
+							for(var i=1; i <= d_o_m;i++){
 								var new_opt = document.createElement('option');
 								new_opt.value = i;
 								new_opt.text = i;
-								if(i == selected)
-								{
+								if(i == selected){
 									new_opt.selected = true;
 								}
 								try
@@ -200,8 +169,7 @@ class calendar
 							//day.options = options;
 							
 						}
-						function leap_year(year)
-						{
+						function leap_year(year){
 							if ((year/4)   != Math.floor(year/4))   return false;
 							if ((year/100) != Math.floor(year/100)) return true;
 							if ((year/400) != Math.floor(year/400)) return false;
@@ -210,8 +178,7 @@ class calendar
 					</script>";
 		return $code;
 	}
-	function render($month=null, $year=null, $day=null)
-	{
+	function render($month=null, $year=null, $day=null){
 		$content =  "
 	        
 	        	<table class='calendar'>
@@ -232,8 +199,7 @@ class calendar
 		$days_in_month = $this->get_days_in_month();
 		
 	    //=====Days of the week=====
-		for($c = 1; $c <= 7; $c++)
-		{
+		for($c = 1; $c <= 7; $c++){
 			$content .= "
 						<th class='day_of_week'>
 	                		".$this->days[$c]."
@@ -243,14 +209,11 @@ class calendar
 		
 		$weeks_in_month = ceil(($days_in_month+($month_start-1))/7);
 		
-		for($r = 1; $r <= $weeks_in_month; $r++)
-		{
+		for($r = 1; $r <= $weeks_in_month; $r++){
 			$content .=  "
 						<tr>";
-			for($c = 1; $c <= 7; $c++)
-			{
-				if ($r == 1 && $c == $month_start)
-				{
+			for($c = 1; $c <= 7; $c++){
+				if ($r == 1 && $c == $month_start){
 					$day = 1;
 				}
 				
@@ -258,8 +221,7 @@ class calendar
 							<td>";
 				
 	
-				if ($day > 0 && $day <= $days_in_month)
-				{
+				if ($day > 0 && $day <= $days_in_month){
 						$content .=  "
 								<a href='http://$_SERVER[HTTP_HOST]$_SERVER[SCRIPT_NAME]?day=$day&month=$this->month&year=$this->year".$this->get_link_attribs()."'>
 								<div style='border:1px solid black' class='day' id='$day-$month-$year' onclick=\"day_selected('$day', '$month', '$year')\">
@@ -280,16 +242,13 @@ class calendar
 		return $content;
 	}
 	
-	function day_select()
-	{
+	function day_select(){
 		
 		
 		$code = "<select name='day' id='day'>";
 		
-		for($i=1; $i <= $this->get_days_in_month(); $i++)
-		{
-			if ($this->day == $i)
-			{
+		for($i=1; $i <= $this->get_days_in_month(); $i++){
+			if ($this->day == $i){
 				$code .="<option value='$i' selected>$i</option>";
 			}else{
 				$code .="<option value='$i'>$i</option>";
@@ -300,14 +259,11 @@ class calendar
 		return $code;
 	}
 	
-	function month_select()
-	{
+	function month_select(){
 		$code = "<select name='month' id='month' onchange='set_days();'>";
 		
-		for($i=1; $i <= count($this->months)-1; $i++)
-		{
-			if ($this->month == $i)
-			{
+		for($i=1; $i <= count($this->months)-1; $i++){
+			if ($this->month == $i){
 				$code .="<option value='$i' selected>".$this->months[$i]."</option>";
 			}else{
 				$code .="<option value='$i'>".$this->months[$i]."</option>";
@@ -317,20 +273,16 @@ class calendar
 		return $code;
 	}
 
-	function year_select()
-	{
+	function year_select(){
 		
 		$year_list = [];
-		for($y = $this->year - 2; $y <= $this->year + 2; $y++)
-		{
+		for($y = $this->year - 2; $y <= $this->year + 2; $y++){
 			$year_list[] = $y;
 		}
 	
 		$code = "<select name='year' id='year' onchange='set_days();'>";
-		foreach($year_list as $year)
-		{
-			if ($this->year == $year)
-			{
+		foreach($year_list as $year){
+			if ($this->year == $year){
 				$code .="<option value='$year' selected>$year</option>";
 			}else{
 				$code .="<option value=$year>$year</option>";

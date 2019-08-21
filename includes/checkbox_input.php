@@ -10,12 +10,10 @@ class checkbox_input extends html_input{
 		//$code = "<input type=\"checkbox\" name=\"$this->name\" id=\"$this->id\" value=\"\"";
 		$code = "<input type=\"checkbox\" name=\"$this->name\" id=\"$this->id\"";
 		$keys = array_keys($this->custom_attributes);
-		foreach($keys as $name)
-		{
+		foreach($keys as $name){
 			$code .= " $name='".addslashes($this->custom_attributes[$name])."'";
 		}
-		if (strval($this->value) == 1)
-		{
+		if (strval($this->value) == 1){
 			$code .= " checked";
 		}
 		$code .= ">";
