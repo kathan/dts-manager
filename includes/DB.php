@@ -29,15 +29,18 @@ class DB{
                 switch(gettype($val)){
                     case 'string':
                         $bind_ary[0] .= 's';
-                        $bind_ary[] = &$val;
+                        $lval = $val;
+                        $bind_ary[] = &$lval;
                         break;
                     case 'integer':
                         $bind_ary[0] .= 'i';
-                        $bind_ary[] = &$val;
+                        $lval = $val;
+                        $bind_ary[] = &$lval;
                         break;
                     case 'double':
                         $bind_ary[0] .= 'd';
-                        $bind_ary[] = &$val;
+                        $lval = $val;
+                        $bind_ary[] = &$lval;
                         break;
                 }
             }
