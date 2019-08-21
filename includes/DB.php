@@ -40,6 +40,7 @@ class DB{
                         break;
                 }
             }
+            var_dump($bind_ary);
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){
