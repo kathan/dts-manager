@@ -23,7 +23,6 @@ class DB{
         $stmt = self::$db->stmt_init();
         $stmt->prepare($sql);
 	if(isset($binds)){
-            var_dump($binds);
 
             foreach($binds as $val){
                 switch(gettype($val)){
@@ -44,7 +43,6 @@ class DB{
                         break;
                 }
             }
-            var_dump($bind_ary);
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){

@@ -76,7 +76,6 @@ function login($username, $password){
 			$feedback .= $sql."<br>";
 		}
                 $r = DB::fetch_array($result);
-                var_dump($r['user_count']);
 		if (!$result || $r['user_count'] < 1){
 			$feedback .=  ' ERROR - User not found or password incorrect ';
 			return false;
