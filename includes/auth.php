@@ -64,19 +64,19 @@ function login($username, $password){
 		return false;
 	} else {
                 $binds = [$username,$password];
-		$sql= "	SELECT *
+		$sql= "	SELECT count(*) user_count
 			FROM users
 			WHERE username = ?
 			AND password = ?
-			AND active = 1
-			LIMIT 1";
+			AND active = 1";
 		$result = DB::query($sql, $binds);
 		if(DB::error()){
 			global $feedback;
 			$feedback .= DB::error()."<br>";
 			$feedback .= $sql."<br>";
 		}
-		if (!$result || DB::num_rows($result) < 1){
+                $r = DB::fetch_array($result);
+		if (!$result || DB::num_rows($r['user_count']) < 1){
 			$feedback .=  ' ERROR - User not found or password incorrect ';
 			return false;
 		} else {
