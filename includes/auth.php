@@ -223,7 +223,7 @@ function set_cookie(){
     session_start();
     $expires = time() + PHP_COOKIE_LENGTH;
     $new_cookie = session_id();
-    setcookie(COOKIE_NAME, $new_cookie, $expires, App::getAppRoot(),'',0);
+    setcookie(COOKIE_NAME, $new_cookie, $expires, App::getHttpRoot(),'',0);
     $_COOKIE[COOKIE_NAME] = $new_cookie;
 }
 
