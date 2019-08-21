@@ -51,7 +51,6 @@ class App{
     public static function dbConnect(){
 	if(!isset(self::$db)){
             self::$db = DB::connect($_ENV['RDS_USERNAME'], $_ENV['RDS_PASSWORD'], $_ENV['RDS_DB_NAME'], $_ENV['RDS_HOSTNAME']);
-            echo "connected";
             if(self::$db){
                 if(self::$db->set_charset("utf8")){
                     echo self::$db->error;
