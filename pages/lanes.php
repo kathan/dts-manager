@@ -32,36 +32,7 @@ class lane //extends dts_table
 		$t->assign('form', $_REQUEST);
 		return $t->fetch(App::getTempDir().'lane_search_form.tpl');
 	}
-	function get_search_edit_old(){
-		$f = new html_form();
-		$f->set_get();
-		$i0 = new hidden_input('page', 'lanes');
-		$f->add_input($i0);
-		
-		$i1 = new date_input('start_activity_date');
-		$f->add_input($i1);
-		
-		$i1b = new date_input('end_activity_date');
-		$f->add_input($i1b);
-		
-		$i2 = new text_input('pickup_city');
-		$f->add_input($i2);
-		
-		$i3 = new text_input('pickup_state');
-		$f->add_input($i3);
-		
-		$i4 = new text_input('dest_city');
-		$f->add_input($i4);
-		
-		$i5 = new text_input('dest_state');
-		$f->add_input($i5);
-		
-		$i6 = new submit_input($this->search, $this->search);
-		$f->add_input($i6);
-		$c = '<center><h2>Lane Search</h2>';
-		$c .= $f->render();
-		return $c;
-	}
+	
 	function get_search_results(){
 		$c ='';
 		

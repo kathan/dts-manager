@@ -173,24 +173,6 @@ class customer_table extends dts_table{
 		return $p->render();
 	}
 	
-	function get_loads_old(){
-		if($this->customer_id>0){
-                    $binds = [$this->customer_id];
-			$p = new portal("   SELECT load_id,
-                                            DATE_FORMAT(l.activity_date,'$this->date_format') activity_date,
-                                            IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city, ', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'PICK' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') origin,
-                                            IFNULL((SELECT CONCAT(IF(cancelled,'<span style=\"background-color:$this->cancel_color\">',IF(rating='Expedited','<span style=\"background-color:$this->expedited_color\">','')),w.city,', ', w.state) FROM load_warehouse lw, warehouse w WHERE lw.load_id = l.load_id AND lw.type = 'DEST' AND w.warehouse_id = lw.warehouse_id limit 1), '$this->null_str') dest
-                                            FROM `load` l
-                                            WHERE l.customer_id = ?", $binds);
-			$p->hide_column('load_id');
-			$p->set_table('load');
-			$p->set_primary_key('load_id');
-		$p->set_row_action("\"row_clicked('\$id', '\$pk', '\$table')\";");
-		$c .= $p->render();
-		}
-		return $c;
-	}
-	
 	function get_loads(){
 	//Added 10/15/13
 		if($this->customer_id>0){

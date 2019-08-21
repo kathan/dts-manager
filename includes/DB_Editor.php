@@ -258,19 +258,9 @@ class DB_Editor extends DB_Table{
 			}
 		}
 	}
-	
 
-	function new_button_old(){
-		return "<button onclick=\"window.location='$_SERVER[SCRIPT_NAME]?action=$this->new_str&amp;".Request::recycle_get()."'\">New</button>";
-	}
-	
 	function new_button(){
-		
 		return "<a href=\"$_SERVER[SCRIPT_NAME]?action=$this->new_str&amp;".Request::recycle_get()."\">New</a>";
-	}
-	
-	function list_button_old(){
-		return "<button onclick=\"window.location='$_SERVER[SCRIPT_NAME]?".Request::recycle_get()."'\">List</button>";
 	}
 	
 	function list_button(){
@@ -286,7 +276,6 @@ class DB_Editor extends DB_Table{
 				$col_list .= "".$col->get_column_name()."";
 			}
 		}
-		//echo $col_list;
 		$sql = "SELECT $col_list FROM `".$this->get_name()."` ";
 		
 		$clause = 'WHERE';
@@ -298,7 +287,6 @@ class DB_Editor extends DB_Table{
 			$sql .= " $clause `".$pk->get_name()."` = ".$pk->format_for_where($_REQUEST[$pk->get_name()]);
 			$clause = 'AND';
 		}
-		//echo $sql;
 		$re = DB::query($sql);
 		
 		$this->row = DB::fetch_assoc($re);
@@ -340,15 +328,11 @@ class DB_Editor extends DB_Table{
 		
 		$t->assign('search', $_REQUEST[$this->search_str]);
 		
-		//echo $sql;
 		$list = DB::query($sql);
-		//print_r(DB::to_array($list));
 		$p = new Paginator($list, $start);
 		$t->assign('pag', $p->get());
-		//print_r($p->get());
 		$t->assign('list',  $p->to_array($list));
 
-		//$t->assign('total', mysql_affected_rows());
 		return $t->fetch($this->list_template);
 	}
 	
@@ -375,7 +359,6 @@ class DB_Editor extends DB_Table{
 			}
 			
 		}
-		//print_r($this->where);
 		foreach($this->where as $w){
 			$sql .= "$clause $w";
 			$clause = 'AND';
@@ -389,7 +372,6 @@ class DB_Editor extends DB_Table{
 			$sql .= $pk->get_name();
 			$i++;
 		}
-		//echo $sql;
 		return $sql;
 	}
 	
@@ -439,9 +421,6 @@ class DB_Editor extends DB_Table{
 			//=== Delete button ===
 			$del_str = DB_Table::$delete_str;
 			
-			/*$c .= <<<qq
-			<td><form id="del" method="post" action="">$q_input<input type="submit" name="action" value="$del_str" onclick="confirm_delete()"/></form></td>
-qq;*/
 			$c .= "<td>";
 			$c .= "
 					<form id=\"del_$r\" method=\"post\" >
@@ -536,11 +515,9 @@ qq;*/
 		
 		
 		foreach($cols as $col){
-			if(!in_array($col->get_name(), $this->no_access)) //
-			{
+			if(!in_array($col->get_name(), $this->no_access)){
 				
-				if(!$col->auto_inc && !in_array($col->get_name(), $this->no_edit))//
-				{
+				if(!$col->auto_inc && !in_array($col->get_name(), $this->no_edit)){
 					$c .= "
 				<tr>";
 					if(!$col->is_hidden()){
@@ -554,8 +531,7 @@ qq;*/
 				";
 					
 				}else{
-					//if(!in_array($col->get_name(), $this->no_edit))
-					//{
+					//if(!in_array($col->get_name(), $this->no_edit)){
 						$c .= "
 				<tr>";
 						

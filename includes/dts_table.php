@@ -74,109 +74,65 @@ class dts_table extends table{
 	$interval = 15;//minutes
 	$am_pm = 'AM';
 	
-	for($h = $start_time; $h <= $end_time; $h++)
-	{
-		for($m = 0; $m < 60; $m += $interval)
-		{
+	for($h = $start_time; $h <= $end_time; $h++){
+		for($m = 0; $m < 60; $m += $interval){
 			$time = date('g:i A', strtotime($h.':'.$m));
 			$this->times[$time] = $time;
 		}
 	}
 }
 
-//function generate_times_old(){
-//    $start_time = 0;
-//    $end_time = 24;
-//    $interval = 15;//minutes
-//    $am_pm = 'AM';
-//		
-//    for($h = $start_time; $h <= $end_time; $h++){
-//	for($m = 0; $m < 60; $m += $interval){
-//            if($h >= 12){
-//		$am_pm = 'PM';
-//            }
-//            if($h > 12){
-//		$time = ($h-12).":".str_pad($m, 2, '0')." $am_pm";
-//            }else{
-//		$time = "$h:".str_pad($m, 2, '0')." $am_pm";
-//            }
-//            $this->times[$time] = $time;
-//	}
-//    }
-//    $m=0;
-//    if($h >= 12){
-//	$am_pm = 'PM';
-//		}
-//		if($h > 12)
-//		{
-//			$time = ($h-12).":".str_pad($m, 2, '0')." $am_pm";
-//		}else{
-//			$time = "$h:".str_pad($m, 2, '0')." $am_pm";
-//		}
-//		$this->times[$time] = $time;
-//	}
-	function get_users()
-	{
+
+	function get_users(){
 		$sql = "SELECT user_id, IF(active = 1, username, concat(substr(first_name, 1, 1), substr(last_name, 1, 1))) username FROM users order by active desc";
 		$re = DB::query($sql);
 		$result = Array('');
-		while($r = DB::fetch_assoc($re))
-		{
+		while($r = DB::fetch_assoc($re)){
 			$result[$r['user_id']] = $r['username'];
 		}
 		return $result;
 	}
-	function nbsp($str)
-	{
+	function nbsp($str){
 		return str_replace(' ', '&nbsp;', $str);
 	}
 	
 	
-	function add_to_breadcrumb($name, $value=null)
-	{
-		if(isset($this->breadcrumb))
-		{
+	function add_to_breadcrumb($name, $value=null){
+		if(isset($this->breadcrumb)){
 			$this->breadcrumb .= "&";
 		}
 		$this->breadcrumb .= $name.'='.safe_get($value);
 	}
 	
-	function back_button()
-	{
-		if(isset($_SERVER['HTTP_REFERER']))
-		{
+	function back_button(){
+		if(isset($_SERVER['HTTP_REFERER'])){
 			return "</tr><tr><td><div class='menu' onclick='history.back();'>&lt;&lt;&nbsp;Back</div></td>";
 		}
 	}
 	
-	function get_tab_menu()
-	{
+	function get_tab_menu(){
 		return $this->tab_menu->render();
 	}
-	function db_script()
-	{
+	function db_script(){
 		return "<script src='db_save.js.php' type=\"text/javascript\"></script>";
 	}
-	function sortable_script()
-	{
+	function sortable_script(){
 		//return "<script src='sortable.js'></script>";
 	}
-	function check_size()
-	{
+	function check_size(){
 		return $this->script("window.onresize = resize;
 
-function resize()
-{
+function resize(){
   var myWidth = 0, myHeight = 0;
-  if( typeof( window.innerWidth ) == 'number' ) {
+  if( typeof( window.innerWidth ) == 'number' ){
     //Non-IE
     myWidth = window.innerWidth;
     myHeight = window.innerHeight;
-  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ){
     //IE 6+ in 'standards compliant mode'
     myWidth = document.documentElement.clientWidth;
     myHeight = document.documentElement.clientHeight;
-  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ){
     //IE 4 compatible
     myWidth = document.body.clientWidth;
     myHeight = document.body.clientHeight;
@@ -185,40 +141,32 @@ function resize()
   window.alert( 'Width = ' + myWidth + ' Height = ' + myHeight );
 }");
 	}
-	function popup_script()
-	{
+	function popup_script(){
 		return $this->script("			
-				function popUp(URL, id, width, height)
-				{
-					if(!width)
-					{
+				function popUp(URL, id, width, height){
+					if(!width){
 						width=600;
 					}
-					if(!height)
-					{
+					if(!height){
 						height = 600;
 					}
-					if(!id)
-					{
+					if(!id){
 						day = new Date();
 						id = day.getTime();
 					}
 					eval(\"page\" + id + \" = window.open(URL, '\" + id + \"', 'toolbar=0,location=0,statusbar=0,menubar=0,resizable=1,width=\"+width+\",height=\"+height+\",left = 0,top = 0');\");
 				}");
 	}
-	function portal_script()
-	{
+	function portal_script(){
 		return $this->script("
-			function get_portal(table, params)
-			{
+			function get_portal(table, params){
 				try
 				{
   				var d = document.getElementById(table+'_portal');
 				  d.innerHTML = 'Loading '+table;			
 					var url = '?page=$this->name&portal='+table+'&action=portal&".SMALL_VIEW."&'+params;
 					var portal = getFromURL(url);
-				}catch(e)
-				{
+				}catch(e){
 					alert('Error in get_portal:'+e.description + ' url:' + url);
 				}
 				d.innerHTML = '';
@@ -227,11 +175,9 @@ function resize()
 			}");
 			
 	}
-	function module_script()
-	{
+	function module_script(){
 		return $this->script("
-			function get_module(name, params)
-			{
+			function get_module(name, params){
 				var d = document.getElementById(name+'_module');
 				//alert(table+'1');
 				d.innerHTML = 'Loading '+name;
@@ -242,8 +188,7 @@ function resize()
 					//var url = '?page=$this->page&module='+name+'&action=module&".SMALL_VIEW."&'+params;
 				var module = getFromURL(url);
 				
-				}catch(e)
-					{
+				}catch(e){
 						alert('Error in module_script:'+e.description + ' url:' + url);
 					}
 					d.innerHTML = '';
@@ -252,10 +197,8 @@ function resize()
 			}");
 			
 	}
-	function get_user_name($user_id)
-	{
-		if(isset($user_id))
-		{
+	function get_user_name($user_id){
+		if(isset($user_id)){
 			$sql ="SELECT username FROM users WHERE user_id = $user_id";
 			$r = DB::query($sql);
 			$ro = DB::fetch_assoc($r);
@@ -265,15 +208,13 @@ function resize()
 		}
 	}
 	
-	function style($text)
-	{
+	function style($text){
 		return "<style type=\"text/css\">
 					$text
 				</style>";
 	}
 
-	function script($text)
-	{
+	function script($text){
 		return "<script type=\"text/javascript\">
 					$text
 				</script>";

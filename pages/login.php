@@ -21,7 +21,7 @@
             loginform();
         }
     }else{
-        if(!logged_In()){
+        if(!Auth::loggedIn()){
             echo loginForm();
 	}
     }
