@@ -80,8 +80,7 @@ function login($username, $password){
 			$feedback .=  ' ERROR - User not found or password incorrect ';
 			return false;
 		} else {
-			$user_id = DB::result($result,0,'user_id');
-                         $binds = [$user_id];
+                         $binds = [$username];
 			$sql = "	UPDATE users
 				SET last_login = NOW()
                                  WHERE user_id = ?";
