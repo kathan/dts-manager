@@ -20,26 +20,23 @@ class DB{
     public static function query($sql, $binds=null){
         $bind_ary = [];
         $bind_ary[0] = '';
-        $stmt = self::$db->prepare($sql);
+        $stmt = $mysqli->stmt_init();
+        $stmt->prepare($sql);
 	if(isset($binds)){
             
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
-                        $bind_ary[0] .= 's';
-                        $bind_ary[] = &$val;
+                        $stmt->bind_param("s", $val);
                         break;
                     case 'integer':
-                        $bind_ary[0] .= 'i';
-                        $bind_ary[] = &$val;
+                        $stmt->bind_param("i", $val);
                         break;
                     case 'double':
-                        $bind_ary[0] .= 'd';
-                        $bind_ary[] = &$val;
+                        $stmt->bind_param("d", $val);
                         break;
                 }
             }
-            call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){
             $result = $stmt->get_result();
