@@ -145,8 +145,8 @@ function user_set_tokens($username){
     $id_hash= getHash($username);
 	
     $expires = time()+PHP_COOKIE_LENGTH;
-    setcookie(COOKIE_USERNAME,$username, $expires, App::getAppRoot(), '', 0);
-    setcookie(COOKIE_HASH, $id_hash, $expires, App::getAppRoot(), '', 0);
+    setcookie(COOKIE_USERNAME,$username, $expires, App::getHttpRoot(), '', 0);
+    setcookie(COOKIE_HASH, $id_hash, $expires, App::getHttpRoot(), '', 0);
     $binds = [$id_hash, $username];
     $sql = "	UPDATE users
 		SET hash = ?,
