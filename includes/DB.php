@@ -18,12 +18,9 @@ class DB{
     }
 	
     public static function query($sql, $binds=null){
-        $bind_ary = [];
-        $bind_ary[0] = '';
-        $stmt = $mysqli->stmt_init();
+        $stmt = self::$db->stmt_init();
         $stmt->prepare($sql);
 	if(isset($binds)){
-            
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
