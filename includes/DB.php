@@ -44,9 +44,6 @@ class DB{
         }
         if($stmt->execute()){
             $result = $stmt->get_result();
-            var_dump($sql);
-            var_dump($binds);
-            var_dump($result);
             return $result;
         }else{
             return false;

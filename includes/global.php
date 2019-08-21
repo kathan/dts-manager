@@ -94,19 +94,21 @@ function MySQL_Date_To_format($mysqldate, $format){
 }
 	
 function logError($err, $function){
+    $binds = [$err, json_encode($_SERVER), $function, json_encode($_REQUEST)];
     $sql ="INSERT INTO errors(
                 error_string,
                 server_values,
                 function,
                 request_values)
             values(
-                '$err',
-		'".formToDB(array_to_string($_SERVER))."',
-		'$function',
-		'".formToDB(array_to_string($_REQUEST))."'
+                ?,
+		?,
+		?,
+		?
             )";
-    db_query($sql);
-    if( db_error()){
+    DB::query($sql, $binds);
+    if( DB::error()){
+        
     }
 }
 	
