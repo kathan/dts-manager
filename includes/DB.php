@@ -42,7 +42,11 @@ class DB{
             call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){
-            return $stmt->get_result();
+            $result = $stmt->get_result();
+            var_dump($sql);
+            var_dump($binds);
+            var_dump($result);
+            return $result;
         }else{
             return false;
         }
