@@ -18,22 +18,29 @@ class DB{
     }
 	
     public static function query($sql, $binds=null){
+        $bind_ary = [];
+        $bind_ary[0] = '';
         $stmt = self::$db->stmt_init();
         $stmt->prepare($sql);
 	if(isset($binds)){
+            
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
-                        $stmt->bind_param("s", $val);
+                        $bind_ary[0] .= 's';
+                        $bind_ary[] = &$val;
                         break;
                     case 'integer':
-                        $stmt->bind_param("i", $val);
+                        $bind_ary[0] .= 'i';
+                        $bind_ary[] = &$val;
                         break;
                     case 'double':
-                        $stmt->bind_param("d", $val);
+                        $bind_ary[0] .= 'd';
+                        $bind_ary[] = &$val;
                         break;
                 }
             }
+            call_user_func_array([$stmt, 'bind_param'], $bind_ary);
         }
         if($stmt->execute()){
             $result = $stmt->get_result();
