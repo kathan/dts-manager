@@ -1,15 +1,10 @@
 <?php
-    /*=================================
-    |
-    |
-    |
-    =================================*/
     require_once('includes/global.php');
     require_once('includes/auth.php');
     global $feedback;
 	
     if (isset($_POST['submit'])){
-        if (login($_POST['username'], $_POST['password'])){	
+        if (Auth::login($_POST['username'], $_POST['password'])){	
             /*=================================
             |When the user successfully logs in,
             |forward him to the loggedin.php page
