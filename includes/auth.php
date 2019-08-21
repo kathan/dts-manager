@@ -99,29 +99,29 @@ class Auth{
     }
 
     static function loggedIn(){
-	global $feedback;
-	if(self::$LOGGED_IN){
-            return true;
+        global $feedback;
+        if(self::$LOGGED_IN){
+                return true;
+            }
+            
+            if (isset($_COOKIE[self::COOKIE_USERNAME]) && isset($_COOKIE[self::COOKIE_HASH])){
+                //Find auth hash
+                $binds = [$_COOKIE[self::COOKIE_USERNAME], $_COOKIE[self::COOKIE_HASH]];
+                $sql= "	SELECT *
+                        FROM users
+                        WHERE username = ?
+                        AND hash = ?
+                        AND hash_expires > NOW()
+                        AND active = 1";
+            $result = DB::query($sql);
+            if (!isset($result) || $result->num_rows < 1){
+                self::logout();
+                return false;
+            } else {
+                self::$LOGGED_IN = true;
+                return true;
+            }
         }
-        
-        if (isset($_COOKIE[self::COOKIE_USERNAME]) && isset($_COOKIE[self::COOKIE_HASH])){
-            //Find auth hash
-            $binds = [$_COOKIE[self::COOKIE_USERNAME], $_COOKIE[self::COOKIE_HASH]];
-            $sql= "	SELECT *
-				FROM users
-				WHERE username = ?
-				AND hash = ?
-				AND hash_expires > NOW()
-				AND active = 1";
-		$result = DB::query($sql);
-		if (!isset($result) || $result->num_rows < 1){
-                    self::logout();
-                    return false;
-		} else {
-                    self::$LOGGED_IN = true;
-                    return true;
-		}
-	}
         return false;
     }
 
@@ -131,8 +131,14 @@ class Auth{
 
     static function logout(){	
         $expires = time() + self::PHP_COOKIE_LENGTH;
-	
-        if(setcookie(self::COOKIE_USERNAME, '', $expires, App::getAppRoot(), '', 0) && setcookie(self::COOKIE_HASH, '', $expires, App::getAppRoot(), '', 0)){
+        $cookie_options = [
+            'expires' => $expires,
+            'domain' => App::getHttpRoot(),
+            'samesite' => 'strict',
+            'secure' => false
+        ];
+        if(setcookie(self::COOKIE_USERNAME, '', $expires, $cookie_options) &&
+            setcookie(self::COOKIE_HASH, '', $expires, $cookie_options)){
             self::$LOGGED_IN = false;
             return true;
         }else{
@@ -149,8 +155,14 @@ class Auth{
         $id_hash = self::getHash($username);
 	
         $expires = time()+self::PHP_COOKIE_LENGTH;
-        setcookie(self::COOKIE_USERNAME, $username, $expires, App::getHttpRoot(), '', 0);
-        setcookie(self::COOKIE_HASH, $id_hash, $expires, App::getHttpRoot(), '', 0);
+        $cookie_options = [
+            'expires' => $expires,
+            'domain' => App::getHttpRoot(),
+            'samesite' => 'strict',
+            'secure' => false
+        ];
+        setcookie(self::COOKIE_USERNAME, $username, $cookie_options);
+        setcookie(self::COOKIE_HASH, $id_hash, $cookie_options);
         $binds = [$id_hash, $username];
         $sql = "	UPDATE users
 		SET hash = ?,
