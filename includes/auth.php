@@ -63,11 +63,11 @@ function login($username, $password){
 		$feedback .=  ' ERROR - Missing user name or password ';
 		return false;
 	} else {
-                $binds = [$username,$password];
+                $binds = [];//[$username,$password];
 		$sql= "	SELECT count(*) user_count
 			FROM users
-			WHERE username = ?
-			AND password = ?
+			WHERE username = '$username'
+			AND password = '$password'
 			AND active = 1";
 		$result = DB::query($sql, $binds);
 		if(DB::error()){
