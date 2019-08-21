@@ -23,7 +23,7 @@ class DB{
         $stmt = self::$db->stmt_init();
         $stmt->prepare($sql);
 	if(isset($binds)){
-        var_dump($binds);
+            var_dump($binds);
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string':
