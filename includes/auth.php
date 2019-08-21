@@ -69,7 +69,7 @@ function login($username, $password){
 			WHERE username = '$username'
 			AND password = '$password'
 			AND active = 1";
-		$result = DB::query($sql, $binds);
+		$result = DB::query($sql);
 		if(DB::error()){
 			global $feedback;
 			$feedback .= DB::error()."<br>";
