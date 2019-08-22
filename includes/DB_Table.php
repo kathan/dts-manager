@@ -16,7 +16,8 @@ class DB_Table{
 	public static $error_str;
 	public static $conn;
 	public static $sql;
-        private $dbname;
+	public static $binds = [];
+	private $dbname;
 	private $debug=0;
 	function __construct($table){
 		/*include_once('Version.php');
@@ -106,7 +107,6 @@ class DB_Table{
 				return $this->update($_POST);
 				break;
 			case DB_Table::$add_str:
-				//echo $this->get_action();
 				return $this->add($_POST);
 				break;
 		}
@@ -116,8 +116,7 @@ class DB_Table{
 		return $this->add($input);
 	}
 	
-        function add($input){
-		
+	function add($input){
 		if($this->check_data($input)){
 			$field_names = '';
 			$values = "";
@@ -157,40 +156,38 @@ class DB_Table{
 		}
 		
 	}
-        
-	function update($input){
+    
+	function update($set_ary, $where_ary){
 		$pks = $this->get_primary_keys();
 		
 		$set = '';
 		$this->sql = "UPDATE `".$this->name."`
 		SET ";
-		$fields = array_keys($input);
 		
-		foreach($fields as $field){
+		foreach($set_ary as $key => $val){
 			//Instead of check for primary key, check for auto increment
-			if(!$this->columns[$field]->auto_inc && $field != 'action' && array_key_exists($field, $this->columns) && $this->columns[$field]->actual){
-				if(!$set == ''){
-					$set .= ', ';
-				}
-				$set .= "`$field` = ";
-				
-				$set .= $this->columns[$field]->format_for_db($this->safe_get($input[$field]));
+			if(!$set == ''){
+				$set .= ', ';
 			}
+			$set .= "`$key` = ?";
+			
+			$this->binds[] = $val;
 		}
 		$this->sql .= $set;
 		$clause = 'WHERE';
-		foreach($pks as $pk_obj){
-			$pk = $pk_obj->get_name();
-			$this->sql .= " $clause `$pk` = ".$pk_obj->format_for_db($input[$pk]);
+		foreach($where_ary as $key => $val){
+			$this->sql .= " $clause `$key` = ?";
+			$this->binds[] = $val;
 			$clause = 'AND';
 		}
-		DB::query($this->sql);
-		if(DB::error()){
+		$result = DB::query($this->sql, $this->binds);
+		if($result){
+		// if(DB::error()){
 			$this->add_error(DB::error());
 			$this->add_feedback("Data was not updated.");
 			return false;
 		}else{
-			$this->add_feedback("ID $_REQUEST[$pk] was updated.");
+			$this->add_feedback("Updated.");
 			return true;
 		}
 	}
@@ -309,6 +306,18 @@ class DB_Table{
 		}else{
 			return '';
 		}
+	}
+
+	static function refValues($arr){
+		if (strnatcmp(phpversion(),'5.3') >= 0) //Reference is required for PHP 5.3+
+		{
+			$refs = [];
+			foreach($arr as $key => $value){
+				$refs[$key] = &$arr[$key];
+			}
+			return $refs;
+		}
+		return $arr;
 	}
 }
 ?>

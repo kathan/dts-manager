@@ -1,5 +1,6 @@
 <?php
 require_once("global.php");
+require_once("DB_Table.php");
 
 class Auth{
     const COOKIE_HASH = 'dts_hash';
@@ -89,10 +90,14 @@ class Auth{
                 if(DB::error()){
                     $feedback .= DB::error();
                 }
-                self::user_set_tokens($username);
-                $feedback .=  'You Are Now Logged In ';
-                self::$LOGGED_IN = true;
-                return true;
+                if(self::user_set_tokens($username)){
+                    $feedback .=  'You Are Now Logged In ';
+                    self::$LOGGED_IN = true;
+                    return true;
+                }else{
+                    $feedback .= "Could not set user tokens";
+                    return false;
+                }
             }
         }
     }
@@ -137,8 +142,13 @@ class Auth{
             'samesite' => 'strict',
             'secure' => false
         ];
-        if(setcookie(self::COOKIE_USERNAME, '', $cookie_options) &&
-            setcookie(self::COOKIE_HASH, '', $cookie_options)){
+
+        unset($_COOKIE[self::COOKIE_USERNAME]);
+        unset($_COOKIE[self::COOKIE_HASH]);
+        if(setcookie(self::COOKIE_USERNAME, "", $expires, "" , App::getHttpRoot()) &&
+            setcookie(self::COOKIE_HASH, '', $expires, "", App::getHttpRoot())){
+        //if(setcookie(self::COOKIE_USERNAME, '', $cookie_options) &&
+        //    setcookie(self::COOKIE_HASH, '', $cookie_options)){
             self::$LOGGED_IN = false;
             return true;
         }else{
@@ -161,19 +171,33 @@ class Auth{
             'samesite' => 'strict',
             'secure' => false
         ];
-        setcookie(self::COOKIE_USERNAME, $username, $cookie_options);
-        setcookie(self::COOKIE_HASH, $id_hash, $cookie_options);
-        $binds = [$id_hash, $username];
-        $sql = "	UPDATE `users`
-		            SET `hash` = ?,
-		                `hash_expires` = ADDDATE(NOW(), ".self::MYSQL_COOKIE_LENGTH.")
-		            WHERE  `username` = ?";
-        DB::query($sql, $binds);	
+        $_COOKIE[self::COOKIE_USERNAME] = $username;
+        $_COOKIE[self::COOKIE_HASH] = $id_hash;
+        if(setcookie(self::COOKIE_USERNAME, $username, $expires, "" , App::getHttpRoot()) &&
+            setcookie(self::COOKIE_HASH, $id_hash, $expires, "", App::getHttpRoot())){
+        // setcookie(self::COOKIE_USERNAME, $username, $cookie_options);
+        // setcookie(self::COOKIE_HASH, $id_hash, $cookie_options);
+            $t = new DB_Table('users');
+            $expires_ts = time() + self::PHP_COOKIE_LENGTH;
+            $hash_expires = new DateTime("@$expires_ts");
+            $set = [
+                'hash' => $id_hash, 
+                'hash_expires' => $hash_expires
+            ];
+            $where = [
+                'username' => $username
+            ];
+            $result = $t->update($set, $where);
+            return $result;
+        }else{
+            $feedback .= "Could not set tokens";
+            return false;
+        }
     }
 
     static function getUserId(){
         $binds = [$_COOKIE[self::COOKIE_USERNAME]];
-        $sql = "	SELECT *
+        $sql = "	SELECT user_id
 		            FROM `users`
 		            WHERE `username` = ?";
         $result = DB::query($sql, $binds);
@@ -184,7 +208,8 @@ class Auth{
         }
 
         if ($result && DB::numrows($result) > 0){
-            return DB::result($result,0,'user_id');
+            $user_id = DB::result($result,0,'user_id');
+            return $user_id;
         } else {
             return false;
         }

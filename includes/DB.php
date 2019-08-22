@@ -48,6 +48,14 @@ class DB{
                         $bind_ary[0] = 'd'.$bind_ary[0];
                         $bind_ary[] = $val;
                         break;
+                    case 'object':
+                        switch(get_class($val)){
+                            case 'DateTime':
+                                $bind_ary[0] = 's'.$bind_ary[0];
+                                $bind_ary[] = $val->format('Y-m-d H:i:s');
+                                break;
+                        }
+                        break;
 
                 }
             }
@@ -90,7 +98,7 @@ class DB{
 
     public static function result($result, $row, $field){
         $result->data_seek($row);
-        $row_obj = $result->fetch_row();
+        $row_obj = $result->fetch_assoc();
         return $row_obj[$field];
     }
 
