@@ -26,6 +26,4 @@ function loginForm(){
     $t = new Template();
     $t->assign('imgRoot', App::getImgRoot());
     return $t->fetch(App::getTempDir().'/login.tpl');
-}	
-
-?>
+}

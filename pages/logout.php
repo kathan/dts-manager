@@ -3,9 +3,9 @@ require_once('includes/global.php');
 require_once('includes/auth.php');
 
 if (Auth::loggedInAs(safe_get($_COOKIE[Auth::COOKIE_USERNAME]))){
-    if(logout()){
-	echo "You have been logged out.";
+    if(Auth::logout()){
+        header("Location: ?page=login");
     }
 }else{
-    echo "You have been logged out.";
+    Feedback::add("You have been logged out.");
 }

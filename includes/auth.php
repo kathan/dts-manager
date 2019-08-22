@@ -137,8 +137,8 @@ class Auth{
             'samesite' => 'strict',
             'secure' => false
         ];
-        if(setcookie(self::COOKIE_USERNAME, '', $expires, $cookie_options) &&
-            setcookie(self::COOKIE_HASH, '', $expires, $cookie_options)){
+        if(setcookie(self::COOKIE_USERNAME, '', $cookie_options) &&
+            setcookie(self::COOKIE_HASH, '', $cookie_options)){
             self::$LOGGED_IN = false;
             return true;
         }else{
