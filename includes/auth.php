@@ -269,9 +269,7 @@ class Auth{
     }
 
     static function encryptPassword($password){
-        $c = new Crypt();
-        $enc_password = $c->encrypt($password, base64_decode(self::$crypt_key));
-        return $enc_password;
+        return hash("sha512", $password);
     }
 
     // static function hashPassword($password){
