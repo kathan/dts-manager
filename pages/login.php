@@ -18,7 +18,7 @@
     }else{
         if(!Auth::loggedIn()){
             echo loginForm();
-	}
+        }
     }
     echo $feedback;
     

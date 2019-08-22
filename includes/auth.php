@@ -1,6 +1,7 @@
 <?php
 require_once("global.php");
 require_once("DB_Table.php");
+require_once('Crypt.php');
 
 class Auth{
     const COOKIE_HASH = 'dts_hash';
@@ -13,6 +14,7 @@ class Auth{
     const MAX_UN_LENGTH = 15;
     const PHP_COOKIE_LENGTH=  60*60*24*7;//7 days
     const MYSQL_COOKIE_LENGTH = 'INTERVAL 7 day';
+    private static $crypt_key = 'nKmUfd93vJFb0tNTiHmiT93oazD+i8wULSPDUJWcqUQ=';
     public static $LOGGED_IN = false;
 
     static function loggedInAs($name){
@@ -64,7 +66,7 @@ class Auth{
             $feedback .=  ' ERROR - Missing user name or password ';
             return false;
         } else {
-            $binds = [$username, self::hashPassword($password)];
+            $binds = [$username, self::encryptPassword($password)];
             $sql= "	SELECT count(*) user_count
                     FROM `users`
                     WHERE `username` = ?
@@ -266,9 +268,15 @@ class Auth{
         }
     }
 
-    static function hashPassword($password){
-        return hash("sha512", $password);
+    static function encryptPassword($password){
+        $c = new Crypt();
+        $enc_password = $c->encrypt($password, base64_decode(self::$crypt_key));
+        return $enc_password;
     }
+
+    // static function hashPassword($password){
+    //     return hash("sha512", $password);
+    // }
 
     static function debug($s){
         echo $s."<br>";

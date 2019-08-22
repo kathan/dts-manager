@@ -104,7 +104,7 @@ function save_user(){
 				if($_POST['password1'] === $_POST['password2'] && $_POST['password1'] != '' && $_POST['password2'] != ''){
 					$data = $_POST;
 					$data['password'] = $_POST['password1'];
-					$data['hash_password'] = Auth::hashPassword($_POST['password1']);
+					$data['hash_password'] = Auth::encryptPassword($_POST['password1']);
 					unset($data['password1']);
 					unset($data['password2']);
 					if($t->update($data, ['user_id'=>$_GET['user_id']])){
