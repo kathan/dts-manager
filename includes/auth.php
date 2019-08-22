@@ -132,8 +132,14 @@ class Auth{
         return false;
     }
 
-    static function getHash($username){
-        return md5($username . time() . self::PRIVATE_KEY);
+    function getToken(){
+        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
+            mt_rand( 0, 0xffff ),
+            mt_rand( 0, 0x0fff ) | 0x4000,
+            mt_rand( 0, 0x3fff ) | 0x8000,
+            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
+        );
     }
 
     static function logout(){	
@@ -164,7 +170,7 @@ class Auth{
             return false;
         }
         $username = strtolower($username);
-        $id_hash = self::getHash($username);
+        $id_hash = self::getToken();
 	
         $expires = time()+self::PHP_COOKIE_LENGTH;
         $cookie_options = [
