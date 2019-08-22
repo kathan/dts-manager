@@ -303,5 +303,12 @@ class DB_Table{
 		}
 		return DB::query($this->sql);
 	}
+	public static function &safe_get(&$v){
+		if(isset($v)){
+			return $v;
+		}else{
+			return '';
+		}
+	}
 }
 ?>

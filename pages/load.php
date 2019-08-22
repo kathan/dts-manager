@@ -261,7 +261,7 @@ class load_table extends dts_table{
 	function repeat_load(){
 		
 		$old_load_id = $_REQUEST['load_id'];
-                $binds = [get_user_id(), $old_load_id];
+                $binds = [Auth::getUserId(), $old_load_id];
 		$sql = "INSERT INTO `load`(customer_id,trailer_type,pallets,length,size,weight,class,commodity, order_date, order_by)
 			SELECT customer_id,trailer_type,pallets,length,size,weight,class,commodity, NOW(), ? FROM `load` WHERE load_id = ?";
 		$r = DB::query($sql, $binds);
@@ -381,7 +381,7 @@ class load_table extends dts_table{
 							c.carrier_id,
 							')\">$this->delete_icon</a>') `delete`";
 		}
-		$sql .= ",lc.carrier_id, CONCAT(main_phone_number, '<br>', fax) phone_fax,  (SELECT username FROM users u WHERE u.user_id =lc.booked_with) booked_with, lc.notes
+		$sql .= ",lc.carrier_id, CONCAT(main_phone_number, '<br>', fax) phone_fax,  (SELECT username FROM `users` u WHERE u.user_id =lc.booked_with) booked_with, lc.notes
 					FROM `load` l, carrier c, load_carrier lc
 					WHERE l.load_id = ?
 					AND lc.load_id = l.load_id
@@ -652,7 +652,7 @@ class load_table extends dts_table{
 						if(window.opener){
 							var type = document.getElementById('warehouse_type');
 							var obj=new Object();
-							obj.id = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".get_user_id()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
+							obj.id = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".Auth::getUserId()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
 							obj.value = $this->load_id;
 							db_save(obj);
 							refresh_close();
@@ -862,7 +862,7 @@ class load_table extends dts_table{
 			
 		}
 		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
-			$where .= " $clause acct_owner = ".get_user_id();
+			$where .= " $clause acct_owner = ".Auth::getUserId();
 			$clause = 'AND';
 		}
 		$sql .= $where;
@@ -1111,7 +1111,7 @@ class load_table extends dts_table{
 				.load_content, .content{background-color:#EEEEEE}");
 		}
 		$auth_edit=false;
-		if(!$this->been_delivered() && (Auth::loggedInAs('admin') || get_user_id() === $r['order_by'] || get_user_id() === $r['acct_owner'])){
+		if(!$this->been_delivered() && (Auth::loggedInAs('admin') || Auth::getUserId() === $r['order_by'] || Auth::getUserId() === $r['acct_owner'])){
 			$auth_edit=true;
 		}
 		$c .= $this->popup_script();
@@ -1232,7 +1232,7 @@ class load_table extends dts_table{
 				<tr>
 				<td colspan=3 class='bottom_pad'>";
 		//==== Customer ====
-		if(Auth::loggedInAs('admin') || get_user_id() == $r['order_by'] || get_user_id() == $r['acct_owner']){
+		if(Auth::loggedInAs('admin') || Auth::getUserId() == $r['order_by'] || Auth::getUserId() == $r['acct_owner']){
 		$c .= "
 		<fieldset>
 				<legend>";
@@ -1510,7 +1510,7 @@ class load_table extends dts_table{
 	
 	function create_new(){
             set_post('order_date', 'NOW()');
-            set_post('order_by', get_user_id());
+            set_post('order_by', Auth::getUserId());
             $this->add($_POST);
             if(DB::error()){
 		echo DB::error();
@@ -1545,7 +1545,7 @@ class load_table extends dts_table{
 		$c .= '<tr><td>Weigth</td><td>'.$this->fetch_new('weight').'</td></tr>';
 		$c .= '<tr><td>Class</td><td>'.$this->fetch_new('class').'</td></tr>';
 		$c .= '<tr><td>Carrier</td><td>'.$this->fetch_new('carrier_id').'</td></tr>';
-		$c .= '<tr><td>Order By</td><td>'.$this->fetch_new('order_by', safe_get(get_user_id($_REQUEST[Auth::COOKIE_USERNAME]))).'</td></tr>';
+		$c .= '<tr><td>Order By</td><td>'.$this->fetch_new('order_by', safe_get(Auth::getUserId($_REQUEST[Auth::COOKIE_USERNAME]))).'</td></tr>';
 		if(isset($_REQUEST[SMALL_VIEW])){
 			$c .= '<tr><td><input type="button" onclick="submit_close()" value="$this->add_str"></td></tr>';
 			$c .= '<tr><td><input type="button" onclick="cancel_close()" value="$this->cancel_str"></td></tr>';
@@ -1566,7 +1566,7 @@ class load_table extends dts_table{
 	
 	function get_user($user_id){
 		
-		$sql ="SELECT * FROM users WHERE user_id = $user_id";
+		$sql ="SELECT * FROM `users` WHERE user_id = $user_id";
 		$r = DB::query($sql);
 		return DB::fetch_assoc($r);
 	}
@@ -1699,7 +1699,7 @@ class load_table extends dts_table{
 			$new_row['region_id'] = $rr['id'];
 			$rul[] = $new_row;
 			$sql = "SELECT *
-					FROM users
+					FROM `users`
 					WHERE user_id in (	SELECT user_id
 										FROM user_region_list
 										WHERE region_list_id = $rr[id])
@@ -1992,9 +1992,9 @@ class load_table extends dts_table{
 						c.name carrier_name,
 						c.main_phone_number carrier_phone,
 						c.fax carrier_fax,
-						(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM users u WHERE u.user_id=lc.booked_with) booked_name,
-						(SELECT username FROM users WHERE user_id=lc.booked_with) booked_with,
-						(SELECT username FROM users, customer c WHERE user_id = c.acct_owner AND c.customer_id = l.customer_id) booked_salesperson,
+						(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM `users` u WHERE u.user_id=lc.booked_with) booked_name,
+						(SELECT username FROM `users` WHERE user_id=lc.booked_with) booked_with,
+						(SELECT username FROM `users`, customer c WHERE user_id = c.acct_owner AND c.customer_id = l.customer_id) booked_salesperson,
 						pickup_date,
 						c.phys_address carrier_address
 				FROM `load` l, carrier c,  load_carrier lc,
@@ -2098,9 +2098,9 @@ class load_table extends dts_table{
 						c.name carrier_name,
 						c.main_phone_number carrier_phone,
 						c.fax carrier_fax,
-						(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM users u WHERE u.user_id=lc.booked_with) booked_name,
-						(SELECT username FROM users WHERE user_id=lc.booked_with) booked_with,
-						(SELECT username FROM users, customer c WHERE user_id = c.acct_owner AND c.customer_id = l.customer_id) booked_salesperson,
+						(SELECT CONCAT(u.first_name, ' ', u.last_name) FROM `users` u WHERE u.user_id=lc.booked_with) booked_name,
+						(SELECT username FROM `users` WHERE user_id=lc.booked_with) booked_with,
+						(SELECT username FROM `users`, customer c WHERE user_id = c.acct_owner AND c.customer_id = l.customer_id) booked_salesperson,
 						pickup_date,
 						c.phys_address carrier_address
 				FROM `load` l, carrier c,  load_carrier lc,
@@ -2356,7 +2356,7 @@ class load_table extends dts_table{
 	}
 	
 	function get_order_by_name(){
-		$sql = 'SELECT username FROM users u, `load` l WHERE u.user_id = l.order_by AND l.load_id = '.$this->load_id;
+		$sql = 'SELECT username FROM `users` u, `load` l WHERE u.user_id = l.order_by AND l.load_id = '.$this->load_id;
 		$re = DB::query($sql);
 		$ro = DB::fetch_array($re);
 		return $ro[0];
@@ -2404,7 +2404,7 @@ class load_table extends dts_table{
 	
 	function get_acct_owner_name(){
 		$sql = 'SELECT username
-				FROM users u, customer c, `load` l
+				FROM `users` u, customer c, `load` l
 				WHERE u.user_id = c.acct_owner
 				AND c.customer_id = l.customer_id
 				AND l.load_id = '.$this->load_id;

@@ -267,7 +267,7 @@ function new_user(){
 
 function get_user($user_id){
 	$sql = "	SELECT *
-				FROM users
+				FROM `users`
 				WHERE user_id = $user_id";
 	//echo $sql;
 	$result = DB::query($sql);
@@ -286,12 +286,11 @@ function get_user($user_id){
 }
 
 function edit_user($user=null){
-	//require_once('Template.php');
 	global $feedback;
 	$GLOBALS['page_title'] = 'Edit User';
 	$t = new Template();
 	$t->assign('admin', Auth::loggedInAs('super admin'));
-	if (get_user_id() == safe_get($_GET['user_id']) || Auth::loggedInAs('super admin')){
+	if (Auth::getUserId() == safe_get($_GET['user_id']) || Auth::loggedInAs('super admin')){
 		if(isset($user)){
 			if(isset($user['user_id'])){
 				$t->assign('group_form', $this->group_form($user['user_id']));
@@ -404,27 +403,28 @@ function group_form($user_id){
 		$t->assign('user_id', $user_id);
 		//Groups sub-form
 		$sql = "	SELECT *
-					FROM groups
+					FROM `groups`
 					WHERE group_id NOT IN (	SELECT group_id 
 											FROM user_group ug 
-											WHERE ug.user_id = $user_id)";
-				
-		$re = DB::query($sql);
+											WHERE ug.user_id = ?)";
+		$binds = [$user_id];
+		$re = DB::query($sql, $binds);
 		if(DB::error()){
 			$feedback .= DB::error()."<br/>";
 			$feedback .= $sql;
 		}
-		$unlinked_options = Array();
+		$unlinked_options = [];
 		while ($row = DB::fetch_assoc($re)){
 			$unlinked_options[$row['group_id']] = $row['group_name'];
 		}
 		$t->assign('unlinked_options', $unlinked_options);				
 		$sql = "	SELECT *
-					FROM groups
+					FROM `groups`
 					WHERE group_id IN(	SELECT ug.group_id
 										FROM user_group ug
-										WHERE ug.user_id = $user_id)";
-		$re = DB::query($sql);
+										WHERE ug.user_id = ?)";
+		$binds = [$user_id];
+		$re = DB::query($sql, $binds);
 		if(DB::error()){
 			$feedback .= DB::error()."<br/>";
 			$feedback .= $sql;
@@ -446,10 +446,10 @@ function show_list(){
 	$sql = "SELECT	u.*,
 							IF(u.active, 'Yes', 'No') active,
 							(	SELECT GROUP_CONCAT(g.group_name SEPARATOR ', ')
-								FROM groups g, user_group ug
+								FROM `groups` g, `user_group` ug
 								WHERE g.group_id = ug.group_id
 								AND ug.user_id = u.user_id
-								GROUP BY u.user_id) groups,
+								GROUP BY u.user_id) `groups`,
 							(	SELECT GROUP_CONCAT(cl.contact_list_name SEPARATOR ', ')
 								FROM contact_lists cl, user_contact_list ucl
 								WHERE cl.contact_list_id = ucl.contact_list_id
@@ -460,7 +460,7 @@ function show_list(){
 								WHERE rl.id = url.region_list_id
 								AND url.user_id = u.user_id
 								GROUP BY u.user_id) regions
-					FROM users u ";
+					FROM `users` u ";
 	if(isset($_GET['filter'])){
 		$filter = $_GET['filter'];
 		$filter_str = "&filter=$_GET[filter]";
@@ -471,7 +471,6 @@ function show_list(){
 			$sql .= "where active = 1 ";
 			
 		}elseif($filter == "all"){
-		//
 			
 		}
 	}else{
@@ -498,7 +497,7 @@ function show_list(){
 			$sql .= "ORDER BY email $dir";
 			break;
 		case "username":
-			$sql .= "ORDER BY username $dir";
+			$sql .= "ORDER BY `username` $dir";
 			break;
 		case "first_name":
 			$sql .= "ORDER BY first_name $dir";
@@ -516,7 +515,7 @@ function show_list(){
 			$sql .= "ORDER BY regions $dir";
 			break;
 		case "active":
-			$sql .= "ORDER BY active $dir";
+			$sql .= "ORDER BY `active` $dir";
 			break;
 		default:
 			$sql .= "ORDER BY user_id $dir";
@@ -543,7 +542,7 @@ function show_list(){
 
 function get_customers(){
 	global $feedback;
-	$sql = "SELECT customer_id, name customer_name, city, state FROM customer WHERE acct_owner = ". get_user_ID();
+	$sql = "SELECT customer_id, name customer_name, city, state FROM customer WHERE acct_owner = ". Auth::getUserId();
 	
 	$p = new portal($sql);
 	$p->set_row_action("\"refresh_cust_notes('\$id')\";");
@@ -570,7 +569,7 @@ function get_cust_notes($cust_id){
 	$sql = "SELECT cust_note_id, note, note_date
 			FROM cust_owner_notes
 			WHERE customer_id = $cust_id
-			AND user_id = ". get_user_ID();
+			AND user_id = ". Auth::getUserId();
 	//require_once"includes/portal.php";
 	$p = new portal($sql);
 	

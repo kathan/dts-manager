@@ -42,8 +42,10 @@ function get_action(){
 	
 function &safe_get(&$v){
     if(isset($v)){
-        return $v;
-    }
+		$v2 =& $v;
+        return $v2;
+	}
+	return null;
 }
 	
 function ob_get_output($file){
@@ -94,22 +96,22 @@ function MySQL_Date_To_format($mysqldate, $format){
 }
 	
 function logError($err, $function){
-    $binds = [$err, json_encode($_SERVER), $function, json_encode($_REQUEST)];
-    $sql ="INSERT INTO errors(
-                error_string,
-                server_values,
-                function,
-                request_values)
-            values(
-                ?,
-		?,
-		?,
-		?
-            )";
-    DB::query($sql, $binds);
-    if( DB::error()){
+    // $binds = [$err, json_encode($_SERVER), $function, json_encode($_REQUEST)];
+    // $sql ="INSERT INTO errors(
+    //             error_string,
+    //             server_values,
+    //             function,
+    //             request_values)
+    //         values(
+    //             ?,
+	// 	?,
+	// 	?,
+	// 	?
+    //         )";
+    // DB::query($sql, $binds);
+    // if( DB::error()){
         
-    }
+    // }
 }
 	
 function getFileName($path){

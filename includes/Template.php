@@ -6,6 +6,5 @@ class Template extends Smarty{
 		$this->error_reporting = E_ALL & ~E_NOTICE;
 		parent::__construct();
 	}
-	//$this->error_reporting = 0;
 }
 ?>

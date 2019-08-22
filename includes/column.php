@@ -28,6 +28,7 @@ class column{
 	var $db_date_functions=['NOW()'];
 	var $null_str ='';
 	var $html_input;
+	
 	function __construct(&$table_obj, $name, $desc=true){
 		$this->pw = false;
 		$this->name = $name;
@@ -73,53 +74,13 @@ class column{
 	}
 	
 	function _describe(){
-		//if (!$this->relative)
-		//{
-			//$this->children = db_get_children($this->table, $this->name);
-			$this->children = db_get_children($this->table_obj, $this->name);
-			//$this->parent_column =& db_get_parent($this->table, $this->name);
-			$this->parent_column =& db_get_parent($this->table_obj, $this->name);
-		//}
-		/*$sql = "Describe `".$this->table_obj->get_name()."` `$this->name`";
-		$r = db_query($sql);
-		if(db_error()){
-			echo db_error();
-		}else{
-			$row = db_fetch_assoc($r);
-			$search = '/(\w+)(\((\d+)\))?/';
-			preg_match($search, $row['Type'], $result);
-			if(isset($result[1])){
-				$this->type = $result[1];
-			}else{
-				$this->type = 'unknown';
-			}
-			
-			if(isset($result[3])){
-				$this->length = $result[3];
-				
-			}
-			//echo $sql."<br>";
-			switch($row['Key']){
-				case 'PRI':
-					$this->is_primary = true;
-					break;
-				case 'UNI':
-					$this->is_unique = true;
-					break;
-			}
-			if($row['Null'] == 'NO'){
-				$this->not_null = true;
-			}
-			if($row['Extra'] == 'auto_increment'){
-				$this->auto_inc = true;
-			}
-		}*/
+		$this->children = db_get_children($this->table_obj, $this->name);
+		$this->parent_column =& db_get_parent($this->table_obj, $this->name);
 	}
 	
 	function get_child_link($value){
 		require_once("filter_link.php");
 		$new_value = "";
-		//print_r($this->children);
 		if(count($this->children) > 0){
 			foreach($this->children as $child){
 				$new_value .= "<a href=\"".$child['TABLE_NAME'].".php?action=filter&$child[COLUMN_NAME]=$value\">".$child['TABLE_NAME']."</a><br>";
@@ -173,6 +134,7 @@ class column{
 	function MYSQL_Time_To_Format($value, $format){
 		
 	}
+
 	function MySQL_Date_To_format($mysqldate, $format){
 		if(isset($mysqldate) && $mysqldate != ''  && $mysqldate != '0000-00-00'){
 			$date_time_ary = explode( ' ', $mysqldate);
@@ -180,18 +142,13 @@ class column{
 			$date_str ='';
 			if(isset($date_ary[1]) && isset($date_ary[2]) && $date_ary[0]){
 				$date_str .= $date_ary[1].'/'.$date_ary[2].'/'.$date_ary[0]." ";
-			}else
-			{
+			}else{
 				$date_str .= '00/00/0000';
 			}
 			$date_str .= safe_get($date_time_ary[1]);
-			//print_r($date_ary);
-			//echo $date_str;
 			return date($format, strtotime($date_str));
-		}else
-		{
-			return $this->null_str;
 		}
+		return $this->null_str;
 	}
 	
 	function &get_edit_html($value=null){
@@ -199,118 +156,114 @@ class column{
 		if(isset($this->parent_column)){
 			require_once("select_input.php");
 			return new select_input($this->name, $this->parent_column->name, $this->parent_label_column, $this->get_parent_records(), $value);
-			
 		}elseif(isset($this->value_list)){
 			return new select_input($this->name, '', $this->name, $this->value_list, $value);
+		}
+			
+		if($this->pw){
+			return new password_input($this->name, true);
+		}elseif($this->hidden){
+			//This should handle and date formats as well
+			return new hidden_input($this->name, $value);
 		}else{
 			
-			//echo $this->get_type();
-			if($this->pw){
-				return new password_input($this->name, true);
-			}elseif($this->hidden){
-				//This should handle and date formats as well
-				return new hidden_input($this->name, $value);
-			}else{
-				
-				if(!isset($this->html_input)){
-				switch($this->get_type()){
-					case 'time':
-						$this->html_input = new text_input($this->name, $this->MySQL_Date_To_format($value, 'g:i a'));
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						
-						$this->html_input->set_label($this->label);
-						//return $i;
-						//return new text_input($this->name, $value);
-						break;
-					case 'date':
-						
-						$this->html_input = new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y'));
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						$this->html_input->set_label($this->label);
-						//return $i;
-						//return new text_input($this->name, $value);
-						break;
-					case 'datetime':
+			if(!isset($this->html_input)){
+			switch($this->get_type()){
+				case 'time':
+					$this->html_input = new text_input($this->name, $this->MySQL_Date_To_format($value, 'g:i a'));
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
 					
-						$this->html_input =  new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
-						$this->html_input->set_label($this->label);
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						//return $i;
-						break;
-					case 'timestamp':
-					 
-						$this->html_input =  new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
-						$this->html_input->set_label($this->label);
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						//return $i;
-						break;
-					case 'binary':
-						$this->html_input = new checkbox_input($this->name, $value);
-						$this->html_input->set_label($this->label);
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						//return $i;
-						break;
-					case 'mediumtext':
-						$this->html_input =  new textarea_input($this->name, $value);
-						if(isset($this->rows)){
-							$this->html_input->set_rows($this->rows);
-						}
-						if(isset($this->cols)){
-							$this->html_input->set_cols($this->cols);
-						}
-						$this->html_input->set_label($this->label);
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						//return $i;
-						break;
-					case 'mediumblob':
-						require_once("file_input.php");
-						$this->html_input =  new file_input($this->name);
-						$this->html_input->set_label($this->label);
-						if($this->table_obj->auto_save){
-							$this->html_input->set_id($this->id);
-						}
-						//return $i;
-						break;
-					default:
+					$this->html_input->set_label($this->label);
+					//return $i;
+					//return new text_input($this->name, $value);
+					break;
+				case 'date':
+					
+					$this->html_input = new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y'));
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					$this->html_input->set_label($this->label);
+					//return $i;
+					//return new text_input($this->name, $value);
+					break;
+				case 'datetime':
+				
+					$this->html_input =  new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
+					$this->html_input->set_label($this->label);
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					//return $i;
+					break;
+				case 'timestamp':
+					
+					$this->html_input =  new date_input($this->name, $this->MySQL_Date_To_format($value, 'n/j/Y g:i a'));
+					$this->html_input->set_label($this->label);
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					//return $i;
+					break;
+				case 'binary':
+					$this->html_input = new checkbox_input($this->name, $value);
+					$this->html_input->set_label($this->label);
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					//return $i;
+					break;
+				case 'mediumtext':
+					$this->html_input =  new textarea_input($this->name, $value);
+					if(isset($this->rows)){
+						$this->html_input->set_rows($this->rows);
+					}
+					if(isset($this->cols)){
+						$this->html_input->set_cols($this->cols);
+					}
+					$this->html_input->set_label($this->label);
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					//return $i;
+					break;
+				case 'mediumblob':
+					require_once("file_input.php");
+					$this->html_input =  new file_input($this->name);
+					$this->html_input->set_label($this->label);
+					if($this->table_obj->auto_save){
+						$this->html_input->set_id($this->id);
+					}
+					//return $i;
+					break;
+				default:
+					
+					if(isset($this->value_list)){
 						
-						if(isset($this->value_list)){
-							
-							return new select_input($this->name, '', $this->name, $this->value_list, $value);
-						}else{
-							$this->html_input =  new text_input($this->name, $value);
-							if(isset($this->length)){
-								if($this->table_obj->auto_save){
-									$this->html_input->set_id($this->id);
-								}
-								if($this->length < 30){
-									$this->html_input->set_size($this->length);
-								}
-								$this->html_input->set_max_length($this->length);
+						return new select_input($this->name, '', $this->name, $this->value_list, $value);
+					}else{
+						$this->html_input =  new text_input($this->name, $value);
+						if(isset($this->length)){
+							if($this->table_obj->auto_save){
+								$this->html_input->set_id($this->id);
 							}
-							$this->html_input->set_label($this->label);
+							if($this->length < 30){
+								$this->html_input->set_size($this->length);
+							}
+							$this->html_input->set_max_length($this->length);
 						}
-						break;
-				}
-				}
-				return $this->html_input;
+						$this->html_input->set_label($this->label);
+					}
+					break;
 			}
+			}
+			return $this->html_input;
 		}
 	}
 		
 	function format_for_db($value){
-		//echo $value;
 		switch($this->get_type()){
 			case 'int':
 				return intval($value);
@@ -334,7 +287,6 @@ class column{
 			case 'datetime':
 			
 				if(in_array($value, $this->db_date_functions)){
-					
 					return $value;
 				}
 				return "'".$this->date_to_db($value)."'";
@@ -364,7 +316,6 @@ class column{
 		5 <=
 		6 like
 		*/
-		//echo $value;
 		switch($this->get_type()){
 			case 'date':
 				return "'".$this->date_to_db($value)."'";
@@ -394,7 +345,6 @@ class column{
 	}
 	
 	function time_to_db($origdate){
-		
 		if (isset($origdate) && $origdate != ''){
 			return date("H:i:s", strtotime($origdate));
 		}
@@ -475,6 +425,7 @@ class column{
 			return false;
 		}
 	}
+
 	function set_as_password(){
 		$this->pw = true;
 	}
@@ -491,6 +442,47 @@ class column{
 		}
 	}
 	
+	function check_input(&$input){
+		$failure = false;
+		//check for unique
+		if($this->is_unique){
+			$sql = "	SELECT *
+						FROM `".$this->table_obj->get_name()."`
+						WHERE `$this->name` = ?";
+			$binds = [$input];
+			$r = DB::query($sql);
+		
+			if(DB::num_rows($r) > 0){
+				$this->add_error("$this->name must be unique.");
+				$failure = true;
+			}
+		}
+		
+		//check for not null
+		if($this->not_null && !$this->auto_inc && $input == ''){
+			$this->add_error("$this->name is required.");
+			$failure = true;
+		}
+		
+		switch($this->get_type()){
+			case 'int':
+				if(!is_numeric($input) && $input != ''){
+					$this->add_error("$this->name must be an integer. \"$input\" is not an integer");
+					$failure = true;
+				}
+				break;
+			case 'decimal':
+				if(!is_numeric($input) && $input != ''){
+					$this->add_error("$this->name must be a decimal.");
+					$failure = true;
+				}
+				break;
+			default:
+				break;
+		}
+		return !$failure;
+	}
+	
 	function get_file(){
 		
 		// In PHP earlier then 4.1.0, $HTTP_POST_FILES  should be used instead of $_FILES.
@@ -501,7 +493,6 @@ class column{
 	    	unlink($_FILES[$this->name]['tmp_name']);//delete the temporary file
 	    }else{
     		$this->add_error("Error: $error<br>");
-    		
     	}
     	
 		switch ($error){
@@ -509,24 +500,18 @@ class column{
 			$this->add_feedback("Your file has been saved.");
 			return $image_data;
 		case 1: //UPLOAD_ERR_INI_SIZE
-			
 			$this->add_error("Error: $error The uploaded file exceeds the maximum server upload size.");
 			break;
 		case 2:
-			
 			$this->add_error("Error: $error The uploaded file exceeds the size that was specified in the html form.");
 			break;
 		case 3:
-			
 			$this->add_error("Error: $error The uploaded file was only partially uploaded.");
 			break;
 		case 4:
-			
 			$this->add_error("Error: $error No file was uploaded.");
 			break;
 		}
-		
-		//return $image_data;
 	}
 }
 ?>

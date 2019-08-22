@@ -84,7 +84,7 @@ class dts_table extends table{
 
 
 	function get_users(){
-		$sql = "SELECT user_id, IF(active = 1, username, concat(substr(first_name, 1, 1), substr(last_name, 1, 1))) username FROM users order by active desc";
+		$sql = "SELECT user_id, IF(active = 1, username, concat(substr(first_name, 1, 1), substr(last_name, 1, 1))) username FROM `users` order by active desc";
 		$re = DB::query($sql);
 		$result = Array('');
 		while($r = DB::fetch_assoc($re)){
@@ -199,7 +199,7 @@ function resize(){
 	}
 	function get_user_name($user_id){
 		if(isset($user_id)){
-			$sql ="SELECT username FROM users WHERE user_id = $user_id";
+			$sql ="SELECT username FROM `users` WHERE user_id = $user_id";
 			$r = DB::query($sql);
 			$ro = DB::fetch_assoc($r);
 			return $ro['username'];

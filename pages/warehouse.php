@@ -82,7 +82,7 @@ class warehouse_table extends dts_table{
 		$code .= $this->db_script();
 		$code .= $this->portal_script();
 		$code .= $this->sortable_script();
-		if(logged_in()){
+		if(Auth::loggedIn()){
 			$code .= "<div class='content load_content'>";
 			$GLOBALS['page_title'] = 'Warehouses';
 			switch(get_action()){
@@ -210,12 +210,12 @@ class warehouse_table extends dts_table{
 		
 	}
 	
-	
 	function create_new(){
 		$this->add();
 		$this->warehouse_id = $this->last_id;
 		echo $this->error_str;
 	}
+
 	function get_search(){
 		$c = '<!-- warehouse search start --><center><h2>Warehouse Search</h2>';
 		$c .= "Use % as a wildcard character";

@@ -30,7 +30,7 @@ function month_report_form(){
 
 function get_users(){
 	$sql = "SELECT *
-			FROM users";
+			FROM `users`";
 	$re = DB::query($sql);
 	$ary = Array('');
 	while($r = DB::fetch_assoc($re)){
@@ -181,11 +181,11 @@ $sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
 		/*12/3/13 Joe requested "Darrel. Can you make a quick change to our DB?  In the reports, can you change the percentage so that the carrier rep commission equal the profit. And not the current 33%" 
 		old line ", IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .3 carrier_rep_comm"
 		*/
-		$sql .= ", (SELECT username FROM users u, load_carrier lc WHERE lc.load_id = l.load_id AND u.user_id = lc.booked_with LIMIT 1) carrier_rep
+		$sql .= ", (SELECT username FROM `users` u, load_carrier lc WHERE lc.load_id = l.load_id AND u.user_id = lc.booked_with LIMIT 1) carrier_rep
 			, (SELECT booked_with FROM load_carrier lc WHERE lc.load_id = l.load_id LIMIT 1) carrier_rep_id
 			
 			, IF(wc_active, profit-((profit * .01) * wc_percent), profit) carrier_rep_comm
-			, (SELECT username FROM users u WHERE c.acct_owner = u.user_id) sales_rep
+			, (SELECT username FROM `users` u WHERE c.acct_owner = u.user_id) sales_rep
 			, acct_owner sales_rep_id
 			, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .1 sales_rep_comm";
 		

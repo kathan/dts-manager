@@ -17,7 +17,7 @@ if(Auth::loggedIn()){
         break;
 	default:
         if($_REQUEST['table'] == 'load_carrier'){
-		    set_post('booked_with', get_user_id());
+		    set_post('booked_with', Auth::getUserId());
         }
         echo $t->add();
             break;

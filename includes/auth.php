@@ -15,46 +15,45 @@ class Auth{
     public static $LOGGED_IN = false;
 
     static function loggedInAs($name){
-	global $feedback;
+	    global $feedback;
         
-	if ($name && isset($_COOKIE[self::COOKIE_HASH])){
+	    if ($name && isset($_COOKIE[self::COOKIE_HASH])){
             $binds = [$name, $_COOKIE[self::COOKIE_HASH], $name, $_COOKIE[self::COOKIE_HASH]];
             $sql = "	
 				SELECT u.username
-				FROM users u
-				WHERE username = ?
-				AND hash = ?
-				AND hash_expires > NOW()
+				FROM `users` u
+				WHERE `username` = ?
+				AND `hash` = ?
+				AND `hash_expires` > NOW()
 				AND u.active = 1
 				UNION
 				SELECT u.username
-				FROM users u , user_group ug, groups g
+				FROM `users` u , `user_group` ug, `groups` g
 				WHERE g.group_name = ?
 				AND u.hash = ?
 				AND ug.group_id = g.group_id
 				AND u.user_id = ug.user_id
 				AND u.hash_expires > NOW()
 				AND u.active = 1";
-		$result = DB::query($sql, $binds);
-		if(DB::error()){
-			global $feedback;
-			$feedback .= DB::error()."<br>";
-			$feedback .= $sql;
-			
-		}
-		if ($result){
-			if(DB::numrows($result) < 1){
-				return false;
-			} else {
-				return true;
-			}
-		}else{
-			$feedback .= DB::error();
-			return false;
-		}
-	}else{
-		return false;
-	}
+		    $result = DB::query($sql, $binds);
+		    if(DB::error()){
+			    global $feedback;
+			    $feedback .= DB::error()."<br>";
+			    $feedback .= $sql;
+		    }
+		    if ($result){
+                if(DB::numrows($result) < 1){
+                    return false;
+                } else {
+                    return true;
+                }
+            }else{
+                $feedback .= DB::error();
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     static function login($username, $password){
@@ -66,25 +65,25 @@ class Auth{
         } else {
             $binds = [$username, $password];
             $sql= "	SELECT count(*) user_count
-                    FROM users
-                    WHERE username = ?
-                    AND password = ?
-                    AND active = 1";
+                    FROM `users`
+                    WHERE `username` = ?
+                    AND `password` = ?
+                    AND `active` = 1";
             $result = DB::query($sql, $binds);
             if(DB::error()){
                 global $feedback;
                 $feedback .= DB::error()."<br>";
                 $feedback .= $sql."<br>";
             }
-                    $r = DB::fetch_array($result);
+            $r = DB::fetch_array($result);
             if (!$result || $r['user_count'] < 1){
                 $feedback .=  ' ERROR - User not found or password incorrect ';
                 return false;
             } else {
-                            $binds = [$username];
-                $sql = "	UPDATE users
-                            SET last_login = NOW()
-                            WHERE user_id = ?";
+                $binds = [$username];
+                $sql = "	UPDATE `users`
+                            SET `last_login` = NOW()
+                            WHERE `user_id` = ?";
                 $r = DB::query($sql, $binds);
                 
                 if(DB::error()){
@@ -107,14 +106,15 @@ class Auth{
             if (isset($_COOKIE[self::COOKIE_USERNAME]) && isset($_COOKIE[self::COOKIE_HASH])){
                 //Find auth hash
                 $binds = [$_COOKIE[self::COOKIE_USERNAME], $_COOKIE[self::COOKIE_HASH]];
-                $sql= "	SELECT *
-                        FROM users
-                        WHERE username = ?
-                        AND hash = ?
-                        AND hash_expires > NOW()
-                        AND active = 1";
-            $result = DB::query($sql);
-            if (!isset($result) || $result->num_rows < 1){
+                $sql= "	SELECT count(*) user_count
+                        FROM `users`
+                        WHERE `username` = ?
+                        AND `hash` = ?
+                        AND `hash_expires` > NOW()
+                        AND `active` = 1";
+            $result = DB::query($sql, $binds);
+            $r = DB::fetch_array($result);
+            if (!isset($result) || $r['user_count'] < 1){
                 self::logout();
                 return false;
             } else {
@@ -164,19 +164,18 @@ class Auth{
         setcookie(self::COOKIE_USERNAME, $username, $cookie_options);
         setcookie(self::COOKIE_HASH, $id_hash, $cookie_options);
         $binds = [$id_hash, $username];
-        $sql = "	UPDATE users
-		SET hash = ?,
-		hash_expires = ADDDATE(NOW(),
-		".self::MYSQL_COOKIE_LENGTH.")
-		WHERE username = ?";
+        $sql = "	UPDATE `users`
+		            SET `hash` = ?,
+		                `hash_expires` = ADDDATE(NOW(), ".self::MYSQL_COOKIE_LENGTH.")
+		            WHERE  `username` = ?";
         DB::query($sql, $binds);	
     }
 
-    static function get_user_ID(){
+    static function getUserId(){
         $binds = [$_COOKIE[self::COOKIE_USERNAME]];
         $sql = "	SELECT *
-		FROM users
-		WHERE username = ?";
+		            FROM `users`
+		            WHERE `username` = ?";
         $result = DB::query($sql, $binds);
         if(DB::error()){
             global $feedback;
@@ -197,8 +196,8 @@ class Auth{
         if (!$G_USER_RESULT){
             $binds = [self::user_getname()];
             $sql = "    SELECT *
-                        FROM users 
-                        WHERE username = ?";
+                        FROM `users` 
+                        WHERE `username` = ?";
             $G_USER_RESULT = DB::query($sql, $binds);
         }
         if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){
@@ -214,8 +213,8 @@ class Auth{
 	if (!$G_USER_RESULT){
             $binds = [user_getname()];
             $sql = "    SELECT *
-                        FROM users 
-                        WHERE username = ?";
+                        FROM `users` 
+                        WHERE `username` = ?";
             $G_USER_RESULT = DB::query($sql, $binds);
 	}
 	if ($G_USER_RESULT && DB::numrows($G_USER_RESULT) > 0){

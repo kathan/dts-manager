@@ -138,36 +138,36 @@ class carrier_table extends dts_table{
 		$sql = "SELECT CONCAT('S', carrier_id) id, c.* FROM carrier c ";
 		$clause = 'WHERE';
 		$where='';
-                $binds = [];
+                // $binds = [];
 		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0) {
-                    $binds[] = intval(trim($_REQUEST['carrier_id'], 's S'));
+			$binds[] = intval(trim($_REQUEST['carrier_id'], 's S'));
 			$where .= " $clause carrier_id = ?";
 			$clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != '') {
-                            $binds[] = "%".addslashes($_REQUEST['name'])."%";
-                            $where .= " $clause name like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['name'])."%";
+				$where .= " $clause name like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !='') {
-                            $binds[] = "%".addslashes($_REQUEST['phys_address'])."%";
-                            $where .= " $clause phys_address like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['phys_address'])."%";
+				$where .= " $clause phys_address like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !='') {
-                            $binds[] = "%".addslashes($_REQUEST['phys_city'])."%";
-                            $where .= " $clause phys_city like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['phys_city'])."%";
+				$where .= " $clause phys_city like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !='') {
-                            $binds[] = "%".addslashes($_REQUEST['phys_state'])."%";
-                            $where .= " $clause phys_state like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['phys_state'])."%";
+				$where .= " $clause phys_state like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['mc_number']) && $_REQUEST['mc_number'] !='') {
-                            $binds[] = "%".addslashes($_REQUEST['mc_number'])."%";
-                            $where .= " $clause mc_number like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['mc_number'])."%";
+				$where .= " $clause mc_number like ?";
+				$clause = 'AND';
 			}
 		}
 		$sql .= $where;
@@ -197,7 +197,7 @@ class carrier_table extends dts_table{
 	}
 	
 	function get_loads() {
-		$binds = [$_REQUEST[carrier_id]];
+		$binds = [$_REQUEST['carrier_id']];
 		
 		$p = new portal("SELECT 	l.load_id,
 								IFNULL(

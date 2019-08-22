@@ -3,45 +3,61 @@
 class DB{
     public static $db;
     public static function connect($dbuser, $dbpass, $dbname='', $dbhost='localhost'){
-	if(!isset(self::$db)){
+	    if(!isset(self::$db)){
             self::$db = new mysqli ($dbhost, $dbuser, $dbpass, $dbname);
             if(!self::$db){
                 return false;
             }
-	}
-		
-	return self::$db;
+	    }
+	    return self::$db;
     }
 	
     public static function close(){
         self::$db->close();
     }
-	
+    
+    static function refValues($arr){
+        if (strnatcmp(phpversion(),'5.3') >= 0) //Reference is required for PHP 5.3+
+        {
+            $refs = [];
+            foreach($arr as $key => $value){
+                $refs[$key] = &$arr[$key];
+            }
+            return $refs;
+        }
+        return $arr;
+    }
+
     public static function query($sql, $binds=null){
         $bind_ary = [];
         $bind_ary[0] = '';
         $stmt = self::$db->stmt_init();
         $stmt->prepare($sql);
-	if(isset($binds)){
-            var_dump($binds);
+	    if(isset($binds) && count($binds) > 0){
             foreach($binds as $val){
                 switch(gettype($val)){
-                    case 'string':
-                        $bind_ary[0] .= 's';
+                    case 'string';
+                        $bind_ary[0] = 's'.$bind_ary[0];
                         $bind_ary[] = $val;
                         break;
                     case 'integer':
-                        $bind_ary[0] .= 'i';
+                        $bind_ary[0] = 's'.$bind_ary[0];
                         $bind_ary[] = $val;
                         break;
                     case 'double':
-                        $bind_ary[0] .= 'd';
+                        $bind_ary[0] = 'd'.$bind_ary[0];
                         $bind_ary[] = $val;
                         break;
+
                 }
             }
-            var_dump($bind_ary);
-            call_user_func_array([$stmt, 'bind_param'], $bind_ary);
+            $ref_vals = self::refValues($bind_ary);
+            if(!call_user_func_array([$stmt, 'bind_param'], $ref_vals)){
+                debug_print_backtrace();
+                echo "<br>$sql<br>";
+                var_dump($binds);
+                return false;
+            }
         }
         if($stmt->execute()){
             $result = $stmt->get_result();
@@ -50,7 +66,17 @@ class DB{
             return false;
         }
     }
-	
+    
+    public static function num_fields($result){
+        return $result->field_count; 
+    }
+
+    public static function field_name($result, $idx){
+        $result->field_seek($idx);
+        $finfo = $result->fetch_field();
+        return $finfo->name;
+    }
+
     public static function num_rows($result){
         if ($result){
             return $result->num_rows;

@@ -17,7 +17,7 @@ echo $t->fetch(App::$temp.'cust_report.tpl');
 function get_report($start, $end, $user_id=null){
 	$sql .= "select customer_id
 					, name
-					, (select username from users u where user_id = c.acct_owner) cust_rep
+					, (select username from `users` u where user_id = c.acct_owner) cust_rep
 					, (select count(*)
 						from `load`
 						where customer_id = c.customer_id
@@ -64,7 +64,7 @@ function get_report($start, $end, $user_id=null){
 
 function get_users(){
 	$sql = "SELECT *
-			FROM users";
+			FROM `users`";
 	$re = DB::query($sql);
 	$ary = Array('');
 	while($r = DB::fetch_assoc($re)){
@@ -75,7 +75,7 @@ function get_users(){
 
 function get_username($user_id){
 	$sql = "SELECT username
-			FROM users
+			FROM `users`
 			WHERE user_id = $user_id";
 	$re = DB::query($sql);
 	$r = DB::fetch_assoc($re);

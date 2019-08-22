@@ -8,8 +8,7 @@ require_once('includes/html_form.php');
 $l = new lane();
 echo $l->render();
 
-class lane //extends dts_table
-{
+class lane {
 	var $search = 'Search';
 	
 	function __construct(){

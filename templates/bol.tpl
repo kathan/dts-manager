@@ -32,7 +32,6 @@
 			</div>
 		</td>
 		<td id="carrier_info" class="top_border">
-			{*Carrier: {$load.carrier_name}<br />*}
 			LTL Carrier: {$load.ltl_carrier}<br />
 			Pro Number: {$load.pro_number}<br />
 			Pick Up Date: {$load.pickup_date}<br />

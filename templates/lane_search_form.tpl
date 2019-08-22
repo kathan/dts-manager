@@ -1,7 +1,7 @@
 <!-- start lane search-->
 <center>
 <h2>Lane Search</h2>
-<form method="GET" action="/dts/index.php" name="" enctype="multipart/form-data">
+<form method="GET" action="index.php" name="" enctype="multipart/form-data">
 	<input type="hidden" name="page" id=""  value="lanes">
 	<table class="edit_class">
 		<tr>

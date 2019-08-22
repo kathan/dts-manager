@@ -40,7 +40,7 @@ function &db_get_parent(&$table_obj, $column){
 	require_once("column.php");
 	mysqli_select_db('information_schema');
 	$sql = "		SELECT *
-					FROM key_column_usage
+					FROM `key_column_usage`
 					WHERE TABLE_SCHEMA = '".DBNAME."'
 					AND TABLE_NAME = '".$table_obj->get_name()."' 
 					AND REFERENCED_COLUMN_NAME is NOT NULL

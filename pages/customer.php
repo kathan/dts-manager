@@ -153,13 +153,13 @@ class customer_table extends dts_table{
 	
 	function create_new(){
 		
-		set_post('acct_owner', get_user_ID());
+		set_post('acct_owner', Auth::getUserId());
 		$this->add();
 		$this->customer_id = $this->last_id;
 	}
 	function get_customers(){
-		$binds = [get_user_id()];
-		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM users u WHERE u.user_id = c.acct_owner) acct_owner
+		$binds = [Auth::getUserId()];
+		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM `users` u WHERE u.user_id = c.acct_owner) acct_owner
 							FROM customer c
 							";
 		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
@@ -174,7 +174,8 @@ class customer_table extends dts_table{
 	}
 	
 	function get_loads(){
-	//Added 10/15/13
+		//Added 10/15/13
+		$t = new Template();
 		if($this->customer_id>0){
 			$sql = "SELECT 	load_id
 							, activity_date
@@ -204,10 +205,11 @@ class customer_table extends dts_table{
 							WHERE l.customer_id = ?";
                 
                 $binds = [$this->customer_id];
-		$re = DB::query($sql, $binds);
-		$t = new Template();
-		$t->assign('loads', DB::to_array($re));
+			$re = DB::query($sql, $binds);
+			$t->assign('loads', DB::to_array($re));
 		}
+		
+		
 		return $t->fetch(App::getTempDir().'cust_load_list.tpl');
 	}
 	function get_warehouses(){
@@ -273,42 +275,42 @@ class customer_table extends dts_table{
 				, phone, fax, state, contact_name FROM customer ";
 		$clause = 'WHERE';
 		$where='';
-                $binds = [];
+        // $binds = [];
 		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0){
-                    $binds[] = intval(trim($_REQUEST['customer_id'], 't T'));
-                    $where .= " $clause customer_id = ?";
-                    $clause = 'AND';
+            $binds[] = intval(trim($_REQUEST['customer_id'], 't T'));
+			$where .= " $clause customer_id = ?";
+			$clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-                            $binds[] = "%".addslashes($_REQUEST['name'])."%";
-                            $where .= " $clause name like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['name'])."%";
+				$where .= " $clause name like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
-                            $binds[] = "%".addslashes($_REQUEST['address'])."%";
-                            $where .= " $clause address like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['address'])."%";
+				$where .= " $clause address like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
-                            $binds[] = "%".addslashes($_REQUEST['city'])."%";
-                            $where .= " $clause city like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['city'])."%";
+				$where .= " $clause city like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
-                            $binds[] = "%".addslashes($_REQUEST['state'])."%";
-                            $where .= " $clause state like ?";
-                            $clause = 'AND';
+				$binds[] = "%".addslashes($_REQUEST['state'])."%";
+				$where .= " $clause state like ?";
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['acct_owner']) && $_REQUEST['acct_owner'] >0){
-                            $binds[] = $_REQUEST['acct_owner'];
-                            $where .= " $clause acct_owner = ?";
-                            $clause = 'AND';
+				$binds[] = $_REQUEST['acct_owner'];
+				$where .= " $clause acct_owner = ?";
+				$clause = 'AND';
 			}
 		}
 		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
-                    $binds[] = get_user_id();
-                    $where .= " $clause acct_owner = ?";
-                    $clause = 'AND';
+			$binds[] = Auth::getUserId();
+			$where .= " $clause acct_owner = ?";
+			$clause = 'AND';
 		}
 		$sql .= $where;
 		$re = DB::query($sql, $binds);
@@ -354,7 +356,7 @@ class customer_table extends dts_table{
 	
 	function get_acct_owners(){
 		$sql = "SELECT user_id, username
-				FROM users";
+				FROM `users`";
 		$re = DB::query($sql);
 		$ary = [];
 		while($r = DB::fetch_assoc($re)){
@@ -406,7 +408,7 @@ class customer_table extends dts_table{
 	
 	function add_as_customer(){
 		$sql = "INSERT INTO customer(name, address, city, state, zip, phone, fax, contact_name, acct_owner)
-				SELECT name, address, city, state, zip, phone, fax, contact_name, ".get_user_id()."
+				SELECT name, address, city, state, zip, phone, fax, contact_name, ".Auth::getUserId()."
 				FROM warehouse
 				WHERE warehouse_id = $_REQUEST[warehouse_id]";
 		$r = db_query($sql);

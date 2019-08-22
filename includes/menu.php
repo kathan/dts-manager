@@ -7,7 +7,6 @@ class menu{
 	var $active_class;
 	function __construct(){
 		$this->active ='http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'];
-		//echo $this->active;
 	}
 	
 	function add_item(&$item){

@@ -1,8 +1,8 @@
 <?php
 require_once("reports.php");
 if(logged_in()){
-	$_GET['user_id'] = get_user_ID();
-	$_REQUEST['user_id'] = get_user_ID();
+	$_GET['user_id'] = Auth::getUserId();
+	$_REQUEST['user_id'] = Auth::getUserId();
 	if(!isset($_GET['start_Year'])){
 		$_GET['start_Year'] = date('Y');
 		$_REQUEST['start_Year'] = date('Y');

@@ -8,8 +8,8 @@ function get_overdue(){
 				,(select name from warehouse where warehouse_id = lw.warehouse_id) name
 				,(select city from warehouse where warehouse_id = lw.warehouse_id) city
 				,(select state from warehouse where warehouse_id = lw.warehouse_id) state
-				,(select username from users where user_id = (select acct_owner from customer where customer_id = (select customer_id from `load` where load_id = lw.load_id))) acct_owner
-				,(select username from users where user_id = (select order_by from `load` where load_id = lw.load_id)) order_by
+				,(select username from `users` where user_id = (select acct_owner from customer where customer_id = (select customer_id from `load` where load_id = lw.load_id))) acct_owner
+				,(select username from `users` where user_id = (select order_by from `load` where load_id = lw.load_id)) order_by
 				,'Overdue' urgency
 				, CONCAT(activity_date, ' ' , IFNULL(close_time, CASE DAYNAME(activity_date)
 				WHEN 'Sunday' THEN (select sun_close_time FROM warehouse where warehouse_id = lw.warehouse_id)
@@ -42,7 +42,7 @@ function get_overdue(){
 													WHERE acct_owner = ?) 
 								)
 							)";
-	$binds = [get_user_id(), get_user_id()];
+	$binds = [Auth::getUserId(), Auth::getUserId()];
 	
 	$re = DB::query($sql, $binds);
 	echo DB::error();
@@ -61,8 +61,8 @@ function get_approaching(){
 				,(select name from warehouse where warehouse_id = lw.warehouse_id) name
 				,(select city from warehouse where warehouse_id = lw.warehouse_id) city
 				,(select state from warehouse where warehouse_id = lw.warehouse_id) state
-				,(select username from users where user_id = (select acct_owner from customer where customer_id = (select customer_id from `load` where load_id = lw.load_id))) acct_owner
-				,(select username from users where user_id = (select order_by from `load` where load_id = lw.load_id)) order_by
+				,(select username from `users` where user_id = (select acct_owner from customer where customer_id = (select customer_id from `load` where load_id = lw.load_id))) acct_owner
+				,(select username from `users` where user_id = (select order_by from `load` where load_id = lw.load_id)) order_by
 				,'Approaching' urgency
 				, CONCAT(activity_date, ' ' , IFNULL(close_time, CASE DAYNAME(activity_date)
 				WHEN 'Sunday' THEN (select sun_close_time FROM warehouse where warehouse_id = lw.warehouse_id)
@@ -97,7 +97,7 @@ function get_approaching(){
 								)
 							)";
 	
-	$binds = [get_user_id(), get_user_id()];
+	$binds = [Auth::getUserId(), Auth::getUserId()];
 
 	$re = DB::query($sql, $binds);
 	echo DB::error();

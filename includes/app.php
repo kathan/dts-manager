@@ -13,7 +13,7 @@ require_once('DB.php');
 class App{
     public static $db;
     public static $templates_dir = '/templates/';
-    public static $img_dir = '/images';
+    public static $img_dir = 'images';
     public static $site_name = 'DTS';
     
     public static function getSiteName(){
@@ -38,37 +38,38 @@ class App{
 
     public static function get_username($user_id){
         $binds = [$user_id];
-        $sql = "SELECT username
-		FROM users
-		WHERE user_id = ?";
+        $sql = "SELECT `username`
+		        FROM `users`
+		        WHERE `user_id` = ?";
         $re = DB::query($sql, $binds);
-	if(DB::num_rows($re) > 0){
+	    if(DB::num_rows($re) > 0){
             $r = DB::fetch_assoc($re);
             return $r['username'];
-            }
+        }
     }
 	
     public static function dbConnect(){
-	if(!isset(self::$db)){
-            self::$db = DB::connect($_ENV['RDS_USERNAME'], $_ENV['RDS_PASSWORD'], $_ENV['RDS_DB_NAME'], $_ENV['RDS_HOSTNAME']);
+        $env = getenv();
+	    if(!isset(self::$db)){
+            self::$db = DB::connect($env['RDS_USERNAME'], $env['RDS_PASSWORD'], $env['RDS_DB_NAME'], $env['RDS_HOSTNAME']);
             if(self::$db){
                 if(!self::$db->set_charset("utf8")){
                     Feedback::add("Could not set charset");
                     Feedback::add(self::$db->error);
                     return false;
-		}
+		        }
             }else{
                 Feedback::add(self::$db->error);
                 return false;
             }
         }
-	return true;
+	    return true;
     }
 	
     public static function init(){
-	if(!self::dbConnect()){
+	    if(!self::dbConnect()){
             echo "Could not connect to database.";
-	}
+	    }
     }
 }
 
