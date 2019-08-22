@@ -64,11 +64,11 @@ class Auth{
             $feedback .=  ' ERROR - Missing user name or password ';
             return false;
         } else {
-            $binds = [$username, $password];
+            $binds = [$username, self::hashPassword($password)];
             $sql= "	SELECT count(*) user_count
                     FROM `users`
                     WHERE `username` = ?
-                    AND `password` = ?
+                    AND `hash_password` = ?
                     AND `active` = 1";
             $result = DB::query($sql, $binds);
             if(DB::error()){
@@ -78,6 +78,8 @@ class Auth{
             }
             $r = DB::fetch_array($result);
             if (!$result || $r['user_count'] < 1){
+                echo "$sql<br>";
+                var_dump($binds);
                 $feedback .=  ' ERROR - User not found or password incorrect ';
                 return false;
             } else {
@@ -256,6 +258,10 @@ class Auth{
             //look up the user some day when we need it
             return ' ERROR - Not Logged In ';
         }
+    }
+
+    static function hashPassword($password){
+        return hash("sha512", $password);
     }
 
     static function debug($s){

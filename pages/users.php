@@ -101,11 +101,13 @@ function save_user(){
 			
 			if(isset($_POST['password1']) && isset($_POST['password2'])){
 				
-				if(($_POST['password1'] == $_POST['password2'])){
-					if($_POST['password1'] != '' && $_POST['password2'] != ''){
-						$_POST['password'] = $_POST['password1'];
-					}
-					if($t->update($_POST)){
+				if($_POST['password1'] === $_POST['password2'] && $_POST['password1'] != '' && $_POST['password2'] != ''){
+					$data = $_POST;
+					$data['password'] = $_POST['password1'];
+					$data['hash_password'] = Auth::hashPassword($_POST['password1']);
+					unset($data['password1']);
+					unset($data['password2']);
+					if($t->update($data, ['user_id'=>$_GET['user_id']])){
 						$feedback .= "User Updated</br>";
 					}else{
 						$feedback .= $t->error_str."</br>";
@@ -120,7 +122,11 @@ function save_user(){
 			if($_POST['password1'] && $_POST['password2']){
 				if(($_POST['password1'] == $_POST['password2'])){
 					$_POST['password'] = $_POST['password1'];
-					if($t->insert($_POST)){
+					$data = $_POST;
+					
+					$data['password_hash'] = Auth::hashPassword($data['password']);
+					unset($data['password']);
+					if($t->insert($data)){
 						$feedback .= "User Added</br>";
 						header('Location: ?page='.basename(__FILE__, '.php').'&action=edit&user_id='.$t->last_id);
 					}else{
@@ -269,7 +275,6 @@ function get_user($user_id){
 	$sql = "	SELECT *
 				FROM `users`
 				WHERE user_id = $user_id";
-	//echo $sql;
 	$result = DB::query($sql);
 	if(DB::error()){
 		global $feedback;

@@ -165,20 +165,23 @@ class DB_Table{
 		SET ";
 		
 		foreach($set_ary as $key => $val){
-			//Instead of check for primary key, check for auto increment
-			if(!$set == ''){
-				$set .= ', ';
-			}
-			$set .= "`$key` = ?";
+			if(isset($this->columns[strtolower($key)])){
+				if(!$set == ''){
+					$set .= ', ';
+				}
+				$set .= "`$key` = ?";
 			
-			$this->binds[] = $val;
+				$this->binds[] = $val;
+			}
 		}
 		$this->sql .= $set;
 		$clause = 'WHERE';
 		foreach($where_ary as $key => $val){
-			$this->sql .= " $clause `$key` = ?";
-			$this->binds[] = $val;
-			$clause = 'AND';
+			if(isset($this->columns[strtolower($key)])){
+				$this->sql .= " $clause `$key` = ?";
+				$this->binds[] = $val;
+				$clause = 'AND';
+			}
 		}
 		$result = DB::query($this->sql, $this->binds);
 		if($result){
