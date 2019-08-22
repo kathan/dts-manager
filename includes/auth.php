@@ -1,7 +1,7 @@
 <?php
 require_once("global.php");
 require_once("DB_Table.php");
-require_once('Crypt.php');
+require_once('crypt.php');
 
 class Auth{
     const COOKIE_HASH = 'dts_hash';
