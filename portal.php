@@ -14,7 +14,4 @@ if(isset($_REQUEST['table'])){
 	$t->set_table($_REQUEST['table']);
 	$t->set_primary_key('carrier_id');
 	echo $t->render();
-	
 }
-
-?>

@@ -34,7 +34,7 @@ class select_input extends html_input{
 			$code .= "<option></option>";
 		}
 		if(is_resource($this->options)){
-			while($row = db_fetch_array($this->options)){
+			while($row = $this->options->fetch(PDO::FETCH_NUM)){
 				if (safe_get($row[$this->id_name]) == $this->selected){
 					if($row[$this->label_name] != ''){
 						$code .= "

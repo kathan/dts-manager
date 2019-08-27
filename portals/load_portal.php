@@ -4,7 +4,7 @@ require_once "../includes/portal.php";
 echo "
 	<script src='js/base.js'></script>
 	<script>
-		include('../sortable.js');
+		include('js/sortable.js');
 		function row_clicked(id, pk, name){
 			window.location=\"?action=Edit&page=\"+name+\"&\"+pk+\"=\"+id;
 		}

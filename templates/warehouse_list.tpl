@@ -64,9 +64,9 @@
 	function set_warehouse(warehouse_id)
 	{ldelim}
 		var param_str = "table=load&action=update&warehouse_id="+warehouse_id+"&load_id=";
-		var obj=new Object();
+		var obj = {};
 		obj.id = param_str;
-		obj.value = {$smarty.get.load_id};
+		obj.value = '{$smarty.get.load_id}';
 		db_save(obj);
 		
 		refresh_close();

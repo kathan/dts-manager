@@ -11,10 +11,9 @@ function check_for_existing($cust){
 				OR soundex(?) like CONCAT(soundex(address), '%'))
 				AND (zip like ?
 				OR ? like CONCAT(zip, '%'))";
-		$re = DB::query($sql, $binds);
-		echo DB::error();
-		echo "Results<table>";
-		while($r = DB::fetch_assoc($re)){
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		while($r = $stmt->fetch(PDO::FETCH_ASSOC)){
 			echo "<tr>";
 			foreach($r as $i){
 				echo "<td>$i</td>";

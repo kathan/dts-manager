@@ -1,5 +1,5 @@
 <!-- start lane search-->
-<center>
+
 <h2>Lane Search</h2>
 <form method="GET" action="index.php" name="" enctype="multipart/form-data">
 	<input type="hidden" name="page" id=""  value="lanes">
@@ -74,7 +74,7 @@
 	</table>
 </form>
 <script type="text/javascript">
-	include("./CalendarPopup.js");
+	include("js/CalendarPopup.js");
 	var cal_end_activity_date = new CalendarPopup("cal_div_end_activity_date");
 	var cal_start_activity_date = new CalendarPopup("cal_div_start_activity_date");
 </script>

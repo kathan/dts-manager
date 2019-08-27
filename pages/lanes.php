@@ -98,8 +98,12 @@ class lane {
 		$sql .= $where;
 		$sql .= ' ORDER BY l.activity_date';
 		$t = new Template();
-		$re = DB::query($sql, $binds);
-		$t->assign('loads', DB::to_array($re));
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		$t->assign('loads', $stmt->fetchAll(PDO::FETCH_ASSOC));
 		
 		return $t->fetch(App::getTempDir().'lane_search_result.tpl');
 		return $c;

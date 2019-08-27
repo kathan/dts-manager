@@ -34,7 +34,9 @@ if(isset($_GET['r'])){
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/jquery.ui.js"></script>
 		<script type="text/javascript" src="js/jquery.datepick.js"></script>
-		<script type="text/javascript" src="js/base.js" ></script>
+		<script type="text/javascript" src="js/base.js"></script>
+		<script type="text/javascript" src="js/db_save.js" ></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
 		<title>'.$GLOBALS['page_title'].'</title>
 	</head>
 	<body>';
@@ -67,6 +69,8 @@ $c .= '	<link rel="stylesheet" href="css/style.css" type="text/css" media="all">
 		<script type="text/javascript" src="js/jquery.ui.js"></script>
 		<script type="text/javascript" src="js/jquery.datepick.js"></script>
 		<script type="text/javascript" src="js/base.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+
 	</head>
 	<body>';
 $c .= '	<center>
@@ -79,7 +83,6 @@ $c .= '	<center>
 			</tr>
 			<tr>
 				<td valign="top">
-					
 					'.$page_content.'
 				</td>
 			</tr>

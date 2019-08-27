@@ -49,7 +49,7 @@
 		<td class="list_data type">
 			{*act_date*}
 			<input type="text" id="action=update&table=load_warehouse&load_id={$lw[i].load_id}&warehouse_id={$lw[i].warehouse_id}&activity_date=" name="activity_date" value="{if $lw[i].activity_date}{$lw[i].activity_date}{else}00/00/0000{/if}" size="10" readonly="true" onchange="db_save(this);column_updated(this);" />
-			<img onclick="var e=document.getElementById('action=update&table=load_warehouse&load_id={$lw[i].load_id}&warehouse_id={$lw[i].warehouse_id}&activity_date=');var c_str='cal_div_act_date_{$lw[i].warehouse_id}_cal';cal_act_date_{$lw[i].warehouse_id}.select(e,'cal_button_act_date_{$lw[i].warehouse_id}','MM/dd/yyyy');" id="cal_button_act_date_{$lw[i].warehouse_id}" src="images/cal.gif" onload="include('./CalendarPopup.js');cal_act_date_{$lw[i].warehouse_id} = new CalendarPopup('cal_div_act_date_{$lw[i].warehouse_id}');" style="vertical-align:middle" />
+			<img onclick="var e=document.getElementById('action=update&table=load_warehouse&load_id={$lw[i].load_id}&warehouse_id={$lw[i].warehouse_id}&activity_date=');var c_str='cal_div_act_date_{$lw[i].warehouse_id}_cal';cal_act_date_{$lw[i].warehouse_id}.select(e,'cal_button_act_date_{$lw[i].warehouse_id}','MM/dd/yyyy');" id="cal_button_act_date_{$lw[i].warehouse_id}" src="images/cal.gif" onload="include('js/CalendarPopup.js');cal_act_date_{$lw[i].warehouse_id} = new CalendarPopup('cal_div_act_date_{$lw[i].warehouse_id}');" style="vertical-align:middle" />
 		
 			<span id="cal_div_act_date_{$lw[i].warehouse_id}" style="background-color:white;position:absolute;z-index:1000" name="cal_act_date"></span> 
 		</td>

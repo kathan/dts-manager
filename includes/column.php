@@ -29,15 +29,12 @@ class column{
 	var $null_str ='';
 	var $html_input;
 	
-	function __construct(&$table_obj, $name, $desc=true){
+	function __construct(&$table_obj, $name){
 		$this->pw = false;
 		$this->name = $name;
 		$this->label = $name;
 		$this->parent_label_column = $name;
 		$this->table_obj =& $table_obj;
-		if($desc){
-			$this->_describe();
-		}
 	}
 	
 	function add_error($str){
@@ -71,11 +68,6 @@ class column{
 	
 	function get_table(){
 		return $this->table_obj->get_name();
-	}
-	
-	function _describe(){
-		$this->children = db_get_children($this->table_obj, $this->name);
-		$this->parent_column =& db_get_parent($this->table_obj, $this->name);
 	}
 	
 	function get_child_link($value){
@@ -176,8 +168,6 @@ class column{
 					}
 					
 					$this->html_input->set_label($this->label);
-					//return $i;
-					//return new text_input($this->name, $value);
 					break;
 				case 'date':
 					
@@ -186,8 +176,6 @@ class column{
 						$this->html_input->set_id($this->id);
 					}
 					$this->html_input->set_label($this->label);
-					//return $i;
-					//return new text_input($this->name, $value);
 					break;
 				case 'datetime':
 				
@@ -196,7 +184,6 @@ class column{
 					if($this->table_obj->auto_save){
 						$this->html_input->set_id($this->id);
 					}
-					//return $i;
 					break;
 				case 'timestamp':
 					
@@ -205,7 +192,6 @@ class column{
 					if($this->table_obj->auto_save){
 						$this->html_input->set_id($this->id);
 					}
-					//return $i;
 					break;
 				case 'binary':
 					$this->html_input = new checkbox_input($this->name, $value);
@@ -213,7 +199,6 @@ class column{
 					if($this->table_obj->auto_save){
 						$this->html_input->set_id($this->id);
 					}
-					//return $i;
 					break;
 				case 'mediumtext':
 					$this->html_input =  new textarea_input($this->name, $value);
@@ -227,7 +212,6 @@ class column{
 					if($this->table_obj->auto_save){
 						$this->html_input->set_id($this->id);
 					}
-					//return $i;
 					break;
 				case 'mediumblob':
 					require_once("file_input.php");
@@ -236,12 +220,9 @@ class column{
 					if($this->table_obj->auto_save){
 						$this->html_input->set_id($this->id);
 					}
-					//return $i;
 					break;
 				default:
-					
 					if(isset($this->value_list)){
-						
 						return new select_input($this->name, '', $this->name, $this->value_list, $value);
 					}else{
 						$this->html_input =  new text_input($this->name, $value);
@@ -273,7 +254,6 @@ class column{
 				break;
 			case 'time':
 				if(in_array($value, $this->db_date_functions)){
-					
 					return $value;
 				}
 				return "'".$this->time_to_db($value)."'";
@@ -292,7 +272,6 @@ class column{
 				return "'".$this->date_to_db($value)."'";
 				break;
 			case 'binary':
-			
 				return $this->cb_to_binary($value);
 				break;
 			case 'double':
@@ -450,9 +429,9 @@ class column{
 						FROM `".$this->table_obj->get_name()."`
 						WHERE `$this->name` = ?";
 			$binds = [$input];
-			$r = DB::query($sql);
+			$r = App::$db->query($sql);
 		
-			if(DB::num_rows($r) > 0){
+			if($r->rowCount() > 0){
 				$this->add_error("$this->name must be unique.");
 				$failure = true;
 			}

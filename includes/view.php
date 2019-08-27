@@ -18,45 +18,45 @@ class view{
 	var $tbody_height='250px';
 	
 	function __construct($sql='', $binds=null){
-            $this->sql = $sql;
-            $this->binds = $binds;
+		$this->sql = $sql;
+		$this->binds = $binds;
 	}
 	
 	function set_id($id){
-            $this->id = $id;
+		$this->id = $id;
 	}
 	
 	function set_edit_column($col){
-            $this->edit_columns[$col] = $col;
+		$this->edit_columns[$col] = $col;
 	}
 	
 	function set_value_list($col, $vl){
-            $this->value_lists[$col] = $vl;
+		$this->value_lists[$col] = $vl;
 	}
 	
 	function set_element_on_change($col, $val){
-            $this->element_on_change[$col] = $val;
+		$this->element_on_change[$col] = $val;
 	}
 	
 	function set_element_id($col, $id){
-            $this->element_ids[$col] = $id;
+		$this->element_ids[$col] = $id;
 	}
 	
 	function hide_column($col){
-            $this->hidden_columns[$col] = $col;
+		$this->hidden_columns[$col] = $col;
 	}
 	
 	function add_class($class){
-            $this->class .= " $class";
+		$this->class .= " $class";
 	}
 	
 	function set_table($table){
-		$this->table = $table;
+	$this->table = $table;
 	}
 	
 	function set_sql($sql, $binds){
-            $this->sql = $sql;
-            $this->binds = $binds;
+		$this->sql = $sql;
+		$this->binds = $binds;
 	}
 	
 	function hide_primary_key(){
@@ -83,11 +83,12 @@ class view{
 	}
 	
 	function render($hide_column_heads=false){
-		$res = DB::query($this->sql, $this->binds);
+		$stmt = App::$db->prepare($this->sql);
+		$result = $stmt->execute($this->binds);
 		
-		if(DB::error()){
+		if($stmt->errorCode() > 0){
 			echo $this->sql;
-			echo DB::error();
+			echo $stmt->errorCode();
 		}
 		$pk = $this->primary_key;
 		
@@ -100,9 +101,10 @@ class view{
 			$html .= "<thead>\n";
 			$html .= "<tr>";
 			
-			$col_count = DB::num_fields($res);
+			$col_count = $stmt->columnCount();
 			for($c=0; $c < $col_count; $c++){
-				$col_name = DB::field_name($res, $c);
+				$col_ary = $stmt->getColumnMeta($c);
+				$col_name = $col_ary['name'];
 				if(!array_key_exists($col_name, $this->hidden_columns)){
 					$html .= "<th>".$this->format_label($col_name)."</th>\n";
 				}
@@ -117,7 +119,7 @@ class view{
 		$i=0;
 		//==== rows ====
 		
-		while($row = DB::fetch_array($res)){
+		while($row = $stmt->fetch(PDO::FETCH_NUM)){
 			if(isset($pk)){
 				$id = $row[$pk];
 			}else{
@@ -149,7 +151,8 @@ class view{
 			//==== columns ====
 			
 			for($c=0; $c < $col_count; $c++){
-				$col_name = DB::field_name($res, $c);
+				$col_ary = $stmt->getColumnMeta($c);
+				$col_name = $col_ary['name'];
 				if(!array_key_exists($col_name, $this->hidden_columns)){
 					$html .= "<td class='list_data $col_name' style='
 						padding-right: 2px;
@@ -157,33 +160,25 @@ class view{
 						font-weight:bold;
 						font-size: 12px;
 						color: black;'>";
-					//print($this->value_lists[$col_name]);
 					
 					if(isset($this->value_lists[$col_name])){
-						//echo $row[$c];
 						$si = new select_input($col_name, $col_name, $col_name, $this->value_lists[$col_name], $row[$c]);
 						if(isset($this->element_ids[$col_name])){
-							//$row_onclick = eval("return ".$this->row_action);
 							$el_id = eval("return ".$this->element_ids[$col_name]);
 							$si->set_id($el_id);
 						}
-						if(isset($this->element_on_change[$col_name]))
-						{
+						if(isset($this->element_on_change[$col_name])){
 							$oc = $this->element_on_change[$col_name];
 							$si->add_attribute('onchange', $oc);
 						}
 						$html .= $si->render();
 					}elseif(array_key_exists($col_name, $this->edit_columns)){
-						
 						$e = new text_input($col_name, $row[$c]);
-						if(isset($this->element_ids[$col_name]))
-						{
-							//$row_onclick = eval("return ".$this->row_action);
+						if(isset($this->element_ids[$col_name])){
 							$el_id = eval("return ".$this->element_ids[$col_name]);
 							$e->set_id($el_id);
 						}
-						if(isset($this->element_on_change[$col_name]))
-						{
+						if(isset($this->element_on_change[$col_name])){
 							$oc = $this->element_on_change[$col_name];
 							$e->add_attribute('onchange', $oc);
 						}
@@ -203,13 +198,11 @@ class view{
 		//==== end rows ====
 		$html .= "</tbody>\n</table>\n</div>
 		<style>
-			.normalRow
-			{
+			.normalRow{
 				background-color:white;
 				color:color;
 			}
-			.altRow
-			{
+			.altRow{
 				background-color:silver;
 				color:color;
 			}
@@ -217,66 +210,65 @@ class view{
 		return $html;
 	}
 
-	function get_styles()
-	{
+	function get_styles(){
 		return "<style type='text/css'>
-/*==== Scrollable List ====*/
-div.tableContainer {
-	width: 65%;		/* table width will be 99% of this*/
-	height: 295px; 	/* must be greater than tbody*/
-	overflow: auto;
-	margin: 0 auto;
-	}
+		/*==== Scrollable List ====*/
+		div.tableContainer {
+			width: 65%;		/* table width will be 99% of this*/
+			height: 295px; 	/* must be greater than tbody*/
+			overflow: auto;
+			margin: 0 auto;
+			}
 
-table {
-	width: 99%;		/*100% of container produces horiz. scroll in Mozilla*/
-	border: none;
-	background-color: #f7f7f7;
-	}
-	
-table>tbody	{  /* child selector syntax which IE6 and older do not support*/
-	overflow: auto; 
-	height: 250px;
-	overflow-x: hidden;
-	}
-	
-thead tr	{
-	position:relative; 
-	top: expression(offsetParent.scrollTop); /*IE5+ only*/
-	
-	}
-	
-thead td, thead th {
-	text-align: center;
-	font-size: 14px; 
-	background-color: oldlace;
-	color: steelblue;
-	font-weight: bold;
-	border-top: solid 1px #d8d8d8;
-	}	
-	
-td	{
-	color: #000;
-	padding-right: 2px;
-	font-size: 12px;
-	text-align: right;
-	
-	border-left: solid 1px #d8d8d8;
-	border-bottom:1px solid black;
-	}
+		table {
+			width: 99%;		/*100% of container produces horiz. scroll in Mozilla*/
+			border: none;
+			background-color: #f7f7f7;
+			}
+			
+		table>tbody	{  /* child selector syntax which IE6 and older do not support*/
+			overflow: auto; 
+			height: 250px;
+			overflow-x: hidden;
+			}
+			
+		thead tr	{
+			position:relative; 
+			top: expression(offsetParent.scrollTop); /*IE5+ only*/
+			
+			}
+			
+		thead td, thead th {
+			text-align: center;
+			font-size: 14px; 
+			background-color: oldlace;
+			color: steelblue;
+			font-weight: bold;
+			border-top: solid 1px #d8d8d8;
+			}	
+			
+		td	{
+			color: #000;
+			padding-right: 2px;
+			font-size: 12px;
+			text-align: right;
+			
+			border-left: solid 1px #d8d8d8;
+			border-bottom:1px solid black;
+			}
 
-tfoot td	{
-	text-align: center;
-	font-size: 11px;
-	font-weight: bold;
-	background-color: papayawhip;
-	color: steelblue;
-	border-top: solid 2px slategray;
-	}
+		tfoot td	{
+			text-align: center;
+			font-size: 11px;
+			font-weight: bold;
+			background-color: papayawhip;
+			color: steelblue;
+			border-top: solid 2px slategray;
+			}
 
-td:last-child {padding-right: 20px;} /*prevent Mozilla scrollbar from hiding cell content*/
-/*==========================*/
-</style>";
+		td:last-child {padding-right: 20px;} /*prevent Mozilla scrollbar from hiding cell content*/
+		/*==========================*/
+		</style>";
 	}
 }
 ?>

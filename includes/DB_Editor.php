@@ -287,9 +287,9 @@ class DB_Editor extends DB_Table{
 			$sql .= " $clause `".$pk->get_name()."` = ".$pk->format_for_where($_REQUEST[$pk->get_name()]);
 			$clause = 'AND';
 		}
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		
-		$this->row = DB::fetch_assoc($re);
+		$this->row = $re->fetch(PDO::FETCH_ASSOC);
 		return $this->row;
 	}
 	function edit(){
@@ -328,7 +328,7 @@ class DB_Editor extends DB_Table{
 		
 		$t->assign('search', $_REQUEST[$this->search_str]);
 		
-		$list = DB::query($sql);
+		$list = App::$db->query($sql);
 		$p = new Paginator($list, $start);
 		$t->assign('pag', $p->get());
 		$t->assign('list',  $p->to_array($list));
@@ -378,8 +378,8 @@ class DB_Editor extends DB_Table{
 	function build_list($filter=''){
 		$sql = $this->build_query($filter);
 		
-		$re = DB::query($sql);
-		$result_count = DB::num_rows($re);
+		$re = App::$db->query($sql);
+		$result_count = $re->rowCount();
 		$c .= $this->search_form();
 		
 		$c .= $this->new_button();
@@ -401,7 +401,7 @@ class DB_Editor extends DB_Table{
 		$next_start = $start + $this->list_limit;
 		(($result_count - $start) > $this->list_limit ? $next_group_count = $this->list_limit :$next_group_count =($result_count - $start));
 		DB::data_seek($re, $start);
-		while($row = DB::fetch_array($re)){
+		while($row = $re->fetch(PDO::FETCH_NUM)){
 			$q_str='';
 			$q_input='';
 			foreach($pks as $pk){

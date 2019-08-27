@@ -13,3 +13,4 @@ deploy:
   app: "dts-manager"
   env: "DtsManager-dev"
   bucket_name: "dts-manager-s3-bucket"
+  skip_cleanup: true

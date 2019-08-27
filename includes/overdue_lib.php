@@ -44,10 +44,11 @@ function get_overdue(){
 							)";
 	$binds = [Auth::getUserId(), Auth::getUserId()];
 	
-	$re = DB::query($sql, $binds);
-	echo DB::error();
+	$stmt = App::$db->prepare($sql);
+	$result = $stmt->execute($binds);
+	//echo $re->errorCode();
 	$ary=[];
-	while($r = DB::fetch_assoc($re)){
+	while($r = $re->fetch(PDO::FETCH_ASSOC)){
 		$ary[]=$r;
 	}
 	return $ary;
@@ -99,10 +100,13 @@ function get_approaching(){
 	
 	$binds = [Auth::getUserId(), Auth::getUserId()];
 
-	$re = DB::query($sql, $binds);
-	echo DB::error();
+	$stmt = App::$db->prepare($sql);
+	$result = $stmt->execute($binds);
 	$ary=[];
-	while($r = DB::fetch_assoc($re)){
+	if($result){
+		return false;
+	}
+	while($r = $stmt->fetch(PDO::FETCH_ASSOC)){
 		$ary[]=$r;
 	}
 	return $ary;

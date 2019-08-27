@@ -10,8 +10,8 @@ $t = new DB_Table('load');
 /*foreach(array_keys($t->columns) as $key){
 	echo $key.'<br>';
 }*/
-$re = DB::query($sql);
-while($r = DB::fetch_assoc($re)){
+$re = App::$db->query($sql);
+while($r = $re->fetch(PDO::FETCH_ASSOC)){
 	$a = Array('load_id'=>$r['load_id'],
 			$r['field']=>$r['value']);
 	if($l = loadExists($r['load_id'])){
@@ -36,8 +36,8 @@ function loadExists($load_id){
 	$sql = "SELECT *
 			FROM `load`
 			WHERE load_id = $load_id";
-	$re = DB::query($sql);
-	if($r = DB::fetch_assoc($re)){
+	$re = App::$db->query($sql);
+	if($r = $re->fetch(PDO::FETCH_ASSOC)){
 		return $r;
 	}else{
 		return false;

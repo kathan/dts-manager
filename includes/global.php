@@ -1,8 +1,6 @@
 <?php
 global $feedback;
 	
-require_once("database.php");
-	
 function safe_define($key, $value){
     if(!defined($key)){
 	define($key, $value);
@@ -96,22 +94,7 @@ function MySQL_Date_To_format($mysqldate, $format){
 }
 	
 function logError($err, $function){
-    // $binds = [$err, json_encode($_SERVER), $function, json_encode($_REQUEST)];
-    // $sql ="INSERT INTO errors(
-    //             error_string,
-    //             server_values,
-    //             function,
-    //             request_values)
-    //         values(
-    //             ?,
-	// 	?,
-	// 	?,
-	// 	?
-    //         )";
-    // DB::query($sql, $binds);
-    // if( DB::error()){
-        
-    // }
+    
 }
 	
 function getFileName($path){
@@ -125,148 +108,32 @@ function getFileName($path){
     return $pathAry[count($pathAry)];
 }
 	
-	function array_to_stringOLD($array)
-	{
-		foreach ($array as $index => $val)
-		{
+	function array_to_stringOLD($array){
+		foreach ($array as $index => $val){
 			$val2 .= " ".$val;
 		}
 		return $val2;
 	} 
 	
-	 function array_to_string($array)
-	{
+	 function array_to_string($array){
 		$str='';
-		if(is_array($array))
-		{
+		if(is_array($array)){
 			$keys = array_keys($array);
-			foreach($keys as $key)
-			{
+			foreach($keys as $key){
 				$str .= $key . ":" . $array[$key] . "\n";
 			}
 			return $str;
 		}
 	}
-
-	function getSelect($option, $select_name, $select_id, $result, $multiple=0)
-	{
 	
-		$option_id = $option . "_id";
-		
-		if($multiple)
-		{
-			$code = "<select name=".$select_name."[] multiple>\n";
-		}else{
-			$code = "<select name='$select_name'>\n";
-			$code .= "<option value='0'></option>\n";
-		}
-		
-		
-		if ($result)
-		{
-			while ($row = db_fetch_assoc($result))
-			{
-				$option_value = $row[$option_id];
-				$option_name = $row[$option];
-				//debug("value=$value");
-				//debug("name=$name");
-				if ($row[$option_id] == $select_id)
-				{
-					
-					$code .= "<option value='$option_value' selected>$option_name</option>\n";
-				}else{
-					$code .= "<option value='$option_value'>$option_name</option>\n";
-				}
-			}
-		}
-		$code .= "</select>";
-		return $code;
-	}
-	
-	function getSelectNew($option_id, $option_name, $result, $select_name, $select_id=null, $multiple=0)
-	{	
-		if($multiple)
-		{
-			$code = "<select name=".$select_name."[] multiple>\n";
-		}else{
-			$code = "<select name='$select_name'>\n";
-			$code .= "<option value='0'></option>\n";
-		}
-		
-		
-		if ($result)
-		{
-			while ($row = db_fetch_assoc($result))
-			{
-				$option_value = $row[$option_id];
-				$option = $row[$option_name];
-				//debug("value=$value");
-				//debug("name=$name");
-				if ($row[$option_id] == $select_id)
-				{
-					
-					$code .= "<option value='$option_value' selected>$option</option>\n";
-				}else{
-					$code .= "<option value='$option_value'>$option</option>\n";
-				}
-			}
-		}
-		$code .= "</select>";
-		return $code;
-	}
-	
-	function getView($sql)
-	{
-		global $feedback;
-		$result = db_query($sql);
-		$feedback .= db_error();
-		$view .= "
-		<center>
-			<table class='viewTable'>
-				<tr>";
-		$fieldCount = db_numfields($result);
-		
-		//Show all the field heads
-		for($i=0;$i < $fieldCount;$i++)
-		{
-			$view .= getCell(db_fieldname($result, $i), "listTableHead");
-		}
-		$view .= "</tr>";
-		while ($row = db_fetch_array($result))
-		{
-			$r++;
-			$view .= "
-				<tr>";
-				if ($r % 2 == 0)
-				{
-					$class = "listTableData1";
-				}else{
-					$class = "listTableData2";
-				}
-			for($i=0; $i < $fieldCount; $i++)
-			{
-				
-				$view .= getCell($row[$i], $class);
-			}
-			//$view .= "		</div>";
-		}
-		$view .= "
-				</tr>
-		</center>";
-		return $view;
-	}
-	
-	function validate_email ($address) 
-	{
+	function validate_email ($address){
 		return (ereg('^[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+'. '@'. '[-!#$%&\'*+\\/0-9=?A-Z^_`a-z{|}~]+\.' . '[-!#$%&\'*+\\./0-9=?A-Z^_`a-z{|}~]+$', $address));
 	}
 	
-	function get_file($name)
-	{
+	function get_file($name){
 		global $feedback;
 		// In PHP earlier then 4.1.0, $HTTP_POST_FILES  should be used instead of $_FILES.
-		if (is_uploaded_file($_FILES[$name]['tmp_name']))
-		{
+		if (is_uploaded_file($_FILES[$name]['tmp_name'])){
 			//put the file contents into a variable and escape special characters
     		$image_data = DB::esc(file_get_contents($_FILES[$name]['tmp_name']));
 	    	unlink($_FILES[$name]['tmp_name']);//delete the temporary file
@@ -275,8 +142,7 @@ function getFileName($path){
     		$feedback .= "Error: $error<br>";
     	}
     	
-		switch ($error)
-		{
+		switch ($error){
 		case 0:
 			$feedback .=  "Your file has been saved.";
 			return true;

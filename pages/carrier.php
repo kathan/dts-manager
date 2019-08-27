@@ -42,8 +42,8 @@ class carrier_table extends dts_table{
 			$code='';
 		
 		if(Auth::loggedIn()) {
-			$code .= "<script src='sortable.js'></script>
-				<script src='db_save.js.php'></script>
+			$code .= "<script src='js/sortable.js'></script>
+				<script src='js/db_save.js'></script>
 				";
 				$code .= $this->portal_script();
 				$code .= "<div class='content load_content'>";
@@ -171,9 +171,12 @@ class carrier_table extends dts_table{
 			}
 		}
 		$sql .= $where;
-		$re = DB::query($sql, $binds);
-		
-		return $re;
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		return $stmt;
 	}
 	function get_search_edit() {
 		$si = new submit_input($this->search, 'action');
@@ -243,17 +246,14 @@ class carrier_table extends dts_table{
 	}
 	
 	function get_carrier_edit() {
-            $r = $this->get_row($_GET['carrier_id']);
-		
-            $temp = new Template();
-            $temp->assign('carrier', $r);
-            $temp->assign('users', $this->get_users());
-            $temp->assign('admin', Auth::loggedInAs('admin'));
-            $temp->assign('prefix', $this->prefix);
-            return $temp->fetch(App::getTempDir().'carrier_edit.tpl');
+		$r = $this->get_row($_GET['carrier_id'], true);
+		$temp = new Template();
+		$temp->assign('carrier', $r);
+		$temp->assign('users', $this->get_users());
+		$temp->assign('admin', Auth::loggedInAs('admin'));
+		$temp->assign('prefix', $this->prefix);
+		return $temp->fetch(App::getTempDir().'carrier_edit.tpl');
 	}
-	
-	
 	
 	function fetch_edit($name, $value, $protected=false) {
             $c =& $this->get_column($name);

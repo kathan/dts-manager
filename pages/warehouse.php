@@ -205,9 +205,9 @@ class warehouse_table extends dts_table{
 			}
 		}
 		$sql .= $where;
-		$re = DB::query($sql, $binds);
-		return $re;
-		
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		return $stmt;
 	}
 	
 	function create_new(){
@@ -393,14 +393,13 @@ class warehouse_table extends dts_table{
 					DATE_FORMAT(sat_close_time, '$this->time_format') sat_close_time
 				FROM warehouse w
 				WHERE warehouse_id = $this->warehouse_id";
-		$r = DB::query($sql);
-		$w = DB::fetch_assoc($r);
+		$r = App::$db->query($sql);
+		$w = $r->fetch(PDO::FETCH_ASSOC);
 		$t = new Template();
 		$t->assign('w', $w);
 		$t->assign('wh_to_cust', $this->wh_to_cust);
 		$t->assign('times', $this->times);
 		if(isset($_REQUEST[$this->new_str])){
-			
 			$t->assign('new', true);
 			$t->assign('delete_str', $this->delete_str);
 		}

@@ -10,7 +10,7 @@
             |forward him to the loggedin.php page
             |so the current cookie state is used.
             =================================*/
-            //header("Location: ?page=loggedin");
+            // header("Location: ?page=loggedin");
 	}else{
             logError("not logged in", "login");
             loginform();

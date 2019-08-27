@@ -1,8 +1,7 @@
-<script type="text/javascript" src="db_save.js.php"/>
+<script type="text/javascript" src="js/db_save.js"/>
 <script type="text/javascript">
 	{literal}		
-			function get_portal(table, params)
-			{
+			function get_portal(table, params){
 				try
 				{
 				var d = document.getElementById(table+'_portal');
@@ -11,8 +10,7 @@
 				//alert(table+'2');
 					var url = '?page=load&amp;portal='+table+'&amp;action=portal&amp;sml_view&amp;'+params;
 					var portal = getFromURL(url);
-				}catch(e)
-				{
+				}catch(e){
 					alert('Error in get_portal:'+e.description + ' url:' + url);
 				}
 				d.innerHTML = '';
@@ -21,8 +19,7 @@
 			}
 				</script><script type="text/javascript">
 					
-			function get_module(name, params)
-			{
+			function get_module(name, params){
 				var d = document.getElementById(name+'_module');
 				//alert(table+'1');
 				d.innerHTML = 'Loading '+name;
@@ -33,8 +30,7 @@
 					//var url = 'http://domestictransportsolutions.com/dts/?page=load&amp;module='+name+'&amp;action=module&amp;sml_view&amp;'+params;
 				var module = getFromURL(url);
 				
-				}catch(e)
-					{
+				}catch(e){
 						alert('Error in module_script:'+e.description + ' url:' + url);
 					}
 					d.innerHTML = '';
@@ -43,18 +39,14 @@
 			}
 				</script><script type="text/javascript">
 								
-				function popUp(URL, id, width, height)
-				{
-					if(!width)
-					{
+				function popUp(URL, id, width, height){
+					if(!width){
 						width=600;
 					}
-					if(!height)
-					{
+					if(!height){
 						height = 600;
 					}
-					if(!id)
-					{
+					if(!id){
 						day = new Date();
 						id = day.getTime();
 					}
@@ -112,8 +104,7 @@
 <h3>Carrier Search Results</h3>
 <script type="text/javascript">
 	{literal}
-					function check_carrier(insurance_expires)
-					{
+					function check_carrier(insurance_expires){
 						
 						ins_exp_str = insurance_expires.split('-');
 						ins_exp = new Date();
@@ -122,20 +113,17 @@
 						ins_exp.setDate(ins_exp_str[2]);
 						today = new Date();
 						
-						if(ins_exp &gt; today)
-						{
+						if(ins_exp &gt; today){
 							return true;
 						}else
 						{
 							return false;
 						}
 					}
-					function add_load_carrier(carrier_id, insurance_expires)
-					{
-						if(check_carrier(insurance_expires))
-						{
+					function add_load_carrier(carrier_id, insurance_expires){
+						if(check_carrier(insurance_expires)){
 							var param_str = 'table=load_carrier&amp;carrier_id='+carrier_id+'&amp;load_id=';
-							var obj=new Object();
+							var obj = {};
 							obj.id  = param_str;
 							obj.value = {/literal}{$load_id}{literal};
 							db_save(obj);
@@ -145,8 +133,7 @@
 							alert("Carrier's insurance expired on "+insurance_expires+".")
 						}
 					}
-					function refresh_close()
-					{
+					function refresh_close(){
 						window.opener.update_carrier_portal();
 					}
 					{/literal}

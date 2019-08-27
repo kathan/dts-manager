@@ -31,9 +31,9 @@ function month_report_form(){
 function get_users(){
 	$sql = "SELECT *
 			FROM `users`";
-	$re = DB::query($sql);
+	$re = App::$db->query($sql);
 	$ary = Array('');
-	while($r = DB::fetch_assoc($re)){
+	while($r = $re->fetch(PDO::FETCH_ASSOC)){
 		$ary[$r['user_id']] = $r['username'];
 	}
 	return $ary;
@@ -137,7 +137,7 @@ function get_report(){
 	$t->assign('month_str', get_month($_GET['start_Month']));
 	$t->assign('start_year', $_GET['start_Year']);
 	if(isset($_GET['user_id'])){
-		$t->assign('user', App::get_username($_GET['user_id']));
+		$t->assign('user', App::getUsername($_GET['user_id']));
 		$t->assign('user_id', $_GET['user_id']);
 	}
 	$c = $t->fetch(App::getTempDir().'/monthly.tpl');
@@ -237,12 +237,11 @@ $sql .= " l
 					AND activity_date >= '$mon'
 					AND activity_date <= '$fri'
 					order by activity_date, load_id";
-		$result = DB::query($sql);
-		//echo $sql."<br><br>";
-		if(DB::error()){
+		$result = App::$db->query($sql);
+		if(!$result){
 			echo "Error in get_weekly<br/>";
 			echo $sql."<br/>";
-			echo DB::error()."<br/>";
+			echo $result->errorCode()."<br/>";
 		}
 		$t = new Template();
 		isset($_GET['user_id']) ? $t->assign('user_id', $_GET['user_id']) : '';

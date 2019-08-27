@@ -43,46 +43,43 @@ class load_table extends dts_table{
 			$this->current_row();
 		}
 		
-		
 		$this->hide_delete();
 		$this->hide_column('load_id');
 		
-		
-		$i = new hidden_input('page', $this->page);
-		$this->add_other_inputs($i);
+		$page_input = new hidden_input('page', $this->page);
+		$this->add_other_inputs($page_input);
 		$this->add_table_params('page', $this->page);
 		
-		$col = $this->get_column('rating');
-
-		$col->set_value_list($this->rating_list);//????
+		$rating_col = $this->get_column('rating');
+		$rating_col->set_value_list($this->rating_list);//????
 		
-		$ob = $this->get_column('customer_id');
-		$ob->set_parent_label_column('name');
+		$customer_id_col = $this->get_column('customer_id');
+		$customer_id_col->set_parent_label_column('name');
 		
-		$ob = $this->get_column('order_by');
-		$ob->set_parent_label_column('username');
+		$order_by_col = $this->get_column('order_by');
+		$order_by_col->set_parent_label_column('username');
 		
 		$ob = $this->get_column('carrier_id');
 		$ob->set_parent_label_column('name');
 		
-		$col = $this->get_column('trailer_type');
-		$col->set_value_list($this->trailer_type_list);
+		$trailer_type_col = $this->get_column('trailer_type');
+		$trailer_type_col->set_value_list($this->trailer_type_list);
 		
-		$col = $this->get_column('class');
-		$col->set_value_list($this->load_classes);
+		$class_col = $this->get_column('class');
+		$class_col->set_value_list($this->load_classes);
 		
 		$this->tab_menu->add_tab("?page=$this->page&action=$this->search_edit", $this->search);
 		$this->tab_menu->add_tab("?page=$this->page", 'Boards');
 		$this->tab_menu->add_tab("?page=$this->page&action=$this->all", 'List');
-		
 	}
 	
 	function current_row(){
 		$sql = "SELECT l.*, (select acct_owner from customer where customer_id = l.customer_id) acct_owner
 				FROM `load` l
 				WHERE load_id = ?";
-		$re = DB::query($sql, [$this->load_id]);
-		$r = DB::fetch_assoc($re);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute([$this->load_id]);
+		$r = $stmt->fetch(PDO::FETCH_ASSOC);
 		return $r;
 	}
 	
@@ -240,8 +237,6 @@ class load_table extends dts_table{
 						$this->create_new();
 						if($this->load_id){
 							header("location: ?page=$this->page&action=$this->view_str&load_id=$this->load_id");
-						}else{
-							echo DB::error();
 						}
 						break;
 					case $this->all:
@@ -261,25 +256,22 @@ class load_table extends dts_table{
 	function repeat_load(){
 		
 		$old_load_id = $_REQUEST['load_id'];
-                $binds = [Auth::getUserId(), $old_load_id];
+		$binds = [Auth::getUserId(), $old_load_id];
 		$sql = "INSERT INTO `load`(customer_id,trailer_type,pallets,length,size,weight,class,commodity, order_date, order_by)
 			SELECT customer_id,trailer_type,pallets,length,size,weight,class,commodity, NOW(), ? FROM `load` WHERE load_id = ?";
-		$r = DB::query($sql, $binds);
-		if(DB::error()){
-			echo DB::error();
-			$this->add_error();
-			$this->add_error($sql);
-		}else{
-			$this->load_id = DB::insertid();
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
+		$this->load_id = App::$db->lastInsertId();
 		$binds = [$this->load_id, $old_load_id];
 		$sql = "INSERT INTO `load_warehouse`(load_id,open_time,close_time,warehouse_id,activity_date,activity_time,type,scheduled_with,creation_date)
 			SELECT ?,open_time,close_time,warehouse_id,NOW(),activity_time,type,scheduled_with,NOW() FROM `load_warehouse` WHERE load_id = ?";
-		$r = DB::query($sql, $binds);
-		if(DB::error()){
-			echo DB::error();
-			$this->add_error();
-			$this->add_error($sql);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
 	}
 	
@@ -302,7 +294,8 @@ class load_table extends dts_table{
 									AND lw.type = 'DEST' limit 1) 
 								, '$this->null_str') dest,
 								DATE_FORMAT(activity_date, '$this->date_format') activity_date
-							FROM `load` l");
+							FROM `load` l
+							LIMIT 20");
 	
 		$q->set_table('load');
 		$q->set_primary_key('load_id');
@@ -349,15 +342,15 @@ class load_table extends dts_table{
                     $clause = 'AND';
 		}
 		$sql .= $where;
-		$re = DB::query($sql, $binds);
-		if(DB::error()){
-			echo DB::error()."<br>";
-			echo $sql;
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
 		
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$t->assign('loads', DB::to_array($re));
+		$t->assign('loads', $stmt->fetchAll(PDO::FETCH_ASSOC));
 		return $t->fetch(App::getTempDir().'load_search_result.tpl');
 	}
 	
@@ -386,8 +379,12 @@ class load_table extends dts_table{
 					WHERE l.load_id = ?
 					AND lc.load_id = l.load_id
 					AND c.carrier_id = lc.carrier_id";
-		$re = DB::query($sql, [$this->load_id]);
-		$r = DB::fetch_assoc($re);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute([$this->load_id]);
+		if(!$result){
+			return false;
+		}
+		$r = $stmt->fetch(PDO::FETCH_ASSOC);
 		
 		$c .= "<table style='width:100%;border:1px solid black;' class='content'><tr>\n";
 		$c .= "<th>Carrier Name</td>\n";
@@ -441,14 +438,18 @@ class load_table extends dts_table{
 			WHERE lw.warehouse_id = w.warehouse_id
 			AND load_id = ?
 			ORDER BY type desc, lw.creation_date asc";
-		$r = DB::query($sql, [$this->load_id]);
-		return $r;
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute([$this->load_id]);
+		if(!$result){
+			return false;
+		}
+		return $stmt;
 	}
 	
 	function get_warehouses(){
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$t->assign('lw', DB::to_array($this->fetch_warehouses()));
+		$t->assign('lw', $this->fetch_warehouses()->fetchAll(PDO::FETCH_ASSOC));
 		$t->assign('times', $this->times);
 		$t->assign('admin', Auth::loggedInAs('admin'));
 		return $t->fetch(App::getTempDir().'load_warehouse_mod.tpl');
@@ -651,9 +652,9 @@ class load_table extends dts_table{
 					function add_load_warehouse(warehouse_id){
 						if(window.opener){
 							var type = document.getElementById('warehouse_type');
-							var obj=new Object();
+							var obj = {};
 							obj.id = 'table=load_warehouse&creation_date=NOW()&scheduled_with=".Auth::getUserId()."&type='+type.value+'&warehouse_id='+warehouse_id+'&load_id=';
-							obj.value = $this->load_id;
+							obj.value = '$this->load_id';
 							db_save(obj);
 							refresh_close();
 						}else{
@@ -719,7 +720,6 @@ class load_table extends dts_table{
 		$col = $wt->get_column('warehouse_id');
 		$o = $col->get_edit_html();
 		$o->set_size('5');
-		echo $test2->size;
 		
 		$wt->insert_column('name');
 		$wt->insert_column('city');
@@ -755,9 +755,9 @@ class load_table extends dts_table{
 					function add_load_carrier(carrier_id, insurance_expires){
 						if(check_carrier(insurance_expires)){
 							var param_str = 'table=load_carrier&carrier_id='+carrier_id+'&load_id=';
-							var obj=new Object();
+							var obj = {};
 							obj.id  = param_str;
-							obj.value = $this->load_id;
+							obj.value = '$this->load_id';
 							db_save(obj);
 							refresh_close();
 						}else{
@@ -866,10 +866,10 @@ class load_table extends dts_table{
 			$clause = 'AND';
 		}
 		$sql .= $where;
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$t = new Template();
 		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$t->assign('cust', DB::to_array($re));
+		$t->assign('cust', $re->fetchAll(PDO::FETCH_ASSOC));
 		return $t->fetch(App::getTempDir().'/cust_search_result.tpl');
 	}
 	
@@ -963,7 +963,6 @@ class load_table extends dts_table{
 		$t->assign('carrier_total', $carrier_total);
 		$wcp = round($gp * ($r['wc_percent'] * .01), 2);
 		$dlsp = round($gp * ($r['dls_percent'] * .01), 2);
-		
 		$dtsp = round($gp - $wcp, 2);
 		$t->assign('gp', $gp);
 		$t->assign('wcp', $wcp);
@@ -1236,6 +1235,7 @@ class load_table extends dts_table{
 		$c .= "
 		<fieldset>
 				<legend>";
+				$c .= "<a href='#' onclick=\"javascript:popUp('?page=load&action=$this->customer_search_edit&load_id=$this->load_id&".SMALL_VIEW."', 700,550)\">Customer</a>";
 		$c .="</legend>
 			<div id='customer_module'></div>
 		</fieldset>";
@@ -1290,7 +1290,7 @@ class load_table extends dts_table{
 				var warehouse_selection = document.getElementById('warehouse_selection');
 				var type = document.getElementById('warehouse_type');
 				var param_str = 'table=load_warehouse&type='+type.value+'&warehouse_id='+warehouse_selection.value+'&load_id=';
-				var obj=new Object();
+				var obj = {};
 				obj.id = param_str;
 				obj.value = load_id;
 				db_save(obj);
@@ -1304,7 +1304,7 @@ class load_table extends dts_table{
 			
 			function delete_warehouse(warehouse_id){
 				if(confirm('Are you sure you want to delete warehouse '+warehouse_id+' from this load?')){
-					var obj=new Object();
+					var obj = {};
 					obj.id = 'action=$this->delete&table=load_warehouse&load_id=$this->load_id&warehouse_id=';
 					obj.value = warehouse_id;
 					db_save(obj);
@@ -1313,7 +1313,7 @@ class load_table extends dts_table{
 			}
 			var cal_act_dates = Array();
 			function init_cals(){
-				include('./CalendarPopup.js');
+				include('js/CalendarPopup.js');
 				
 				var cals = document.getElementsByName('cal_act_date');
 				for(i=0;i<cals.length;i++){
@@ -1360,13 +1360,16 @@ class load_table extends dts_table{
 							var wc_perc = wc_perc_el.innerHTML * .01;
 							
 							wcp = Math.round(gp * wc_perc *100)/100;
-							wcp_el.style.visibility = 'visible';
-							wcp_el.innerHTML = wcp;
-							
+							if(wcp_el){
+								wcp_el.style.visibility = 'visible';
+								wcp_el.innerHTML = wcp;
+							}else{
+								alert('Cannot find #wcp_el');
+							}
 							
 						}else{
 							wcp = 0;
-							wcp_el.style.visibility = 'hidden';
+							wcp_el ? wcp_el.style.visibility = 'hidden' : alert('Cannot find #wcp_el');
 						}
 						setDtsp();
 					}
@@ -1385,10 +1388,10 @@ class load_table extends dts_table{
 							var dls_perc = dls_perc_el.innerHTML * .01;
 							
 							dlsp = Math.round(gp * dls_perc *100)/100;
-							dlsp_el.style.visibility = 'visible';
+							dlsp_el ? dlsp_el.style.visibility = 'visible' : alert('Cannot find #dlsp_el');
 						}else{
 							dlsp = 0;
-							dlsp_el.style.visibility = 'hidden';
+							dlsp_el ? dlsp_el.style.visibility = 'hidden' : alert('Cannot find #dlsp_el');
 						}
 						setDtsp();
 					}
@@ -1426,7 +1429,7 @@ class load_table extends dts_table{
                                          function add_load_carrier(load_id){
 						var carrier_selection = document.getElementById('carrier_selection');
 						var param_str = 'table=load_carrier&carrier_id='+carrier_selection.value+'&load_id=';
-						var obj=new Object();
+						var obj = {};
 						obj.id = param_str;
 						obj.value = load_id;
 						db_save(obj);
@@ -1509,13 +1512,11 @@ class load_table extends dts_table{
 	}
 	
 	function create_new(){
-            set_post('order_date', 'NOW()');
-            set_post('order_by', Auth::getUserId());
-            $this->add($_POST);
-            if(DB::error()){
-		echo DB::error();
-            }
-            $this->load_id = $this->last_id;
+		set_post('order_date', 'NOW()');
+		set_post('order_by', Auth::getUserId());
+		$this->add($_POST);
+		
+		$this->load_id = $this->last_id;
 	}
 	
 	function get_new(){
@@ -1560,15 +1561,15 @@ class load_table extends dts_table{
 
 	function get_customer($customer_id){
 		$sql ="SELECT *, CONCAT('<a href=\"?page=customer&action=$this->edit_str&customer_id=',customer_id,'\">', name, '</a>') name FROM customer WHERE customer_id = $customer_id";
-		$r = DB::query($sql);
-		return DB::fetch_assoc($r);
+		$r = App::$db->query($sql);
+		return $r->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	function get_user($user_id){
 		
 		$sql ="SELECT * FROM `users` WHERE user_id = $user_id";
-		$r = DB::query($sql);
-		return DB::fetch_assoc($r);
+		$r = App::$db->query($sql);
+		return $r->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	function fetch_new($name, $value=null){
@@ -1665,12 +1666,11 @@ class load_table extends dts_table{
 																	WHERE region_list_id = $filter[region_id])))";
 			}
 		}
-		$result = DB::query($sql);
-		if(DB::error()){
-			echo DB::error();
-			echo $sql;
+		$result = App::$db->query($sql);
+		if(!$result){
+			return false;
 		}
-		$r = DB::fetch_assoc($result);
+		$r = $result->fetch(PDO::FETCH_ASSOC);
 		
 		return $r['profit'];
 	}
@@ -1678,9 +1678,9 @@ class load_table extends dts_table{
 	function get_zones(){
 		$sql = "SELECT *
 				FROM region_lists";
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$a = Array('');
-		while($r = DB::fetch_assoc($re)){
+		while($r = $re->fetch(PDO::FETCH_ASSOC)){
 			$a[$r['id']] = $r['name'];
 		}
 		return $a;
@@ -1689,11 +1689,10 @@ class load_table extends dts_table{
 	function get_region_users(){
 		$sql = "SELECT *
 				FROM region_lists";
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$t = new Template();
-		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$rul = Array();
-		while($rr = DB::fetch_assoc($re)){
+		$rul = [];
+		while($rr = $re->fetch(PDO::FETCH_ASSOC)){
 			$new_row = Array();
 			$new_row['name'] = $rr['name'];
 			$new_row['region_id'] = $rr['id'];
@@ -1705,8 +1704,8 @@ class load_table extends dts_table{
 										WHERE region_list_id = $rr[id])
 					ORDER BY username";
 										
-			$ru = DB::query($sql);
-			while($u = DB::fetch_assoc($ru)){
+			$ru = App::$db->query($sql);
+			while($u = $ru->fetch(PDO::FETCH_ASSOC)){
 				$new_row = Array();
 				$new_row['name'] = $u['username'];
 				$new_row['user_id'] = $u['user_id'];
@@ -1742,7 +1741,6 @@ class load_table extends dts_table{
 		$cal->add_attrib('page', $this->page);
 		
 		$t = new Template();
-		$t->error_reporting = E_ALL & ~E_NOTICE;
 		if(Auth::loggedInAs('admin')){
 			$t->assign('admin', true);
 			$t->assign('daily_profit', $this->get_daily_profit($db_date, $_GET));
@@ -1868,10 +1866,9 @@ class load_table extends dts_table{
 		}
 		
 		
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$t = new Template();
-		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$t->assign('loads', DB::to_array($re));
+		$t->assign('loads', $re->fetchAll(PDO::FETCH_ASSOC));
             $path = App::getTempDir().'load_list.tpl';
 		$temp = $t->fetch($path);
 		
@@ -1887,7 +1884,7 @@ class load_table extends dts_table{
 	function get_carriers_selection(){
 		
 		$sql = "SELECT * FROM carrier";
-		$r = DB::query($sql);
+		$r = App::$db->query($sql);
 		$select = new select_input("carrier_id", "carrier_id", "name", $r);
 		$select->set_id("carrier_selection");
 	
@@ -1897,7 +1894,7 @@ class load_table extends dts_table{
 	function get_warehouse_selection($customer_id){
 		
 		$sql = "SELECT * FROM warehouse w WHERE w.customer_id = $customer_id";
-		$r = DB::query($sql);
+		$r = App::$db->query($sql);
 		$select = new select_input("warehouse_id", "warehouse_id", "name", $r);
 		$select->set_id("warehouse_selection");
 	
@@ -1924,15 +1921,16 @@ class load_table extends dts_table{
 			}
 			
 			function update_gp(){
-				var gp = document.getElementById('gp');
+				var gp, cust_total_el, car_total_el, cust_total, car_total, gp_val;
+				gp = document.getElementById('gp');
 				
-				var cust_total_el = document.getElementById('customer_total');
-				var car_total_el = document.getElementById('carrier_total');
-				var cust_total = cust_total_el.innerHTML.valueOf();
-				var car_total = car_total_el.innerHTML.valueOf();
+				cust_total_el = document.getElementById('customer_total');
+				car_total_el = document.getElementById('carrier_total');
+				cust_total_el ? cust_total = cust_total_el.innerHTML.valueOf() : alert('Cannot find #cust_total_el');
+				car_total_el ? car_total = car_total_el.innerHTML.valueOf() : alert('Cannot find #car_total_el');
 				
-				var gp_val = (cust_total - car_total).toFixed(2)||0;
-				gp.innerHTML = gp_val;
+				gp_val = (cust_total - car_total).toFixed(2)||0;
+				gp ? gp.innerHTML = gp_val : alert('Cannot find gp');
 				
 				wc_change();
 				dls_change();
@@ -2032,18 +2030,17 @@ class load_table extends dts_table{
 				AND origin.load_id = l.load_id
 				AND dest.load_id = l.load_id
 				";
-		$res = DB::query($sql);
-		if(DB::error()){
+		$res = App::$db->query($sql);
+		if($res->errorCode() > 0){
 			echo $sql."<br>";
-			echo DB::error();
+			echo $res->errorCode();
 		}
-		$r = DB::fetch_assoc($res);
+		$r = $res->fetch(PDO::FETCH_ASSOC);
 		
 		$t = new Template();
-		$t->error_reporting = E_ALL & ~E_NOTICE;
 		$t->assign('load', $r);
-		$t->assign('pick', DB::to_array($this->get_pickups($_GET['load_id'])));
-		$t->assign('drop', DB::to_array($this->get_drops($_GET['load_id'])));
+		$t->assign('pick', $this->get_pickups($_GET['load_id'])->fetchAll(PDO::FETCH_ASSOC));
+		$t->assign('drop', $this->get_drops($_GET['load_id'])->fetchAll(PDO::FETCH_ASSOC));
 		return $t->fetch(App::getTempDir().'rate_conf.tpl');
 	}
 	
@@ -2142,12 +2139,12 @@ class load_table extends dts_table{
 				AND origin.load_id = l.load_id
 				AND dest.load_id = l.load_id
 				";
-		$res = DB::query($sql);
-		if(DB::error()){
+		$res = App::$db->query($sql);
+		if($res->errorCode() > 0){
 			echo $sql."<br>";
-			echo DB::error();
+			echo $res->errorCode();
 		}
-		$r = DB::fetch_assoc($res);
+		$r = $res->fetch(PDO::FETCH_ASSOC);
 		$header ='';
 		$header .= "<style media='print' type='text/css'>
 			body{font-size:.9em}
@@ -2198,7 +2195,7 @@ class load_table extends dts_table{
 		$origin = "<table width='80%' border=0><tr>";
 		$origin .= "<td colspan=5>Our Contract Carrier Agreement is amended as follows:</td>";
 		$picks = $this->get_pickups($_REQUEST['load_id']);
-		while($pick = DB::fetch_assoc($picks)){
+		while($pick = $picks->fetch(PDO::FETCH_ASSOC)){
 			
 			$origin .= "</tr><tr>";
 			$origin .= "<td>Shipper:</td><td class='bold'>$pick[origin_name]</td>";
@@ -2221,7 +2218,7 @@ class load_table extends dts_table{
 			$origin .= "</tr><tr>";
 		}
 		$drops = $this->get_drops($_REQUEST['load_id']);
-		while($drop = DB::fetch_assoc($drops)){
+		while($drop = $drops->fetch(PDO::FETCH_ASSOC)){
 			$dest .= "<td>CONS:</td><td class='bold'>$drop[dest_name]</td>";
 			$dest .= "<td width='$gutter'></td>";
 			$dest .= "<td>Delivery Date:</td><td class='bold'>$drop[delivery_date]</td>";
@@ -2357,8 +2354,8 @@ class load_table extends dts_table{
 	
 	function get_order_by_name(){
 		$sql = 'SELECT username FROM `users` u, `load` l WHERE u.user_id = l.order_by AND l.load_id = '.$this->load_id;
-		$re = DB::query($sql);
-		$ro = DB::fetch_array($re);
+		$re = App::$db->query($sql);
+		$ro = $re->fetch(PDO::FETCH_NUM);
 		return $ro[0];
 	}
 	
@@ -2379,7 +2376,7 @@ class load_table extends dts_table{
 					AND w.warehouse_id = lwp.warehouse_id
 					AND lwp.load_id = $load_id
 					ORDER BY creation_date";
-		return DB::query($sql);
+		return App::$db->query($sql);
 	}
 	
 	function get_drops($load_id){
@@ -2399,7 +2396,7 @@ class load_table extends dts_table{
 					AND w.warehouse_id = lwp.warehouse_id
 					AND lwp.load_id = $load_id
 					ORDER BY creation_date";
-		return DB::query($sql);
+		return App::$db->query($sql);
 	}
 	
 	function get_acct_owner_name(){
@@ -2408,8 +2405,8 @@ class load_table extends dts_table{
 				WHERE u.user_id = c.acct_owner
 				AND c.customer_id = l.customer_id
 				AND l.load_id = '.$this->load_id;
-		$re = DB::query($sql);
-		$ro = DB::fetch_array($re);
+		$re = App::$db->query($sql);
+		$ro = $re->fetch(PDO::FETCH_NUM);
 		return $ro[0];
 	}
 	
@@ -2430,8 +2427,8 @@ class load_table extends dts_table{
 				AND (	SELECT count(*)
 						FROM load_carrier lc
 						WHERE lc.load_id = l.load_id) > 0";
-		$re = DB::query($sql);
-		$ro = DB::fetch_array($re);
+		$re = App::$db->query($sql);
+		$ro = $re->fetch(PDO::FETCH_NUM);
 		return $ro[0];
 	}
 }

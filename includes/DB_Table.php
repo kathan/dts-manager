@@ -19,6 +19,7 @@ class DB_Table{
 	public static $binds = [];
 	private $dbname;
 	private $debug=0;
+	
 	function __construct($table){
 		/*include_once('Version.php');
 		Version::add(__FILE__, .1);*/
@@ -56,9 +57,9 @@ class DB_Table{
 	private function describe(){
 		/*Query for all columns in the table and */
 		$this->sql = "Describe `$this->name`";
-		$r = DB::query($this->sql);
-		if(!DB::error() && $r){
-			while($row = DB::fetch_assoc($r)){
+		$r = App::$db->query($this->sql);
+		if(!$r->errorCode() && $r){
+			while($row = $r->fetch(PDO::FETCH_ASSOC)){
 				if(!isset($this->columns[$row['Field']])){
 					
 					$column = new column($this, $row['Field'], false);
@@ -139,16 +140,16 @@ class DB_Table{
 				}
 			}
 			$this->sql .= "$field_names) VALUES ($values)";
-			$r = DB::query($this->sql);
+			$r = App::$db->query($this->sql);
 			
-			if(DB::error()){
-				$this->add_error(DB::error(), __FILE__, __FUNCTION__);
+			if($r->errorCode()){
+				$this->add_error($r->errorCode(), __FILE__, __FUNCTION__);
 				return false;
 			}else{
 			
 				$this->add_feedback("New record was added.");
 				
-				$this->last_id = DB::last_insert_id();
+				$this->last_id = App::$db->lastInsertId();
 				return true;
 			}
 		}else{
@@ -183,10 +184,9 @@ class DB_Table{
 				$clause = 'AND';
 			}
 		}
-		$result = DB::query($this->sql, $this->binds);
+		$result = App::$db->query($this->sql, $this->binds);
 		if($result){
-		// if(DB::error()){
-			$this->add_error(DB::error());
+			$this->add_error($result->errorCode());
 			$this->add_feedback("Data was not updated.");
 			return false;
 		}else{
@@ -207,9 +207,9 @@ class DB_Table{
 			$clause = 'AND';
 			
 		}
-		$result = DB::Query($this->sql);
-		if(DB::error()){
-			$this->add_error(DB::error());
+		$result = App::$db->query($this->sql);
+		if($result->errorCode()){
+			$this->add_error($result->errorCode());
 			$this->add_error($this->sql);
 			$this->add_error('table.delete');
 			return false;
@@ -282,12 +282,12 @@ class DB_Table{
 	}
 	
 	function add_column($new_col, $type){
-		return DB::query("ALTER TABLE `$this->name` ADD `$new_col` $type");
+		return App::$db->query("ALTER TABLE `$this->name` ADD `$new_col` $type");
 		
 	}
 	
 	function alter_column($col, $type){
-		return DB::query("ALTER TABLE `$this->name` CHANGE `$col` `$col` $type");
+		return App::$db->query("ALTER TABLE `$this->name` CHANGE `$col` `$col` $type");
 	}
 	
 	function drop_columns($cols){
@@ -301,7 +301,7 @@ class DB_Table{
 			$this->sql .= "DROP `$col`";
 			$i++;
 		}
-		return DB::query($this->sql);
+		return App::$db->query($this->sql);
 	}
 	public static function &safe_get(&$v){
 		if(isset($v)){

@@ -49,7 +49,7 @@
 <!-- edit warehouse end -->
 <input type="button" onclick="window.close();" value="Close"/>
 <script type="text/javascript">
-	include('./CalendarPopup.js');
+	include('js/CalendarPopup.js');
 	var cal_activity_date = new CalendarPopup('cal_div_activity_date');
 </script>
 <!-- get_load_warehouse_edit end -->

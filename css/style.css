@@ -1,291 +1,305 @@
-fieldset
-{
-	padding-bottom:6px;
+fieldset {
+    padding-bottom: 6px;
 }
+
+
 /*==== Start Menu =====*/
-.cancelled{
-	background-color:red;
-	color:white;
-}
-.expedited
-{
-	background-color:orange;
-}
-.PARTIAL
-{
-	color:brown;
-}
-.REFRIGERATED
-{
-	color:purple;
-}
-.RAIL
-{
-	color:orange;
-}
-.OCEAN
-{
-	color:blue;
-}
-.TL
-{
-	color:green;
-}
-.red, .LTL
-{
-	color:red;
-}
-.origin, .dest
-{
-	font-weight:normal!important;
-}
-.title
-{
-	font-size:15pt;
-}
-.summary
-{
-	border:solid 1px black;
-}
-.title, .sum_carrier_rate, .sum_cust_rate, .summary, .weekly_head
-{
-	font-weight:bold;
-}
-.profit, .carrier_rate, .cust_rate, .sum_carrier_rate, .sum_cust_rate, .summary, .total_comm, .carrier_rep_comm, .sales_rep_comm
-{
-	text-align:right;
-}
-.load_count
-{
-	text-align:left;
-}
-.summary
-{
-	border:1px solid black;
-}
-.right, .wcp
-{
-	text-align:right;
-}
-fieldset, .fieldbox
-{
-	background-color:white;
-	border:solid black 2px;
-}
-.fieldbox
-{
-	border-spacing:0;
-}
-.min
-{
-	width:1%;
-}
-th
-{
-	text-align: center;
-	font-size: 14px;
-	background-color: oldlace;
-	color: steelblue;
-	font-weight: bold;
-	border-top: solid 1px #d8d8d8;
+
+.cancelled {
+    background-color: red;
+    color: white;
 }
 
-.frame
-{
-	border:solid black 1px;
-}
-.faux_edit
-{
-	border:1px gray solid;
-	background-color:#f0f0f0;
-	color:#7f7f8e;
-	
-}
-.tab
-{
-	/*width:100%;*/
-	
-	/*line-height:normal;*/
-	/*border:1px solid black;*/
-}
-input, checkbox, textarea, select
-{
-	border:1px solid gray;
-}
-.tab ul
-{
-	list-style:none;
+.expedited {
+    background-color: orange;
 }
 
-.tab li
-{
-	display:inline;
+.PARTIAL {
+    color: brown;
 }
 
-.tab a
-{
-	padding-left:1em;
-	float:left;
-	background: #CCC url("http://domestictransportsolutions.com/dts/images/tab-left.gif") no-repeat left top;
-	margin-right:1px;
-	padding-bottom:.25em;
-	text-decoration:none;
+.REFRIGERATED {
+    color: purple;
 }
 
-.tab a span
-{
-	float:left;
-	display:block;
-	background: #CCC url("http://domestictransportsolutions.com/dts/images/tab-right.gif") no-repeat right top;
-	padding-right:1em;
-	padding-top:.5em;
-	padding-bottom:.25em;
-	color:#FFF;
-}
-    
-.tab_sep
-{
-	height:1em;
-	background:#000;
-}
-.active_tab
-{
-	background: #000;
+.RAIL {
+    color: orange;
 }
 
-.active_tab span
-{
-	float:left;
-	display:block;
-	background: #000;
-	padding-right:1em;
-	padding-top:.5em;
-	padding-bottom:.25em;
-	color:#FFF;
+.OCEAN {
+    color: blue;
 }
+
+.TL {
+    color: green;
+}
+
+.red,
+.LTL {
+    color: red;
+}
+
+.origin,
+.dest {
+    font-weight: normal!important;
+}
+
+.title {
+    font-size: 15pt;
+}
+
+.summary {
+    border: solid 1px black;
+}
+
+.title,
+.sum_carrier_rate,
+.sum_cust_rate,
+.summary,
+.weekly_head {
+    font-weight: bold;
+}
+
+.profit,
+.carrier_rate,
+.cust_rate,
+.sum_carrier_rate,
+.sum_cust_rate,
+.summary,
+.total_comm,
+.carrier_rep_comm,
+.sales_rep_comm {
+    text-align: right;
+}
+
+.load_count {
+    text-align: left;
+}
+
+.summary {
+    border: 1px solid black;
+}
+
+.right,
+.wcp {
+    text-align: right;
+}
+
+fieldset,
+.fieldbox {
+    background-color: white;
+    border: solid black 2px;
+}
+
+.fieldbox {
+    border-spacing: 0;
+}
+
+.min {
+    width: 1%;
+}
+
+th {
+    text-align: center;
+    font-size: 14px;
+    background-color: oldlace;
+    color: steelblue;
+    font-weight: bold;
+    border-top: solid 1px #d8d8d8;
+}
+
+.frame {
+    border: solid black 1px;
+}
+
+.faux_edit {
+    border: 1px gray solid;
+    background-color: #f0f0f0;
+    color: #7f7f8e;
+}
+
+.tab {
+    /*width:100%;*/
+    /*line-height:normal;*/
+    /*border:1px solid black;*/
+}
+
+input,
+checkbox,
+textarea,
+select {
+    border: 1px solid gray;
+}
+
+.tab ul {
+    list-style: none;
+}
+
+.tab li {
+    display: inline;
+}
+
+.tab a {
+    padding-left: 1em;
+    float: left;
+    background: #CCC url("../images/tab-left.gif") no-repeat left top;
+    margin-right: 1px;
+    padding-bottom: .25em;
+    text-decoration: none;
+}
+
+.tab a span {
+    float: left;
+    display: block;
+    background: #CCC url("../images/tab-right.gif") no-repeat right top;
+    padding-right: 1em;
+    padding-top: .5em;
+    padding-bottom: .25em;
+    color: #FFF;
+}
+
+.tab_sep {
+    height: 1em;
+    background: #000;
+}
+
+.active_tab {
+    background: #000;
+}
+
+.active_tab span {
+    float: left;
+    display: block;
+    background: #000;
+    padding-right: 1em;
+    padding-top: .5em;
+    padding-bottom: .25em;
+    color: #FFF;
+}
+
+
 /*=== End Menu =====*/
-.edit_class
-{
-	
-}
+
+.edit_class {}
+
+
 /*.load_list
 {
 	height:
 }*/
 
-td
-{
-	vertical-align:top;
+td {
+    vertical-align: top;
 }
 
-legend a, .tab_label a
-{
-	color:white;
-	background-color:green;
-	text-decoration:underline;
+legend a,
+.tab_label a {
+    color: white;
+    background-color: green;
+    text-decoration: underline;
 }
+
 .inner {
-	position:absolute;
-	background-color:white;
-	border:solid black 2px;
-	width:100%;
-	height:100%;
-	position:relative;
-	z-index:0;
-	margin:-1px;
-	padding-top:10px;
+    position: absolute;
+    background-color: white;
+    border: solid black 2px;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 0;
+    margin: -1px;
+    padding-top: 10px;
 }
-.outer h3 a{
-	line-height:20px;
-	font-size:70%;
-	border:1px solid #000;
-	background:#ffffcc;
-	text-decoration:none;
-	vertical-align:top;
-	padding-top:50px;
+
+.outer h3 a {
+    line-height: 20px;
+    font-size: 70%;
+    border: 1px solid #000;
+    background: #ffffcc;
+    text-decoration: none;
+    vertical-align: top;
+    padding-top: 50px;
 }
-.tab_label
-{
-	color:white;
-	position:absolute;
-	top:-15px;
-	left:5px;
-	margin:0;
-	padding:0 5px;
-	line-height:25px;
-	background:green;
-	border:1px solid #000;
-	font-weight:bold;
+
+.tab_label {
+    color: white;
+    position: absolute;
+    top: -15px;
+    left: 5px;
+    margin: 0;
+    padding: 0 5px;
+    line-height: 25px;
+    background: green;
+    border: 1px solid #000;
+    font-weight: bold;
 }
-legend
-{
-	font-weight:bold;
-	/*color:steelblue;
+
+legend {
+    font-weight: bold;
+    /*color:steelblue;
 	background-color:oldlace  ;*/
-	color:white;
-	background-color:green;
-	padding:3px;
-	border-top:1px solid #848484;
-	border-left:1px solid #848484;
-	border-right:2px ridge #848484;
-	border-bottom:2px ridge #848484;
-}
-a
-{
-	color:steelblue;
-	text-decoration:none;
-}
-.edit_class
-{
-	text-align:left;
-}
-.label_class
-{
-	text-align:right;
-}
-.content
-{
-	background-color:#EEEEEE;
-	padding:6px;
-}
-.bottom_pad
-{
-	padding-bottom:15px;
-}
-body
-{
-	font-family:sans-serif;
-}
-.normalRow
-{
-	background-color:white;
+    color: white;
+    background-color: green;
+    padding: 3px;
+    border-top: 1px solid #848484;
+    border-left: 1px solid #848484;
+    border-right: 2px ridge #848484;
+    border-bottom: 2px ridge #848484;
 }
 
-.normalRow:hover
-{
-	/*background-color:#4169E1;
-	color:white;*/
-	cursor:pointer;
+a {
+    color: steelblue;
+    text-decoration: none;
 }
 
-.altRow:hover
-{
-	/*background-color:#4169E1;
-	color:white;*/
-	cursor:pointer;
+.edit_class {
+    text-align: left;
 }
+
+.label_class {
+    text-align: right;
+}
+
+.content {
+    background-color: #EEEEEE;
+    padding: 6px;
+}
+
+.bottom_pad {
+    padding-bottom: 15px;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+.normalRow {
+    background-color: white;
+}
+
+.normalRow:hover {
+    /*background-color:#4169E1;
+	color:white;*/
+    cursor: pointer;
+}
+
+.altRow:hover {
+    /*background-color:#4169E1;
+	color:white;*/
+    cursor: pointer;
+}
+
+
 /*==== IE fix ====*/
-.normalRow
-{
-	h: expression(onmouseover=new Function("this.style.cursor='pointer';"),
-                  onmouseout=new Function("this.style.cursor='default';"));
+
+.normalRow {
+    h: expression(onmouseover=new Function("this.style.cursor='pointer';"), onmouseout=new Function("this.style.cursor='default';"));
 }
 
-.altRow
-{
-	h: expression(onmouseover=new Function("this.style.cursor='pointer';"),
-                  onmouseout=new Function("this.style.cursor='default';"));
+.altRow {
+    h: expression(onmouseover=new Function("this.style.cursor='pointer';"), onmouseout=new Function("this.style.cursor='default';"));
 }
+
 
 /*.normalRow
 {
@@ -299,170 +313,188 @@ body
                   onmouseout=new Function("this.style.backgroundColor='white'; this.style.color='black';this.style.cursor='default';"));
 }*/
 
-.altRow
-{
-	background-color:#eee;
+.altRow {
+    background-color: #eee;
 }
 
-.menu_item
-{
-
-	border-right:1px solid gray;
-	width:6em;
-
-	cursor:pointer;
-	/*background-color: lightGray;*/
- 	text-align: center;
- 	padding: 0px 3px 0px 3px;
- 	margin: 3px;
- 	vertical-align:bottom;
-	/*color: white;*/
-	/*width:100px;*/
-	/*BORDER: #CCCCCC 1px solid;
+.menu_item {
+    border-right: 1px solid gray;
+    width: 6em;
+    cursor: pointer;
+    /*background-color: lightGray;*/
+    text-align: center;
+    padding: 0px 3px 0px 3px;
+    margin: 3px;
+    vertical-align: bottom;
+    /*color: white;*/
+    /*width:100px;*/
+    /*BORDER: #CCCCCC 1px solid;
 	font-size: 12px;
 	display:block;
 	background-image:url('http://darrelkathan.com/dts/images/tab.gif');*/
 }
 
+
 /*==== Calendar ====*/
-	.cpYearNavigation,
-	.cpMonthNavigation
-			{
-			background-color:#6677DD;
-			text-align:center;
-			vertical-align:center;
-			text-decoration:none;
-			color:#FFFFFF;
-			font-weight:bold;
-			z-index:1000;
-			}
-	.cpDayColumnHeader,
-	.cpYearNavigation,
-	.cpMonthNavigation,
-	.cpCurrentMonthDate,
-	.cpCurrentMonthDateDisabled,
-	.cpOtherMonthDate,
-	.cpOtherMonthDateDisabled,
-	.cpCurrentDate,
-	.cpCurrentDateDisabled,
-	.cpTodayText,
-	.cpTodayTextDisabled,
-	.cpText
-			{
-			font-size:8pt;
-			}
-	TD.cpDayColumnHeader
-			{
-			text-align:right;
-			border:solid thin #6677DD;
-			border-width:0 0 1 0;
-			}
-	.cpCurrentMonthDate,
-	.cpOtherMonthDate,
-	.cpCurrentDate
-			{
-			text-align:right;
-			text-decoration:none;
-			}
-	.cpCurrentMonthDateDisabled,
-	.cpOtherMonthDateDisabled,
-	.cpCurrentDateDisabled
-			{
-			color:#D0D0D0;
-			text-align:right;
-			text-decoration:line-through;
-			}
-	.cpCurrentMonthDate
-			{
-			color:#6677DD;
-			font-weight:bold;
-			}
-	.cpCurrentDate
-			{
-			color: #FFFFFF;
-			font-weight:bold;
-			}
-	.cpOtherMonthDate
-			{
-			color:#808080;
-			}
-	TD.cpCurrentDate
-			{
-			color:#FFFFFF;
-			background-color: #6677DD;
-			border-width:1;
-			border:solid thin #000000;
-			}
-	TD.cpCurrentDateDisabled
-			{
-			border-width:1;
-			border:solid thin #FFAAAA;
-			}
-	TD.cpTodayText,
-	TD.cpTodayTextDisabled
-			{
-			border:solid thin #6677DD;
-			border-width:1 0 0 0;
-			}
-	A.cpTodayText,
-	SPAN.cpTodayTextDisabled
-			{
-			height:20px;
-			}
-	A.cpTodayText
-			{
-			color:#6677DD;
-			font-weight:bold;
-			}
-	SPAN.cpTodayTextDisabled
-			{
-			color:#D0D0D0;
-			}
-	.cpBorder
-			{
-			border:solid thin #6677DD;
-			}
+
+.cpYearNavigation,
+.cpMonthNavigation {
+    background-color: #6677DD;
+    text-align: center;
+    vertical-align: center;
+    text-decoration: none;
+    color: #FFFFFF;
+    font-weight: bold;
+    z-index: 1000;
+}
+
+.cpDayColumnHeader,
+.cpYearNavigation,
+.cpMonthNavigation,
+.cpCurrentMonthDate,
+.cpCurrentMonthDateDisabled,
+.cpOtherMonthDate,
+.cpOtherMonthDateDisabled,
+.cpCurrentDate,
+.cpCurrentDateDisabled,
+.cpTodayText,
+.cpTodayTextDisabled,
+.cpText {
+    font-size: 8pt;
+}
+
+TD.cpDayColumnHeader {
+    text-align: right;
+    border: solid thin #6677DD;
+    border-width: 0 0 1 0;
+}
+
+.cpCurrentMonthDate,
+.cpOtherMonthDate,
+.cpCurrentDate {
+    text-align: right;
+    text-decoration: none;
+}
+
+.cpCurrentMonthDateDisabled,
+.cpOtherMonthDateDisabled,
+.cpCurrentDateDisabled {
+    color: #D0D0D0;
+    text-align: right;
+    text-decoration: line-through;
+}
+
+.cpCurrentMonthDate {
+    color: #6677DD;
+    font-weight: bold;
+}
+
+.cpCurrentDate {
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+.cpOtherMonthDate {
+    color: #808080;
+}
+
+TD.cpCurrentDate {
+    color: #FFFFFF;
+    background-color: #6677DD;
+    border-width: 1;
+    border: solid thin #000000;
+}
+
+TD.cpCurrentDateDisabled {
+    border-width: 1;
+    border: solid thin #FFAAAA;
+}
+
+TD.cpTodayText,
+TD.cpTodayTextDisabled {
+    border: solid thin #6677DD;
+    border-width: 1 0 0 0;
+}
+
+A.cpTodayText,
+SPAN.cpTodayTextDisabled {
+    height: 20px;
+}
+
+A.cpTodayText {
+    color: #6677DD;
+    font-weight: bold;
+}
+
+SPAN.cpTodayTextDisabled {
+    color: #D0D0D0;
+}
+
+.cpBorder {
+    border: solid thin #6677DD;
+}
+
+
 /*==== End Calendar ====*/
 
-
-.bold
-{
-	font-weight:bold;
-}
-.border
-{
-	border:solid black 1px;
-}
-.center
-{
-	margin-left:auto;
-	margin-right:auto;
-	text-align:center;
-}
-.hidden
-{
-	visibility:hidden;
-}
-#money.faux_edit
-{	
-width:100px;
-}
-.list_data
-{
-	padding-right: 2px; text-align: left; font-weight: bold; font-size: 12px; color: black;
-}
-.sales_rep, .carrier_rep
-{
-	text-align:center;
-}
-.list{
-	border:1px solid #efefef;
-	width:100%;
-}
-.list td, .list th{
-	padding:2px;
+.bold {
+    font-weight: bold;
 }
 
-.button{border:1px solid black;margin:3px;padding:3px;text-align:center;background-color:#cbcbcb;border-radius:6px;}
-.button a{color:red}
-.selected {background-color:yellow}
+.border {
+    border: solid black 1px;
+}
+
+.center {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+#money.faux_edit {
+    width: 100px;
+}
+
+.list_data {
+    padding-right: 2px;
+    text-align: left;
+    font-weight: bold;
+    font-size: 12px;
+    color: black;
+}
+
+.sales_rep,
+.carrier_rep {
+    text-align: center;
+}
+
+.list {
+    border: 1px solid #efefef;
+    width: 100%;
+}
+
+.list td,
+.list th {
+    padding: 2px;
+}
+
+.button {
+    border: 1px solid black;
+    margin: 3px;
+    padding: 3px;
+    text-align: center;
+    background-color: #cbcbcb;
+    border-radius: 6px;
+}
+
+.button a {
+    color: red
+}
+
+.selected {
+    background-color: yellow
+}

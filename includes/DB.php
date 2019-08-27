@@ -31,8 +31,7 @@ class DB{
     public static function query($sql, $binds=null){
         $bind_ary = [];
         $bind_ary[0] = '';
-        $stmt = self::$db->stmt_init();
-        $stmt->prepare($sql);
+        self::$db->prepare($sql);
 	    if(isset($binds) && count($binds) > 0){
             foreach($binds as $val){
                 switch(gettype($val)){
@@ -134,8 +133,8 @@ class DB{
 
     public static function current_db(){
 	$sql = "SELECT database()";
-	$re = DB::query($sql);
-	$row = DB::fetch_array($result);
+	$re = App::$db->query($sql);
+	$row = $result->fetch(PDO::FETCH_NUM);
 	return $row[0];
     }
 	
@@ -160,11 +159,11 @@ class DB{
 	
     public static function to_array($re, $single=false){
         if($single){
-            return DB::fetch_assoc($re);
+            return $re->fetch(PDO::FETCH_ASSOC);
 		}
         $ary = [];
 	
-        while($row = DB::fetch_assoc($re)){
+        while($row = $re->fetch(PDO::FETCH_ASSOC)){
             $ary[] = $row;
         }
         return $ary;

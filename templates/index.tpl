@@ -8,6 +8,7 @@
 		<script type="text/javascript" src="js/events.js"></script>
 		<script type="text/javascript" src="js/jquery.js"></script>
 		<script type="text/javascript" src="js/base.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
 	</head>
 	<body>
 		<div style="width:90%;margin-left:auto;margin-right:auto" class="">
@@ -16,6 +17,7 @@
 				{$menu}
 				<!-- menu end -->
 			</div>
+			<div id="feedback"></div>
 			<div>
 				<!-- page start -->
 				{$page}

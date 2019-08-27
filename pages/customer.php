@@ -30,7 +30,6 @@ class customer_table extends dts_table{
 		$this->hide_column('customer_id');
 		$this->add_table_params('page', 'customer');
 		
-		
 		$i = new hidden_input('page', 'customer');
 		$this->add_other_inputs($i);
 		
@@ -114,8 +113,8 @@ class customer_table extends dts_table{
 				}
 				if(!isset($_GET['sml_view'])){
 					$code .= $this->portal_script();
-					$code .= "<head><script src='sortable.js'></script>
-							<script src='db_save.js.php'></script>
+					$code .= "<head><script src='js/sortable.js'></script>
+							<script src='js/db_save.js'></script>
 							<script type=\"text/javascript\">
 			
 							function popUp(URL){
@@ -147,8 +146,9 @@ class customer_table extends dts_table{
 				OR soundex(?) like CONCAT(soundex(address), '%'))
 				AND (zip like ?
 				OR ? like CONCAT(zip, '%'))";
-		$re = DB::query($sql, $binds);
-		return $re;
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		return $stmt;
 	}
 	
 	function create_new(){
@@ -205,8 +205,9 @@ class customer_table extends dts_table{
 							WHERE l.customer_id = ?";
                 
                 $binds = [$this->customer_id];
-			$re = DB::query($sql, $binds);
-			$t->assign('loads', DB::to_array($re));
+			$stmt = App::$db->prepare($sql);
+			$result = $stmt->execute($binds);
+			$t->assign('loads', $stmt->fetchAll(PDO::FETCH_ASSOC));
 		}
 		
 		
@@ -230,10 +231,11 @@ class customer_table extends dts_table{
 		$sql = "SELECT note_id, notes, last_updated
 								FROM customer_notes cn WHERE cn.customer_id = ?
 								ORDER BY last_updated";
-		$re = DB::query($sql, [$this->customer_id]);
+		$stmt = App::$db->prepare($sql);
+		$re = $stmt->execute([$this->customer_id]);
 		
 		$t = new Template();
-		$t->assign('notes', DB::to_array($re));
+		$t->assign('notes', $stmt->fetchAll(PDO::FETCH_ASSOC));
 
 		return $t->fetch(App::getTempDir().'cust_notes.tpl');
 	}
@@ -313,8 +315,9 @@ class customer_table extends dts_table{
 			$clause = 'AND';
 		}
 		$sql .= $where;
-		$re = DB::query($sql, $binds);
-		return $re;
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		return $stmt;
 	}
 	
 	function show_search_results($cust){
@@ -336,13 +339,13 @@ class customer_table extends dts_table{
 	
 	function current_row(){
             if(!isset($this->current_row)){
-		$this->current_row = $this->get_row($this->customer_id);
+		$this->current_row = $this->get_row($this->customer_id, true);
             }
             return $this->current_row;
 	}
         
 	function get_edit(){
-            $r = $this->current_row();
+		$r = $this->current_row();
 		$t = new Template();
 		$t->assign('cust', $r);
 		$t->assign('cust_to_wh', $this->cust_to_wh);
@@ -357,9 +360,9 @@ class customer_table extends dts_table{
 	function get_acct_owners(){
 		$sql = "SELECT user_id, username
 				FROM `users`";
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$ary = [];
-		while($r = DB::fetch_assoc($re)){
+		while($r = $re->fetch(PDO::FETCH_ASSOC)){
                     $ary[$r['user_id']] = $r['username'];
 		}
 		return $ary;

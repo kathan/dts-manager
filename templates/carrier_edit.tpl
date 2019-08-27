@@ -1,5 +1,5 @@
 <!-- start carrier edit -->
-<script type="type/javascript" src="./CalendarPopup.js"></script>
+<script type="type/javascript" src="js/CalendarPopup.js"></script>
 <h2>{$prefix}{$carrier.carrier_id}</h2>
 <table width="100%">
 	<tbody>
@@ -250,16 +250,13 @@
 </style>
 <script type="text/javascript">
 {literal}
-	include('./CalendarPopup.js');
-	jQuery(document).ready(function()
-	{
+	include('js/CalendarPopup.js');
+	jQuery(document).ready(function(){
 		get_portal('load');
 		cal_insurance_expires = new CalendarPopup('cal_div_insurance_expires');
 	});
-	function cancel()
-	{
-		if(confirm("Are you sure you want to cancel?"))
-		{
+	function cancel(){
+		if(confirm("Are you sure you want to cancel?")){
 		{/literal}
 			window.location="?action={$delete_str}&page={$smarty.get.page}&customer_id={$cust.customer_id}";
 		{literal}

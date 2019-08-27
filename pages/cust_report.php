@@ -11,32 +11,33 @@ isset($_GET['start_date']) && $_GET['start_date'] != '' ? $start_date = $_GET['s
 $t->assign('params', $_GET);
 $t->assign('start_date', $start_date);
 $t->assign('end_date', $end_date);
-$t->assign('cust', DB::to_array(get_report($start_date, $end_date, $user_id)));
+$t->assign('cust', get_report($start_date, $end_date, $user_id)->fetchAll());
 echo $t->fetch(App::$temp.'cust_report.tpl');
 
 function get_report($start, $end, $user_id=null){
+	$binds = [$start, $end, $start, $end, $start, $end, $start, $end];
 	$sql .= "select customer_id
 					, name
 					, (select username from `users` u where user_id = c.acct_owner) cust_rep
 					, (select count(*)
 						from `load`
 						where customer_id = c.customer_id
-						and activity_date >='$start'
-						and activity_date <='$end'
+						and activity_date >= ?
+						and activity_date <= ?
 						and load_id in (select lw.load_id from load_warehouse lw where lw.type = 'PICK' and lw.complete = 1)
 						) load_count
 					, IFNULL((select sum(IF(wc_active, profit-((profit * .01) * wc_percent), profit)) profit
 						from load_report_totals
 						where customer_id = c.customer_id
-						and activity_date >='$start'
-						and activity_date <='$end'
+						and activity_date >= ?
+						and activity_date <= ?
 						and load_id in (select lw.load_id from load_warehouse lw where lw.type = 'PICK' and lw.complete = 1)
 						group by customer_id), 0) profit
 					, IFNULL((select sum(cust_rate) 
 						from load_report_totals
 						where customer_id = c.customer_id
-						and activity_date >='$start'
-						and activity_date <='$end'
+						and activity_date >= ?
+						and activity_date <= ?
 						and load_id in (select lw.load_id from load_warehouse lw where lw.type = 'PICK' and lw.complete = 1)
 						group by customer_id), 0) gross_revenue
 	from customer c
@@ -44,8 +45,8 @@ function get_report($start, $end, $user_id=null){
 	AND (select count(*)
 						from `load`
 						where customer_id = c.customer_id
-						and activity_date >='$start'
-						and activity_date <='$end'
+						and activity_date >= ?
+						and activity_date <= ?
 						and load_id in (select lw.load_id from load_warehouse lw where lw.type = 'PICK' and lw.complete = 1)
 						) > 0";
 	isset($_GET['user_id']) && $_GET['user_id']>0 ? $sql .= " and c.acct_owner = $_GET[user_id]" : '';
@@ -54,10 +55,10 @@ function get_report($start, $end, $user_id=null){
 		isset($_GET['dir']) ? $sql .= " $_GET[dir]" : '';
 	}
 	
-	$re = DB::query($sql);
-	if(DB::error()){
+	$re = App::$db->query($sql);
+	if($re->errorCode() > 0){
 		echo "$sql<br>";
-		echo DB::error();
+		echo $re->errorCode();
 	}
 	return $re;
 }
@@ -65,9 +66,9 @@ function get_report($start, $end, $user_id=null){
 function get_users(){
 	$sql = "SELECT *
 			FROM `users`";
-	$re = DB::query($sql);
-	$ary = Array('');
-	while($r = DB::fetch_assoc($re)){
+	$re = App::$db->query($sql);
+	$ary = [];
+	while($r = $re->fetch(PDO::FETCH_ASSOC)){
 		$ary[$r['user_id']] = $r['username'];
 	}
 	return $ary;
@@ -77,8 +78,8 @@ function get_username($user_id){
 	$sql = "SELECT username
 			FROM `users`
 			WHERE user_id = $user_id";
-	$re = DB::query($sql);
-	$r = DB::fetch_assoc($re);
+	$re = App::$db->query($sql);
+	$r = $re->fetch(PDO::FETCH_ASSOC);
 	return $r['username'];
 }
 ?>

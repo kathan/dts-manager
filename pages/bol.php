@@ -100,9 +100,10 @@ $sql = "SELECT	l.load_id,
 				AND origin.load_id = l.load_id
 				AND dest.load_id = l.load_id";
 $binds = [$_REQUEST['load_id']];
-$re = DB::query($sql, $binds);
+$stmt = App::$db->prepare($sql);
+$result = $stmt->execute($binds);
 $t = new Template();
-$load = DB::to_array($re, true);
+$load = $stmt->fetch(PDO::FETCH_ASSOC);
 $t->assign('load', $load);
 echo $t->fetch(App::getTempDir().'bol.tpl');
 

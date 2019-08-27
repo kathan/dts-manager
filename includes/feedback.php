@@ -32,6 +32,11 @@ class Feedback{
 	public static function show($context='global'){
 		return self::show_feedback($context);
 	}
+
+	public static function get($context='global'){
+		return self::show_feedback($context);
+	}
+
 	public static function show_feedback($context='global'){
 		if(isset(self::$feedback[$context])){
 			$fb = self::$feedback[$context];

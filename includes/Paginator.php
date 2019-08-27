@@ -12,7 +12,10 @@ class Paginator{
 	
 	function __construct($result, $start=1, $limit=20){
 		$this->db_result = $result;
-		$this->total = DB::num_rows($this->db_result);
+		if($result){
+			$this->total = $this->db_result->rowCount();
+		}
+		
 		$this->limit = $limit;
 		if($this->total == 0){
 			$this->start = 0;
@@ -52,10 +55,9 @@ class Paginator{
 	
 	
 	function to_array($re){
-		DB::data_seek($re, $this->start-1);
 		$ary = [];
-		$i = 0;
-		while($row = DB::fetch_assoc($re)){
+		$i = $this->start-1;
+		while($row = $re->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_ABS, $i)){
 			if($i >= $this->limit){
 				break;
 			}

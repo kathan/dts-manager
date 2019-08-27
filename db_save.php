@@ -30,7 +30,7 @@ if(Auth::loggedIn()){
 }
 
 function clear_load_carrier($load_id){
-    $sql = "DELETE FROM load_carrier WHERE load_id = $load_id";
-    DB::query($sql);
+    $t = DbTable('load_carrier');
+    $t->delete(['load_id' => $load_id]);
 }
 ?>

@@ -23,7 +23,7 @@ class date_input extends text_input{
 		$code .= "
 		
 				<script>
-					include('./CalendarPopup.js');
+					include('js/CalendarPopup.js');
 					var cal_$this->name = new CalendarPopup('cal_div_$this->name');
 					//cal_$this->name.setReturnFunction('datechange');
 				</script>

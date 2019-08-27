@@ -36,30 +36,25 @@ class App{
         return pathinfo(__DIR__, PATHINFO_DIRNAME);
     }
 
-    public static function get_username($user_id){
+    public static function getUsername($user_id){
+        $sql = "SELECT username FROM `users` WHERE user_id = ?";
         $binds = [$user_id];
-        $sql = "SELECT `username`
-		        FROM `users`
-		        WHERE `user_id` = ?";
-        $re = DB::query($sql, $binds);
-	    if(DB::num_rows($re) > 0){
-            $r = DB::fetch_assoc($re);
-            return $r['username'];
+        $stmt = self::$db->prepare($sql);
+        $result = $stmt->execute($binds);
+        if(!$result){
+            return false;
         }
+        return $stmt->fetchColumn();
     }
-	
+
     public static function dbConnect(){
         $env = getenv();
 	    if(!isset(self::$db)){
-            self::$db = DB::connect($env['RDS_USERNAME'], $env['RDS_PASSWORD'], $env['RDS_DB_NAME'], $env['RDS_HOSTNAME']);
+            self::$db = new PDO("mysql:host=$env[RDS_HOSTNAME];dbname=$env[RDS_DB_NAME];charset=utf8", $env['RDS_USERNAME'], $env['RDS_PASSWORD'], [PDO::MYSQL_ATTR_FOUND_ROWS => true]);
             if(self::$db){
-                if(!self::$db->set_charset("utf8")){
-                    Feedback::add("Could not set charset");
-                    Feedback::add(self::$db->error);
-                    return false;
-		        }
+                return true;
             }else{
-                Feedback::add(self::$db->error);
+                Feedback::add(self::$db->errorInfo);
                 return false;
             }
         }
@@ -74,4 +69,3 @@ class App{
 }
 
 App::init();
-?>

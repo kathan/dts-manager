@@ -1,9 +1,9 @@
 <?php
 require_once("includes/database.php");
 if(isset($_REQUEST['sql'])){
-	$res = db_query($_REQUEST['sql']);
-	if(db_error()){
-		echo db_error();
+	$res = App::$db->query($_REQUEST['sql']);
+	if($res->errorCode() > 0){
+		echo $res->errorCode();
 	}else{
 	}
 }

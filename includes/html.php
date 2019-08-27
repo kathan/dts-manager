@@ -43,7 +43,7 @@
 				$code .= "<option value=\"0\"></option>\n";
 			}
 		
-			while ($row = db_fetch_assoc($result)){
+			while ($row = $result->fetch(PDO::FETCH_ASSOC)){
 				$option_value = $row[$option_id];
 				$option = $row[$option_name];
 				if ($row[$option_id] == $select_id){

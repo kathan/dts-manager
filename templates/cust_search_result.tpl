@@ -53,7 +53,7 @@ Customer Search Results<br/>
 	function set_customer(customer_id)
 	{ldelim}
 		var param_str = "table=load&action=update&customer_id="+customer_id+"&load_id=";
-		var obj=new Object();
+		var obj = {};
 		obj.id = param_str;
 		obj.value = {$smarty.get.load_id};
 		db_save(obj);

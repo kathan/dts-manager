@@ -1,6 +1,5 @@
 <?php
 require_once('global.php');
-require_once('database.php');
 require_once("column.php");
 require_once('DB_Table.php');
 require_once("html_form.php");
@@ -15,6 +14,7 @@ class table{
 		
 		Added columns will only be visible in list mode
 	*/
+	public static $tableMap = [];
 	var $columns = [];
 	var $other_inputs = [];
 	var $tables = [];
@@ -51,9 +51,9 @@ class table{
 	var $auto_save = false;
 	var $submit_input;
 	var $error_str;
-	var $class ='list sortable';
-	var $wildcard_search=false;
-	
+	var $class = 'list sortable';
+	var $wildcard_search = false;
+
 	function __construct($table=null, $desc=true){
 		$this->form = new html_form();
 		$this->orientation = 'vertical';
@@ -70,7 +70,6 @@ class table{
 		if($desc){
 			$this->_describe();
 		}
-		
 	}
 	
 	function error(){
@@ -138,7 +137,6 @@ class table{
 		$this->other_inputs[$input->get_name()] =& $input;
 	}
 	
-	
 	function add_table_params($key, $value){
 		$this->table_params[$key] = $value;
 	}
@@ -146,8 +144,6 @@ class table{
 	function &get_form(){
 		return $this->form;
 	}
-	
-	
 	
 	function set_sql($sql){
 		$this->sql = $sql;
@@ -216,110 +212,53 @@ class table{
 		
 			switch(get_action()){
 				case $this->list_str:
-				{
 					return $this->_render_list();
 					break;
-				}
 				case $this->edit_str:
-				{
 					$pk_obj = $this->get_primary_key();
 					$id = $_REQUEST[$pk_obj->get_name()];
-					
 					return $this->_render_edit($this->get_row($id), true);
 					break;
-				}
 				case $this->delete_str:
-				{
 					$this->delete();
 					return $this->_render_list();
 					break;
-				}
 				case $this->save_str:
-				{
 					$this->update();
 					return $this->_render_list();
 					break;
-				}
 				case $this->filter_str:
-				{
 					$this->set_filter();
 					return $this->_render_list();
 					break;
-				}
 				case $this->new_str:
-				{
 					return $this->_render_edit();
 					break;
-				}
 				case $this->add_str:
-				{
 					$this->add();
 					return $this->_render_list();
 					break;
-				}
 				default:
-				{
 					return $this->_render_list();
 					break;
-				}
 			}
 		
 	}
 	
-        function add(){
-            $t = new DB_Table($this->name);
-            if($this->check_form()){
-                $fields = array_merge($_POST, $_FILES);
-                if($t->insert($fields)){
-                    $this->add_feedback("New record was added.");
-                    $this->last_id = DB::insertid();
-                    return true;
-                }else{
-                    echo "$t->sql";
-                    return false;
-                }
-            }
-        }
-//	function add(){
-//		if($this->check_form()){
-//			
-//			global $feedback;
-//			$field_names = '';
-//			$values = "";
-//			$sql = "INSERT INTO `".$this->name ."` (";
-//			$fields = array_keys(array_merge($_REQUEST, $_FILES));
-//			foreach($fields as $field){	
-//				
-//				if($field != 'action' && $field != $this->save_str && array_key_exists($field, $this->columns) && ((isset($_REQUEST[$field]) && $_REQUEST[$field] != '') || isset($_FILES[$field]))){
-//					if($field_names != ''){
-//						$field_names .= ', ';
-//						$values .= ",";
-//					}
-//					$field_names .= "$field";
-//					
-//					$values .= $this->columns[$field]->format_for_db(safe_get($_REQUEST[$field]));
-//					if($this->columns[$field]->error_str){
-//						$this->add_error($this->columns[$field]->error_str);
-//					}
-//				}
-//			}
-//			$sql .= "$field_names) VALUES ($values)";
-//			$r = DB::query($sql);
-//			
-//			if(DB::error()){
-//				$this->add_error(DB::error());
-//				$this->add_error($sql);
-//				$this->add_error('table.add()');
-//				return false;
-//			}else{
-//			
-//				$this->add_feedback("New record was added.");
-//				$this->last_id = db_insertid();
-//				return true;
-//			}
-//			$this->_describe();
-//		}
-//	}
+	function add(){
+		$t = new DB_Table($this->name);
+		if($this->check_form()){
+			$fields = array_merge($_POST, $_FILES);
+			if($t->insert($fields)){
+				$this->add_feedback("New record was added.");
+				$this->last_id = $t->insertid();
+				return true;
+			}else{
+				echo "$t->sql";
+				return false;
+			}
+		}
+	}
 	
 	function get_sort_string(&$column){
 		if(isset($_REQUEST['dir']) && $_REQUEST['dir'] == 'asc'){
@@ -337,9 +276,9 @@ class table{
 		
 		$html = "
 		$this->feedback
-<table class='list'>";
+			<table class='list'>";
 		//build each row in an array;
-		$field_count = db_num_fields($this->resource);
+		$field_count = $this->resource->columnCount();
 		
 		$rows = Array($field_count+1);
 		
@@ -362,7 +301,7 @@ class table{
 		$rows[$col+1]='';
 		//===== End Column Heads ======
 		
-		while($row = db_fetch_array($this->resource)){
+		while($row = $this->resource->fetch(PDO::FETCH_NUM)){
 			$menu='';
 			$col = 0;
 			foreach($this->columns as $c){
@@ -403,25 +342,26 @@ class table{
 		foreach($this->columns as $c){
 			
 			$html .= "
-	<tr class='list_row'>";
+		<tr class='list_row'>";
 			if(!$c->is_hidden()){
 				$html .= $rows[$col];
 			}
 			$html .= "
-	</tr>";
+		</tr>";
 			$col++;
 		}
 		$html .= "
-	<tr>
+		<tr>
 		".$rows[$col+1]."
-	</tr>
-</table>";
+		</tr>
+		</table>";
 		return $html;
 	}
 	
 	function &get_order_by(&$sql){
 		$sql .= $this->sql_order;
 	}
+
 	function set_order_by($order_by=''){
 		if(isset($_REQUEST['order_by'])){
 			$this->sql_order .= " ORDER BY ".$_REQUEST['order_by'];
@@ -449,16 +389,12 @@ class table{
 	function add_class($class){
 		$this->class .= " $class";
 	}
+	
 	function _render_list(){
 		$sql ='';
 		$this->render_sql($sql);
-		/*$this->get_columns($sql);
-		$this->get_tables($sql);
-		$this->get_filter($sql);
-		$this->get_order_by($sql);*/
-		$this->resource = DB::query($sql);
+		$this->resource = App::$db->query($sql);
 
-		//echo $sql."<br>";
 		$this->_scan_resource();
 		$edit='';
 		if(!$this->hide_column_heads && $this->show_menu){
@@ -474,7 +410,6 @@ class table{
 	
 	function _render_vertical_list(){
 		require_once("action_link.php");
-		//require_once("edit_link.php");
 		require_once("hyperlink.php");
 		require_once("delete_button.php");
 		
@@ -482,20 +417,16 @@ class table{
 		<table class='$this->class' id='$this->name'>";
 
 		//====== Row Heads ======
-		if(!$this->hide_column_heads)//1
-		{
+		if(!$this->hide_column_heads){
 			$html .= "<thead>";
 			$html .= "<tr>";
 			$col = 0;
 		
-			foreach($this->columns as $c)//2
-			{
-				if(!$c->is_omitted())//3
-				{
+			foreach($this->columns as $c){
+				if(!$c->is_omitted()){
 					$html .= "
 		<th class='list_head'>"
 				.$this->get_sort_string($c)
-				//.$c->name
 				."
 		</th>";
 				}// end 3
@@ -508,11 +439,9 @@ class table{
 		
 		$i=0;
 		$html .= "<tbody>";
-		while($row = db_fetch_array($this->resource))//4
-		{
+		while($row = $this->resource->fetch(PDO::FETCH_ASSOC)){
 			$row_menu='';
-			if($i % 2 == 0)//5
-			{
+			if($i % 2 == 0){
 				$row_class = "row1";
 			}else{//5
 				$row_class = "row2";
@@ -523,15 +452,11 @@ class table{
 			$id = $row[$pk->get_name()];
 			//========
 			$html .= "
-	<tr class='$row_class' onclick=\"row_clicked('$id', '".$pk->get_name()."', '$this->name')\">";
+		<tr class='$row_class' onclick=\"row_clicked('$id', '".$pk->get_name()."', '$this->name')\">";
 			$col = 0;
-			//foreach(array_merge($this->columns, $this->virtual_columns) as $c)//6
-			foreach($this->columns as $c)//6
-			{
+			foreach($this->columns as $c){
 				
-				if($c->is_primary())//7
-				{
-					//$html .= "<br />";
+				if($c->is_primary()){
 					
 					//====Edit button=====
 					$edit = new hyperlink($_SERVER['SCRIPT_NAME'], $this->edit_str, $this->table_params);
@@ -541,8 +466,7 @@ class table{
 					//====================
 					
 					//======Delete button======
-					if($this->show_delete)//8
-					{
+					if($this->show_delete){
 						$del = new delete_button($_SERVER['SCRIPT_NAME'], $row[$col] , $c->get_name());
 						$row_menu .= $del->render()."<br />";
 					}// end 8
@@ -550,15 +474,13 @@ class table{
 				}
 				
 				//====Show Children====
-				if($this->show_rel_menu)//9
-				{
+				if($this->show_rel_menu){
 					$row_menu .= $c->get_child_link($row[$col]);
 				}// end 9
 				//=====================
 				
 				//====Show parents====
-				if($this->show_rel_menu && $c->has_parent())//10
-				{
+				if($this->show_rel_menu && $c->has_parent()){
 					//Provides links back parents
 					$p = $c->get_parent();
 						
@@ -573,9 +495,7 @@ class table{
 				}//10
 				//====================
 				
-				if(!$c->is_omitted())//11
-				{
-					//echo $col;
+				if(!$c->is_omitted()){
 					$html .= "
 		<td class='list_data'>
 			".$c->get_view_html($row[$col]);
@@ -590,11 +510,11 @@ class table{
 				$html .= "<td class='menu'>$row_menu</td>";
 			}
 			$html .= "
-	</tr>";
+		</tr>";
 		$i++;
 		}// end 4
 		$html .= "
-</table>";
+		</table>";
 		return $html;
 	}
 	
@@ -633,7 +553,6 @@ class table{
 			$this->form->create_submit_input($this->add_str, 'action');
 		}
 		
-		//$this->form->create_submit_input($this->cancel_str, 'cancel');
 		return 	$this->feedback.
 				$this->form->render();
 	}
@@ -665,16 +584,14 @@ class table{
 	}
 	
 	function _scan_resource(){
-		
-
-		for($c=0; $c < db_num_fields($this->resource); $c++){
-			$field_name = db_fieldname($this->resource, $c);
+		for($c=0; $c < $this->resource->columnCount(); $c++){
+			$field_ary = $this->resource->getColumnMetadata($c);
+			$field_name = $field_ary['name'];
 			if(!isset($this->columns[$field_name])){
 				$column = new column($this,$field_name);
 				$this->columns[$field_name] = $column;
 			}	
 		}
-		//echo $this->sql;
 	}
 	
 	function get_name(){
@@ -682,16 +599,21 @@ class table{
 	}
 	
 	function _describe(){
+		if(array_key_exists($this->name, self::$tableMap)){
+			$this->columns = self::$tableMap[$this->name];
+			return;
+		}
 		$sql = "Describe `$this->name`";
-		$r = DB::query($sql);
-		if(DB::error()){
-			$this->add_error(DB::error());
+		$r = App::$db->query($sql);
+		if($r->errorCode() > 0){
+			$this->add_error($r->errorCode());
 			$this->add_error($sql);
 			$this->add_error('table._describe');
 		}else{
-			while($row = DB::fetch_assoc($r)){
+			$i=0;
+			while($row = $r->fetch(PDO::FETCH_ASSOC)){
 				if(!isset($this->columns[$row['Field']])){
-					$column = new column($this, $row['Field'], false);
+					$column = new column($this, $row['Field']);
 					$search = '/(\w+)(\((\d+)\))?/';
 					preg_match($search, $row['Type'], $result);
 					if(isset($result[1])){
@@ -723,8 +645,10 @@ class table{
 					$this->columns[$row['Field']] = $column;
 				}
 			}
+			self::$tableMap[$this->name] = $this->columns;
 		}
 	}
+
 	function declare_column($col_name, $type, $length=0, $is_unq=false, $is_pk=false, $auto_inc=false){
 		$column = new column($this, $col_name, false);
 		$column->type = $type;
@@ -734,12 +658,9 @@ class table{
 		$column->auto_inc = $auto_inc;
 		$this->columns[$name] =& $column;
 	}
+
 	function update(){
-		
-		//$pk_obj = $this->get_primary_key();
 		$pks = $this->get_primary_keys();
-		
-		//$pk = $pk_obj->get_name();
 		$set = '';
 		$sql = "UPDATE `".$this->name."`
 		SET ";
@@ -761,14 +682,10 @@ class table{
 			$pk = $pk_obj->get_name();
 			$sql .= " $clause $pk = ".$pk_obj->format_for_db($_REQUEST[$pk]);
 			$clause = 'AND';
-			//$id_list .= $_REQUEST[$pk].
 		}
-		//$sql .= " WHERE $pk = ".$pk_obj->format_for_db($_REQUEST[$pk]);//single pk only
-		DB::query($sql);
-		//echo "$sql<br>";
-		//$this->add_feedback($sql);
-		if(DB::error()){
-			$this->add_error(DB::error());
+		$r = App::$db->query($sql);
+		if($r->errorCode()){
+			$this->add_error($r->errorCode());
 			$this->add_error($sql);
 			$this->add_error('table.update');
 			return false;
@@ -779,7 +696,6 @@ class table{
 	}
 	
 	function delete(){
-		//$pk_obj = $this->get_primary_key();
 		$pks = $this->get_primary_keys();
 		
 		$sql = "DELETE FROM ".$this->name;
@@ -788,11 +704,10 @@ class table{
 			$pk = $pk_obj->get_name();
 			$sql .= " $clause $pk = ".$pk_obj->format_for_db($_REQUEST[$pk]);
 			$clause = 'AND';
-			//$id_list .= $_REQUEST[$pk].
 		}
-		$result = DB::query($sql);
-		if(DB::error()){
-			$this->add_error(DB::error());
+		$result = App::$db->query($sql);
+		if($result->errorCode()){
+			$this->add_error($result->errorCode());
 			$this->add_error($sql);
 			$this->add_error('table.delete');
 			return false;
@@ -801,7 +716,6 @@ class table{
 			return true;
 		}
 	}
-	
 	
 	function get_row($id=null, $assoc=false){
 		//needs to be updated for multiple column primary keys
@@ -814,15 +728,15 @@ class table{
 			$sql .= " limit 0";
 		}
 		$this->sql = $sql;
-		$this->resource =  DB::query($sql);
-		if(DB::error()){
-			$this->add_error(DB::error());
+		$this->resource = App::$db->query($sql);
+		if($this->resource->errorCode() > 0){
+			$this->add_error($this->resource->errorCode());
 			$this->add_error($sql);
 			$this->add_error('table.get_row()');
 		}elseif($assoc){
-			return DB::fetch_assoc($this->resource);
+			return $this->resource->fetch(PDO::FETCH_ASSOC);
 		}else{
-			return DB::fetch_array($this->resource);
+			return $this->resource->fetch(PDO::FETCH_NUM);
 		}
 	}
 	
@@ -873,7 +787,6 @@ class table{
 	}
 	
 	function &get_column($column_name){
-		
 		return $this->columns[$column_name];
 	}
 	
@@ -928,14 +841,13 @@ class table{
 	function set_date_created_column($c){
 		$this->date_created_column = $c;
 	}
+
 	function set_created_by_column($c){
 		$this->created_by_column = $c;
 	}
+
 	function set_updated_by_column(){
 		$this->updated_by_column = $c;
 	}
-	//================ Deprecated =======================
-	
-	
 }
 ?>

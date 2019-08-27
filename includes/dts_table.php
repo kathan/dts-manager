@@ -56,46 +56,45 @@ class dts_table extends table{
 	var $null_str ='<span style="color:red">N/A</span>';
 	
 	function __construct($name, $desc=true){
-            asort($this->ltl_carriers);
-            $this->generate_times();
-            parent::__construct($name, $desc);
-            $this->add_to_breadcrumb($this->page, $name);
-            $this->tab_menu = new tab_menu();
+		asort($this->ltl_carriers);
+		$this->generate_times();
+		parent::__construct($name, $desc);
+		$this->add_to_breadcrumb($this->page, $name);
+		$this->tab_menu = new tab_menu();
 	}
         
 	function money($num){
 		return number_format($num, 2, '.', '');
 	}
 	
-        function generate_times(){
-	$this->times['null'] ='';
-	$start_time = 0;
-	$end_time = 24;
-	$interval = 15;//minutes
-	$am_pm = 'AM';
-	
-	for($h = $start_time; $h <= $end_time; $h++){
-		for($m = 0; $m < 60; $m += $interval){
-			$time = date('g:i A', strtotime($h.':'.$m));
-			$this->times[$time] = $time;
+	function generate_times(){
+		$this->times['null'] ='';
+		$start_time = 0;
+		$end_time = 24;
+		$interval = 15;//minutes
+		$am_pm = 'AM';
+		
+		for($h = $start_time; $h <= $end_time; $h++){
+			for($m = 0; $m < 60; $m += $interval){
+				$time = date('g:i A', strtotime($h.':'.$m));
+				$this->times[$time] = $time;
+			}
 		}
 	}
-}
-
 
 	function get_users(){
 		$sql = "SELECT user_id, IF(active = 1, username, concat(substr(first_name, 1, 1), substr(last_name, 1, 1))) username FROM `users` order by active desc";
-		$re = DB::query($sql);
+		$re = App::$db->query($sql);
 		$result = Array('');
-		while($r = DB::fetch_assoc($re)){
+		while($r = $re->fetch(PDO::FETCH_ASSOC)){
 			$result[$r['user_id']] = $r['username'];
 		}
 		return $result;
 	}
+
 	function nbsp($str){
 		return str_replace(' ', '&nbsp;', $str);
 	}
-	
 	
 	function add_to_breadcrumb($name, $value=null){
 		if(isset($this->breadcrumb)){
@@ -113,34 +112,38 @@ class dts_table extends table{
 	function get_tab_menu(){
 		return $this->tab_menu->render();
 	}
+
 	function db_script(){
-		return "<script src='db_save.js.php' type=\"text/javascript\"></script>";
+		return "<script src='js/db_save.js' type=\"text/javascript\"></script>";
 	}
+
 	function sortable_script(){
-		//return "<script src='sortable.js'></script>";
+		//return "<script src='js/sortable.js'></script>";
 	}
+
 	function check_size(){
 		return $this->script("window.onresize = resize;
 
-function resize(){
-  var myWidth = 0, myHeight = 0;
-  if( typeof( window.innerWidth ) == 'number' ){
-    //Non-IE
-    myWidth = window.innerWidth;
-    myHeight = window.innerHeight;
-  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ){
-    //IE 6+ in 'standards compliant mode'
-    myWidth = document.documentElement.clientWidth;
-    myHeight = document.documentElement.clientHeight;
-  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ){
-    //IE 4 compatible
-    myWidth = document.body.clientWidth;
-    myHeight = document.body.clientHeight;
-  }
-  //window.status = 'Width = ' + myWidth + ' Height = ' + myHeight;
-  window.alert( 'Width = ' + myWidth + ' Height = ' + myHeight );
-}");
+		function resize(){
+		var myWidth = 0, myHeight = 0;
+		if( typeof( window.innerWidth ) == 'number' ){
+			//Non-IE
+			myWidth = window.innerWidth;
+			myHeight = window.innerHeight;
+		} else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ){
+			//IE 6+ in 'standards compliant mode'
+			myWidth = document.documentElement.clientWidth;
+			myHeight = document.documentElement.clientHeight;
+		} else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ){
+			//IE 4 compatible
+			myWidth = document.body.clientWidth;
+			myHeight = document.body.clientHeight;
+		}
+		//window.status = 'Width = ' + myWidth + ' Height = ' + myHeight;
+		window.alert( 'Width = ' + myWidth + ' Height = ' + myHeight );
+		}");
 	}
+
 	function popup_script(){
 		return $this->script("			
 				function popUp(URL, id, width, height){
@@ -157,51 +160,52 @@ function resize(){
 					eval(\"page\" + id + \" = window.open(URL, '\" + id + \"', 'toolbar=0,location=0,statusbar=0,menubar=0,resizable=1,width=\"+width+\",height=\"+height+\",left = 0,top = 0');\");
 				}");
 	}
+
 	function portal_script(){
 		return $this->script("
 			function get_portal(table, params){
-				try
-				{
-  				var d = document.getElementById(table+'_portal');
-				  d.innerHTML = 'Loading '+table;			
+				try{
+					var d = document.getElementById(table+'_portal');
+					d.innerHTML = 'Loading '+table;			
 					var url = '?page=$this->name&portal='+table+'&action=portal&".SMALL_VIEW."&'+params;
 					var portal = getFromURL(url);
 				}catch(e){
 					alert('Error in get_portal:'+e.description + ' url:' + url);
 				}
-				d.innerHTML = '';
-				d.innerHTML = portal;
-				
+				if(d){
+					d.innerHTML = '';
+					d.innerHTML = portal;
+				}else{
+					alert('Cannot find #d')
+				}
 			}");
 			
 	}
+
 	function module_script(){
 		return $this->script("
 			function get_module(name, params){
 				var d = document.getElementById(name+'_module');
-				//alert(table+'1');
-				d.innerHTML = 'Loading '+name;
-				//alert(table+'2');
-				try
-					{
-					var url = '?page=$this->page&module='+name+'&".SMALL_VIEW."&'+params;
-					//var url = '?page=$this->page&module='+name+'&action=module&".SMALL_VIEW."&'+params;
-				var module = getFromURL(url);
-				
-				}catch(e){
+				if(d){
+					d.innerHTML = 'Loading '+name;
+					try{
+						var url = '?page=$this->page&module='+name+'&".SMALL_VIEW."&'+params;
+						var module = getFromURL(url);
+					}catch(e){
 						alert('Error in module_script:'+e.description + ' url:' + url);
 					}
 					d.innerHTML = '';
-				d.innerHTML = module;
-				
+					d.innerHTML = module;
+				}
 			}");
 			
 	}
+
 	function get_user_name($user_id){
 		if(isset($user_id)){
 			$sql ="SELECT username FROM `users` WHERE user_id = $user_id";
-			$r = DB::query($sql);
-			$ro = DB::fetch_assoc($r);
+			$r = App::$db->query($sql);
+			$ro = $r->fetch(PDO::FETCH_ASSOC);
 			return $ro['username'];
 		}else{
 			return "unknown";
@@ -220,6 +224,4 @@ function resize(){
 				</script>";
 	}
 }
-
-
 ?>

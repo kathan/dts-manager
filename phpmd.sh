@@ -1,1 +1,1 @@
-./vendor/bin/phpmd . html unusedcode,controversial,design >> phpmd_results.html
+./vendor/bin/phpmd . html 'unusedcode,controversial,design' --exclude verndor/,templates/,includes/smarty/,includes/smarty-master >> phpmd_results.html
