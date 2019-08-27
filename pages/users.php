@@ -13,10 +13,16 @@ $post_action = '';
 
 class users extends dts_table{
 	private $userTable;
+	private $userGroupTable;
+	private $contactListTable;
+	private $regionListTable;
 
 	function __construct(){
 		parent::__construct('users');
 		$this->userTable = new DbTable(App::$db, 'users');
+		$this->userGroupTable = new DbTable(App::$db, 'user_group');
+		$this->contactListTable = new DbTable(App::$db, 'user_contact_list');
+		$this->regionListTable = new DbTable(App::$db, 'user_region_list');
 	}
 
 	function process_users(){
@@ -96,7 +102,6 @@ class users extends dts_table{
 
 	function save_user(){
 		if (Auth::loggedInAs('super admin') || Auth::loggedInAs($_COOKIE[Auth::COOKIE_USERNAME])){
-			$t = new DB_Table('users');
 			if(isset($_REQUEST['user_id'])){
 				
 				if(isset($_POST['password1']) && isset($_POST['password2'])){
@@ -107,7 +112,7 @@ class users extends dts_table{
 						$data['hash_password'] = Auth::encryptPassword($_POST['password1']);
 						unset($data['password1']);
 						unset($data['password2']);
-						if($t->update($data, ['user_id'=>$_GET['user_id']])){
+						if($this->userTable->update($data, ['user_id'=>$_GET['user_id']])){
 							Feedback::add("User Updated");
 						}else{
 							Feedback::add($t->error_str);
@@ -125,7 +130,7 @@ class users extends dts_table{
 						
 						$data['password_hash'] = Auth::hashPassword($data['password']);
 						unset($data['password']);
-						if($t->insert($data)){
+						if($this->userTable->insert($data)){
 							Feedback::add("User Added");
 							header('Location: ?page='.basename(__FILE__, '.php').'&action=edit&user_id='.$t->last_id);
 						}else{
@@ -144,7 +149,7 @@ class users extends dts_table{
 	function add_groups($user_id, $group_ids){
 		if (Auth::loggedInAs('super admin')){
 			foreach($group_ids as $group_id){
-				$result = $this->userTable->insert(['user_id'=>$user_id, 'group_id' => $group_id]);
+				$result = $this->userGroupTable->insert(['user_id'=>$user_id, 'group_id' => $group_id]);
 				if(!$result){
 					$failed = true;
 				}
@@ -160,7 +165,7 @@ class users extends dts_table{
 	function add_contacts($user_id, $contact_list_ids){
 		if (Auth::loggedInAs('super admin')){
 			foreach($contact_list_ids as $contact_list_id){
-				$result = $this->userTable->insert(['user_id'=>$user_id, 'contact_list_id' => $contact_list_id]);
+				$result = $this->contactListTable->insert(['user_id'=>$user_id, 'contact_list_id' => $contact_list_id]);
 				if(!$result){
 					$failed = true;
 				}
@@ -176,7 +181,7 @@ class users extends dts_table{
 	function remove_groups($user_id, $group_ids){
 		if (Auth::loggedInAs('super admin')){
 			foreach($group_ids as $group_id){
-				$result = $this->userTable->delete(['user_id' => $user_id, 'group_id' => $group_id]);
+				$result = $this->userGroupTable->delete(['user_id' => $user_id, 'group_id' => $group_id]);
 				if(!$result){
 					$failed = true;
 				}
@@ -192,7 +197,7 @@ class users extends dts_table{
 	function remove_contacts($user_id, $contact_list_ids){
 		if (Auth::loggedInAs('super admin')){
 			foreach($contact_list_ids as $contact_list_id){
-				$result = $this->userTable->delete(['user_id' => $user_id, 'contact_list_id' => $contact_list_id]);
+				$result = $this->contactListTable->delete(['user_id' => $user_id, 'contact_list_id' => $contact_list_id]);
 				if(!$result){
 					$failed = true;
 				}
@@ -207,9 +212,8 @@ class users extends dts_table{
 
 	function add_regions($user_id, $region_list_ids){
 		if (Auth::loggedInAs('super admin')){
-			$t = new DbTable('user_region_list');
 			foreach($region_list_ids as $region_list_id){
-				if(!$t->insert(['user_id'=>$user_id, 'region_list_id'=>$region_list_id])){
+				if(!$this->regionListTable->insert(['user_id'=>$user_id, 'region_list_id'=>$region_list_id])){
 					$failed = true;
 				}
 			}
@@ -223,9 +227,8 @@ class users extends dts_table{
 
 	function remove_regions($user_id, $region_list_ids){
 		if (Auth::loggedInAs('super admin')){
-			$t = new DbTable('user_region_list');
 			foreach($region_list_ids as $region_list_id){
-				if(!$t->delete(['user_id'=>$user_id, 'region_list_id'=>$region_list_id])){
+				if(!$this->regionListTable->delete(['user_id'=>$user_id, 'region_list_id'=>$region_list_id])){
 					$failed = true;
 				}
 			}
@@ -257,6 +260,9 @@ class users extends dts_table{
 			return $r;
 		}
 		Feedback::add("Could not find id $user_id in the database.");
+		Feedback::add("sql: $sql");
+		Feedback::add("binds: ".json_encode($binds));
+
 	}
 
 	function edit_user($user=null){

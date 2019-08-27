@@ -201,15 +201,8 @@ class DbTable{
 				$clause = 'AND';
 			}
 		}
-		try{
-			$this->db->prepare($this->sql);
-			$result = $this->execute($this->binds);
-		} catch(PDOExecption $e) { 
-			$this->addError(__FUNCTION__, $e->getMessage(), $this->sql);
-			return false;
-		}
-		return true;
-
+		$stmt = $this->db->prepare($this->sql);
+		return $stmt->execute($this->binds);
 	}
 	
 	function addError($str){

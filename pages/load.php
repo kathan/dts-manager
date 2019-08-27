@@ -701,7 +701,6 @@ class load_table extends dts_table{
 		$si = new submit_input($this->warehouse_search_result, 'action');
 		$wt->set_submit_input($si);
 		
-		
 		$hi1 = new hidden_input(SMALL_VIEW);
 		$wt->add_input($hi1);
 		

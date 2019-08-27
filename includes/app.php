@@ -1,4 +1,5 @@
 <?php
+ini_set('memory_limit', '1024M');
 ini_set('display_errors', 'On');
 ini_set('error_reporting', E_ALL);
 //error_reporting(E_ALL);
@@ -10,6 +11,25 @@ ini_set('include_path', ini_get('include_path').":".App::getAppRoot()."/includes
 
 require_once('DB.php');
 
+function handleFatal() {
+    $error = error_get_last();
+    var_dump($error);
+    var_dump(debug_backtrace(0));
+    if ($error['type'] === E_ERROR) {
+        !isset($errno) ? $errno  = $error["type"] : $errno = E_CORE_ERROR;
+        !isset($errfile) ? $errfile = $error["file"] : $errfile = "unknown file";
+        !isset($errline) ? $errline = $error["line"] : $errline = 0;
+        !isset($errstr) ? $errstr  = $error["message"] : $errstr = "unknown";
+        // App:logit('Fatal Error: '.$errstr);
+        // Feedback::add('Fatal Error: '.$errstr);
+        $stack = debug_backtrace(0);
+        // App::addError(['type'=>'Fatal Error', 'number'=>$errno, 'message'=>$errstr, 'file'=>$errfile, 'line'=>$errline, 'stack'=>$stack]);
+        //mailError('Fatal Error', $stack, $errno, $errstr, $errfile, $errline);
+    }/*else{
+        mailError('Fatal Error', [], -0, 'Something mysterious happened');
+    }*/
+	
+}
 class App{
     public static $db;
     public static $templates_dir = '/templates/';
