@@ -35,7 +35,8 @@ class App{
     public static $templates_dir = '/templates/';
     public static $img_dir = 'images';
     public static $site_name = 'DTS';
-    
+    const DISPLAY_DATE_FORMAT = '%c/%e/%y';
+
     public static function getSiteName(){
         return self::$site_name;
     }

@@ -34,6 +34,7 @@ class dts_table extends table{
 	var $db_date_format = '%Y-%m-%e';
 	var $db_time_format = '%H:%i:%s';
 	var $date_format = '%m/%e/%Y';
+	const DISPLAY_DATE_FORMAT = '%m/%e/%Y';
 	var $null_date ='0000-00-00';
 	var $blank_date ='00/00/0000';
 	var $null_time ='00:00:00';

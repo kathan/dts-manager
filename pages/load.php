@@ -633,7 +633,9 @@ class load_table extends dts_table{
 					</form>";
 		$c .= $this->script("
 				function refresh_close(){
-					db_save(document.getElementsByName('problem')[0]);
+					var problem = document.getElementsByName('problem')[0];
+					alert(problem);
+					db_save(problem);
 					window.opener.update_problem_module();
 					window.close();
 				}");

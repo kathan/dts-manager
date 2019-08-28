@@ -139,7 +139,7 @@ class DB{
     }
 	
     public static function form_to_db($s){
-        return self::$db->real_escape_string($s);
+        return self::esc($s);
     }
 
     public static function db_date($year, $month, $day){
@@ -154,7 +154,7 @@ class DB{
     }
 	
     public static function esc($str){
-        return self::$db->real_escape_string($str);
+        return mysqli_real_escape_string($str);
     }
 	
     public static function to_array($re, $single=false){

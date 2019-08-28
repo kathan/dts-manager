@@ -1,10 +1,8 @@
 <?php
-date_default_timezone_set('America/Chicago');
-ini_set('display_errors', 'On');//Debug only
 require_once('includes/app.php');
 require_once('includes/global.php');
 require_once('includes/auth.php');
-require_once"includes/dts_table.php";
+require_once("includes/dts_table.php");
 
 if(Auth::loggedIn()){
     $t = new dts_table($_REQUEST['table']);
@@ -29,6 +27,7 @@ if(Auth::loggedIn()){
     }
 }
 
+//Why is this here?
 function clear_load_carrier($load_id){
     $t = DbTable('load_carrier');
     $t->delete(['load_id' => $load_id]);

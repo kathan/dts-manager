@@ -86,12 +86,14 @@ class DbTable{
 		$this->binds = [];
 		$select = '';
 		foreach($columns_ary as $column){
-			if(array_key_exists(strtolower($column), $this->columns) || $column = '*'){
-				if($select != ''){
-					$select .= ',';
-				}
-				$select .= "$column";
+			if($column === '*'){
+				$column = 't1.*';
 			}
+
+			if($select != ''){
+				$select .= ',';
+			}
+			$select .= "$column";
 		}
 		$where = '';
 		$clause = 'WHERE';
@@ -105,7 +107,7 @@ class DbTable{
 				$clause = 'AND';
 			}
 		}
-		$this->sql = "SELECT $select FROM `$this->name` $where $limitOffset";
+		$this->sql = "SELECT $select FROM `$this->name` t1 $where $limitOffset";
 		try {
 			$stmt = $this->db->prepare($this->sql);
 			$result = $stmt->execute($this->binds);

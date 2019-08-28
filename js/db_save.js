@@ -34,10 +34,8 @@ function db_save(obj) {
         req.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=ISO-8859-13");
         req.setRequestHeader("Content-length", query_str.length);
         req.setRequestHeader("Connection", "close");
-
         req.send(query_str);
-        if (req.status == 200) {
-
+        if (req.status === 200) {
             if (req.responseText != 1) {
                 alert(req.responseText);
             }
