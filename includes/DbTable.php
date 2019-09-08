@@ -77,7 +77,7 @@ class DbTable{
 		}
 	}
 	
-	function query($columns_ary, $where_ary, $page){
+	function query($columns_ary, $where_ary, $page=1){
 		$limitOffset = '';
 		if(is_array($page)){
 			isset($page[0]) ? $limitOffset = "LIMIT ".$page[0] : $limitOffset = '';
