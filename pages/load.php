@@ -2429,8 +2429,11 @@ class load_table extends dts_table{
 						FROM load_carrier lc
 						WHERE lc.load_id = l.load_id) > 0";
 		$re = App::$db->query($sql);
-		$ro = $re->fetch(PDO::FETCH_NUM);
-		return $ro[0];
+		if($re){
+			$ro = $re->fetch(PDO::FETCH_NUM);
+			return $ro[0];
+		}
+		return false;
 	}
 }
 $l = new load_table();
