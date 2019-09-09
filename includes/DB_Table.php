@@ -58,7 +58,7 @@ class DB_Table{
 		/*Query for all columns in the table and */
 		$this->sql = "Describe `$this->name`";
 		$r = App::$db->query($this->sql);
-		if(!$r->errorCode() && $r){
+		if($r){
 			while($row = $r->fetch(PDO::FETCH_ASSOC)){
 				if(!isset($this->columns[$row['Field']])){
 					
@@ -141,14 +141,10 @@ class DB_Table{
 			}
 			$this->sql .= "$field_names) VALUES ($values)";
 			$r = App::$db->query($this->sql);
-			
-			if($r->errorCode()){
-				$this->add_error($r->errorCode(), __FILE__, __FUNCTION__);
+			if(App::$db->errorInfo()[1] > 0){
+				throw new Exception(App::$db->errorInfo()[2]);
 				return false;
 			}else{
-			
-				$this->add_feedback("New record was added.");
-				
 				$this->last_id = App::$db->lastInsertId();
 				return true;
 			}
@@ -156,6 +152,10 @@ class DB_Table{
 			$this->add_feedback("Data was not added.");
 		}
 		
+	}
+
+	function insertid(){
+		return $this->last_id;
 	}
     
 	function update($set_ary, $where_ary){
