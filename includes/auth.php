@@ -216,7 +216,7 @@ class Auth{
         }
     }
 
-    static function user_getrealname(){
+    static function userGetRealName(){
         //see if we have already fetched this user from the db, if not, fetch it
         $binds = [self::user_getname()];
         $sql = "    SELECT first_name, last_name

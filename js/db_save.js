@@ -37,7 +37,7 @@ function db_save(obj) {
         req.send(query_str);
         if (req.status === 200) {
             if (req.responseText != 1) {
-                alert(req.responseText);
+                console.log(req.responseText);
             }
         } else {
             alert("There was a problem retrieving the XML data:\n" + req.statusText);
@@ -56,7 +56,7 @@ function processReqChange() {
         if (req.status == 200) {
             req.responseText
             if (req.responseText != 1) {
-                alert(req.responseText);
+                console.log(req.responseText);
             }
         } else {
             alert("There was a problem retrieving the XML data:\n" +

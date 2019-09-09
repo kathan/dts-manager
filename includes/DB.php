@@ -17,10 +17,9 @@ class DB{
     }
 
     static function refValues($arr){
-        if (strnatcmp(phpversion(),'5.3') >= 0) //Reference is required for PHP 5.3+
-        {
+        if (strnatcmp(phpversion(),'5.3') >= 0){
             $refs = [];
-            foreach($arr as $key => $value){
+            foreach(array_keys($arr) as $key){
                 $refs[$key] = &$arr[$key];
             }
             return $refs;
@@ -29,38 +28,38 @@ class DB{
     }
 
     public static function query($sql, $binds=null){
-        $bind_ary = [];
-        $bind_ary[0] = '';
-        self::$db->prepare($sql);
+        $bindAry = [];
+        $bindAry[0] = '';
+        $stmt = self::$db->prepare($sql);
 	    if(isset($binds) && count($binds) > 0){
             foreach($binds as $val){
                 switch(gettype($val)){
                     case 'string';
-                        $bind_ary[0] = 's'.$bind_ary[0];
-                        $bind_ary[] = $val;
+                        $bindAry[0] = 's'.$bindAry[0];
+                        $bindAry[] = $val;
                         break;
                     case 'integer':
-                        $bind_ary[0] = 's'.$bind_ary[0];
-                        $bind_ary[] = $val;
+                        $bindAry[0] = 's'.$bindAry[0];
+                        $bindAry[] = $val;
                         break;
                     case 'double':
-                        $bind_ary[0] = 'd'.$bind_ary[0];
-                        $bind_ary[] = $val;
+                        $bindAry[0] = 'd'.$bindAry[0];
+                        $bindAry[] = $val;
                         break;
                     case 'object':
                         switch(get_class($val)){
                             case 'DateTime':
-                                $bind_ary[0] = 's'.$bind_ary[0];
-                                $bind_ary[] = $val->format('Y-m-d H:i:s');
+                                $bindAry[0] = 's'.$bindAry[0];
+                                $bindAry[] = $val->format('Y-m-d H:i:s');
                                 break;
                         }
                         break;
 
                 }
             }
-            $ref_vals = self::refValues($bind_ary);
-            if(!call_user_func_array([$stmt, 'bind_param'], $ref_vals)){
-                debug_print_backtrace();
+            $refVals = self::refValues($bindAry);
+            if(!call_user_func_array([$stmt, 'bind_param'], $refVals)){
+                $backtrace = debug_backtrace();
                 echo "<br>$sql<br>";
                 var_dump($binds);
                 return false;
@@ -97,8 +96,8 @@ class DB{
 
     public static function result($result, $row, $field){
         $result->data_seek($row);
-        $row_obj = $result->fetch_assoc();
-        return $row_obj[$field];
+        $rowObj = $result->fetch_assoc();
+        return $rowObj[$field];
     }
 
     public static function data_seek($result, $offset){
@@ -132,10 +131,10 @@ class DB{
     }
 
     public static function current_db(){
-	$sql = "SELECT database()";
-	$re = App::$db->query($sql);
-	$row = $result->fetch(PDO::FETCH_NUM);
-	return $row[0];
+        $sql = "SELECT database()";
+        $re = App::$db->query($sql);
+        $row = $re->fetch(PDO::FETCH_NUM);
+        return $row[0];
     }
 	
     public static function form_to_db($s){
@@ -154,7 +153,7 @@ class DB{
     }
 	
     public static function esc($str){
-        return mysqli_real_escape_string($str);
+        return str_replace("'", "\'", $str);
     }
 	
     public static function to_array($re, $single=false){
@@ -167,8 +166,5 @@ class DB{
             $ary[] = $row;
         }
         return $ary;
-		
     }
 }
-
-?>

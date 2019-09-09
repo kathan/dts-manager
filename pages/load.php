@@ -461,7 +461,7 @@ class load_table extends dts_table{
 	
 	function get_money_edit_module_new(){
 		$r = $this->current_row();
-		print_r($r);
+		echo $r;
 	}
 	
 	function get_money_edit_module(){
@@ -634,7 +634,6 @@ class load_table extends dts_table{
 		$c .= $this->script("
 				function refresh_close(){
 					var problem = document.getElementsByName('problem')[0];
-					alert(problem);
 					db_save(problem);
 					window.opener.update_problem_module();
 					window.close();
@@ -671,26 +670,36 @@ class load_table extends dts_table{
 		$where='';
 		
 		if(isset($_REQUEST['warehouse_id']) && intval(trim($_REQUEST['warehouse_id'], 'd D')) > 0){
-			$where .= " $clause warehouse_id = ".intval(trim($_REQUEST['warehouse_id'], 'd D'));
+			$where .= " $clause warehouse_id = ?";
+			$clause = 'AND';
+			$binds[] = intval(trim($_REQUEST['warehouse_id'], 'd D'));
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '$_REQUEST[name]'";
+				$where .= " $clause name like ?";
 				$clause = 'AND';
+				$binds[] = $_REQUEST['name'];
 			}
+
 			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
-				$where .= " $clause address like '$_REQUEST[address]'";
+				$where .= " $clause address like ?";
+				$clause = 'AND';
+				$binds[] = $_REQUEST['address'];
 			}
 			
 			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
-				$where .= " $clause city like '$_REQUEST[city]'";
+				$where .= " $clause city like ?";
+				$clause = 'AND';
+				$binds[] = $_REQUEST['city'];
 			}
 			
 			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
-				$where .= " $clause state like '$_REQUEST[state]'";
+				$where .= " $clause state like ?";
+				$clause = 'AND';
+				$binds[] = $_REQUEST['state'];
 			}
 		}
 		$sql .= $where;
-		$p = new portal($sql);
+		$p = new portal($sql, $binds);
 		$c .= $p->render();
 		
 		return $c;
@@ -768,6 +777,7 @@ class load_table extends dts_table{
 					function refresh_close(){
 						window.opener.update_carrier_portal();
 					}");
+		$binds = [];
 		$sql = "SELECT	CONCAT('S', carrier_id) carrier_id,
 						name,
 						phys_city,
@@ -777,27 +787,38 @@ class load_table extends dts_table{
 		$clause = 'WHERE';
 		$where='';
 		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0){
-			$where .= " $clause carrier_id = ".intval(trim($_REQUEST['carrier_id'], 's S'));
+			$where .= " $clause carrier_id = ?";
+			$binds[] = intval(trim($_REQUEST['carrier_id'], 's S'));
+			$clause = 'AND';
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '$_REQUEST[name]'";
+				$where .= " $clause name like ?";
+				$binds[] = $_REQUEST['name'];
 				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_address']) && $_REQUEST['phys_address'] !=''){
-				$where .= " $clause phys_address like '$_REQUEST[phys_address]'";
+				$where .= " $clause phys_address like ?";
+				$binds[] = $_REQUEST['phys_address'];
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_city']) && $_REQUEST['phys_city'] !=''){
-				$where .= " $clause phys_city like '$_REQUEST[phys_city]'";
+				$where .= " $clause phys_city like ?";
+				$binds[] = $_REQUEST['phys_city'];
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['phys_state']) && $_REQUEST['phys_state'] !=''){
-				$where .= " $clause phys_state like '$_REQUEST[phys_state]'";
+				$where .= " $clause phys_state like ?";
+				$binds[] = $_REQUEST['phys_state'];
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['mc_number']) && $_REQUEST['mc_number'] !=''){
-				$where .= " $clause mc_number like '$_REQUEST[mc_number]'";
+				$where .= " $clause mc_number like ?";
+				$binds[] = $_REQUEST['mc_number'];
+				$clause = 'AND';
 			}
 		}
 		$sql .= $where;
-		$p = new portal($sql);
+		$p = new portal($sql, $binds);
 		$c .= $p->render();
 		
 		return $c;
@@ -834,6 +855,7 @@ class load_table extends dts_table{
 	
 	//===== Customer Search functions =====
 	function get_customer_search_result_module(){
+		$binds = [];
 		$sql = "SELECT	CONCAT('T', customer_id) p_customer_id,
 						customer_id,
 						name,
@@ -845,32 +867,43 @@ class load_table extends dts_table{
 		$clause = 'WHERE';
 		$where='';
 		if(isset($_REQUEST['customer_id']) && intval(trim($_REQUEST['customer_id'], 't T')) > 0){
-			$where .= " $clause customer_id = ".intval(trim($_REQUEST['customer_id'], 't T'));
+			$where .= " $clause customer_id = ?";
+			$binds[] = intval(trim($_REQUEST['customer_id'], 't T'));
 		}else{
 			if(isset($_REQUEST['name']) && $_REQUEST['name'] != ''){
-				$where .= " $clause name like '$_REQUEST[name]'";
+				$binds[] = $_REQUEST['name'];
+				$where .= " $clause name like ?";
 				$clause = 'AND';
 			}
 			if(isset($_REQUEST['address']) && $_REQUEST['address'] !=''){
-				$where .= " $clause address like '$_REQUEST[address]'";
+				$where .= " $clause address like ?";
+				$binds[] = $_REQUEST['address'];
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['city']) && $_REQUEST['city'] !=''){
-				$where .= " $clause city like '$_REQUEST[city]'";
+				$where .= " $clause city like ?";
+				$binds[] = $_REQUEST['city'];
+				$clause = 'AND';
 			}
 			if(isset($_REQUEST['state']) && $_REQUEST['state'] !=''){
-				$where .= " $clause state like '$_REQUEST[state]'";
+				$where .= " $clause state like ?";
+				$binds[] = $_REQUEST['state'];
+				$clause = 'AND';
 			}
-			
 		}
 		if(!Auth::loggedInAs('admin') && !Auth::loggedInAs('super admin')){
-			$where .= " $clause acct_owner = ".Auth::getUserId();
+			$where .= " $clause acct_owner = ?";
 			$clause = 'AND';
+			$binds[] = Auth::getUserId();
 		}
 		$sql .= $where;
-		$re = App::$db->query($sql);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
 		$t = new Template();
-		$t->error_reporting = E_ALL & ~E_NOTICE;
-		$t->assign('cust', $re->fetchAll(PDO::FETCH_ASSOC));
+		$t->assign('cust', $stmt->fetchAll(PDO::FETCH_ASSOC));
 		return $t->fetch(App::getTempDir().'/cust_search_result.tpl');
 	}
 	
@@ -1561,23 +1594,29 @@ class load_table extends dts_table{
 	}
 
 	function get_customer($customer_id){
-		$sql ="SELECT *, CONCAT('<a href=\"?page=customer&action=$this->edit_str&customer_id=',customer_id,'\">', name, '</a>') name FROM customer WHERE customer_id = $customer_id";
-		$r = App::$db->query($sql);
-		return $r->fetch(PDO::FETCH_ASSOC);
+		$sql ="SELECT *, CONCAT('<a href=\"?page=customer&action=$this->edit_str&customer_id=',customer_id,'\">', name, '</a>') name FROM customer WHERE customer_id = ?";
+		$binds = [$customer_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		return $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	function get_user($user_id){
-		
-		$sql ="SELECT * FROM `users` WHERE user_id = $user_id";
-		$r = App::$db->query($sql);
+		$sql = "SELECT * FROM `users` WHERE user_id = ?";
+		$binds = [$user_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
 		return $r->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	function fetch_new($name, $value=null){
 		$c = $this->get_column($name);
-		$pk_obj = $this->get_primary_key();
-		$pk_name = $pk_obj->get_name();
-		
 		$o = $c->get_edit_html($value);
 		
 		return $o->render();
@@ -1586,22 +1625,16 @@ class load_table extends dts_table{
 	function fetch_edit($name, $value=null, $protected=false){
 		$c = $this->get_column($name);
                 
-		$pk_obj = $this->get_primary_key();
-		$pk_name = $pk_obj->get_name();
 		if($protected){
-                    return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
+			return "<div class='faux_edit'>".$c->get_view_html($value)."</div>";
 		}else{
 			if(isset($c)){
-			$o = $c->get_edit_html($value);
-			$o->set_id("action=$this->update&table=$this->name&load_id=$this->load_id&".$name."=");
-			$o->add_attribute('onchange', 'db_save(this);return column_updated(this);');
-			
-			$script = $this->script("
-		var i = document.getElementById('$name');
-		i.setReturnFunction(onchange);");
-		
-		return $o->render();
-		}
+				$o = $c->get_edit_html($value);
+				$o->set_id("action=$this->update&table=$this->name&load_id=$this->load_id&".$name."=");
+				$o->add_attribute('onchange', 'db_save(this);return column_updated(this);');
+				
+				return $o->render();
+			}
 		}
 	}
 	
@@ -1621,6 +1654,7 @@ class load_table extends dts_table{
 	}
 	
 	function get_daily_profit($date, $filter=null){
+		$binds = [];
 		$sql = "
 			SELECT
 	round(sum(
@@ -1648,30 +1682,37 @@ class load_table extends dts_table{
 		)
 	,2) profit
 					FROM `load` l
-					WHERE activity_date = '$date'
+					WHERE activity_date = ?
 					AND load_id in (SELECT load_id FROM load_carrier)";
+		$binds[] = $date;
 		if(isset($filter) && is_array($filter)){
 			if(isset($filter['user_id'])){
-				$sql .= " AND (l.order_by = $filter[user_id]
+				$sql .= " AND (l.order_by = ?
 							OR l.customer_id in (SELECT customer_id 
 												FROM customer 
-												WHERE acct_owner = $filter[user_id]))";
+												WHERE acct_owner = ?))";
+				$binds[] = $filter['user_id'];
+				$binds[] = $filter['user_id'];
 			}elseif(isset($filter['region_id'])){
 				$sql .= "	AND (l.order_by in (SELECT user_id
 												FROM user_region_list
-												WHERE region_list_id = $filter[region_id])
+												WHERE region_list_id = ?)
 							OR l.customer_id in (SELECT customer_id 
 												FROM customer 
 												WHERE acct_owner in (SELECT user_id
 																	FROM user_region_list
-																	WHERE region_list_id = $filter[region_id])))";
+																	WHERE region_list_id = ?)))";
+				$binds[] = $filter['region_id'];
+				$binds[] = $filter['region_id'];
 			}
 		}
-		$result = App::$db->query($sql);
+		
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
 		if(!$result){
 			return false;
 		}
-		$r = $result->fetch(PDO::FETCH_ASSOC);
+		$r = $stmt->fetch(PDO::FETCH_ASSOC);
 		
 		return $r['profit'];
 	}
@@ -1694,7 +1735,7 @@ class load_table extends dts_table{
 		$t = new Template();
 		$rul = [];
 		while($rr = $re->fetch(PDO::FETCH_ASSOC)){
-			$new_row = Array();
+			$new_row = [];
 			$new_row['name'] = $rr['name'];
 			$new_row['region_id'] = $rr['id'];
 			$rul[] = $new_row;
@@ -1702,12 +1743,16 @@ class load_table extends dts_table{
 					FROM `users`
 					WHERE user_id in (	SELECT user_id
 										FROM user_region_list
-										WHERE region_list_id = $rr[id])
+										WHERE region_list_id = ?)
 					ORDER BY username";
-										
-			$ru = App::$db->query($sql);
-			while($u = $ru->fetch(PDO::FETCH_ASSOC)){
-				$new_row = Array();
+			$binds = [$rr['id']];
+			$stmt = App::$db->prepare($sql);
+			$result = $stmt->execute($binds);
+			if(!$result){
+				return false;
+			}
+			while($u = $stmt->fetch(PDO::FETCH_ASSOC)){
+				$new_row = [];
 				$new_row['name'] = $u['username'];
 				$new_row['user_id'] = $u['user_id'];
 				$rul[] = $new_row;
@@ -1758,7 +1803,8 @@ class load_table extends dts_table{
 	
 	function get_loads($date, $type, $filter=null){
 		
-		$q = new portal();
+		$binds = [];
+		$clause = 'AND';
 		$sql = "	SELECT 	load_id
 							, load_type
 							, cancelled
@@ -1783,15 +1829,22 @@ class load_table extends dts_table{
 										limit 1) 
 								, '$this->null_str') dest
 							FROM `load` l
-							WHERE l.activity_date = '$date'";
+							WHERE l.activity_date = ?";
+							$binds[] = $date;
 		if(isset($filter) && is_array($filter)){
 			if(isset($filter['user_id'])){
-				$sql .= " AND (l.order_by = $filter[user_id]
+				
+				$sql .= " $clause (l.order_by = ?
 							OR l.customer_id in (SELECT customer_id 
 												FROM customer 
-												WHERE acct_owner = $filter[user_id]))";
+												WHERE acct_owner = ?))";
+				$clause = 'AND';
+				$binds[] = $filter['user_id'];
+				$binds[] = $filter['user_id'];
 			}elseif(isset($filter['region_id'])){
-				$sql .= "AND l.zone = $filter[region_id]";
+				$sql .= "$clause l.zone = ?";
+				$binds[] = $filter['region_id'];
+				$clause = 'AND';
 			}
 		}
 		$has_been_loaded = "	AND (	SELECT count(*)
@@ -1825,7 +1878,7 @@ class load_table extends dts_table{
 								AND lw.type = 'PICK') = 0)";
 		$has_been_booked = "	AND (SELECT count(*) FROM load_carrier lc WHERE lc.load_id = l.load_id) > 0";
 		//==== Delivered ====
-		if($type == $this->delivered){
+		if($type === $this->delivered){
 			//A carrier has been booked...
 			$sql .= $has_been_booked;
 			// has been loaded
@@ -1836,7 +1889,7 @@ class load_table extends dts_table{
 		}
 		
 		//==== Loaded ====
-		if($type == $this->loaded){
+		if($type === $this->loaded){
 			//A carrier has been booked...
 			$sql .= $has_been_booked;
 			// has been loaded
@@ -1846,7 +1899,7 @@ class load_table extends dts_table{
 			$sql .= $not_delivered;
 		}
 		
-		if($type == $this->booked){
+		if($type === $this->booked){
 			//A carrier has been booked...
 			$sql .= $has_been_booked;
 			
@@ -1856,7 +1909,7 @@ class load_table extends dts_table{
 			$sql .=  $not_delivered;
 		}
 		
-		if($type == $this->ordered){
+		if($type === $this->ordered){
 			//A carrier has NOT been booked...
 			$sql .= "	AND (SELECT count(*) FROM load_carrier lc WHERE lc.load_id = l.load_id) = 0";
 			
@@ -1866,10 +1919,13 @@ class load_table extends dts_table{
 			$sql .= $not_delivered;
 		}
 		
-		
-		$re = App::$db->query($sql);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
 		$t = new Template();
-		$t->assign('loads', $re->fetchAll(PDO::FETCH_ASSOC));
+		$t->assign('loads', $stmt->fetchAll(PDO::FETCH_ASSOC));
             $path = App::getTempDir().'load_list.tpl';
 		$temp = $t->fetch($path);
 		
@@ -1894,17 +1950,22 @@ class load_table extends dts_table{
 	
 	function get_warehouse_selection($customer_id){
 		
-		$sql = "SELECT * FROM warehouse w WHERE w.customer_id = $customer_id";
-		$r = App::$db->query($sql);
-		$select = new select_input("warehouse_id", "warehouse_id", "name", $r);
+		$sql = "SELECT *
+				FROM warehouse w
+				WHERE w.customer_id = ?";
+		$binds = [$customer_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		$select = new select_input("warehouse_id", "warehouse_id", "name", $stmt);
 		$select->set_id("warehouse_selection");
 	
 		return $select->render();
 	}
 	
 	function get_warehouse_type_select(){
-		
-		
 		$select = new select_input("type", null, null, $this->warehouse_types);
 		$select->set_id("warehouse_type");
 
@@ -2025,16 +2086,16 @@ class load_table extends dts_table{
 					FROM warehouse w, load_warehouse lwd
 					WHERE lwd.type ='DEST' 
 					AND w.warehouse_id = lwd.warehouse_id) dest
-				WHERE l.load_id = $_REQUEST[load_id]
+				WHERE l.load_id = ?
 				AND lc.load_id = l.load_id
 				AND c.carrier_id = lc.carrier_id
 				AND origin.load_id = l.load_id
-				AND dest.load_id = l.load_id
-				";
-		$res = App::$db->query($sql);
-		if($res->errorCode() > 0){
-			echo $sql."<br>";
-			echo $res->errorCode();
+				AND dest.load_id = l.load_id";
+		$binds = [$this->load_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
 		$r = $res->fetch(PDO::FETCH_ASSOC);
 		
@@ -2134,18 +2195,18 @@ class load_table extends dts_table{
 					FROM warehouse w, load_warehouse lwd
 					WHERE lwd.type ='DEST' 
 					AND w.warehouse_id = lwd.warehouse_id) dest
-				WHERE l.load_id = $_REQUEST[load_id]
+				WHERE l.load_id = ?
 				AND lc.load_id = l.load_id
 				AND c.carrier_id = lc.carrier_id
 				AND origin.load_id = l.load_id
-				AND dest.load_id = l.load_id
-				";
-		$res = App::$db->query($sql);
-		if($res->errorCode() > 0){
-			echo $sql."<br>";
-			echo $res->errorCode();
+				AND dest.load_id = l.load_id";
+		$binds = [$this->load_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
-		$r = $res->fetch(PDO::FETCH_ASSOC);
+		$r = $stmt->fetch(PDO::FETCH_ASSOC);
 		$header ='';
 		$header .= "<style media='print' type='text/css'>
 			body{font-size:.9em}
@@ -2354,13 +2415,19 @@ class load_table extends dts_table{
 	}
 	
 	function get_order_by_name(){
-		$sql = 'SELECT username FROM `users` u, `load` l WHERE u.user_id = l.order_by AND l.load_id = '.$this->load_id;
-		$re = App::$db->query($sql);
-		$ro = $re->fetch(PDO::FETCH_NUM);
+		$binds = [$this->load_id];
+		$sql = 'SELECT username FROM `users` u, `load` l WHERE u.user_id = l.order_by AND l.load_id = ?';
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		$ro = $stmt->fetch(PDO::FETCH_NUM);
 		return $ro[0];
 	}
 	
 	function get_pickups($load_id){
+		$binds = [$load_id];
 		$sql = "SELECT lwp.load_id,
 						name origin_name,
 						address origin_address,
@@ -2375,12 +2442,18 @@ class load_table extends dts_table{
 					FROM warehouse w, load_warehouse lwp
 					WHERE lwp.type ='PICK'
 					AND w.warehouse_id = lwp.warehouse_id
-					AND lwp.load_id = $load_id
+					AND lwp.load_id = ?
 					ORDER BY creation_date";
-		return App::$db->query($sql);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		return $stmt;
 	}
 	
 	function get_drops($load_id){
+		$binds = [$load_id];
 		$sql = "SELECT lwp.load_id,
 						name dest_name,
 						address dest_address,
@@ -2395,9 +2468,14 @@ class load_table extends dts_table{
 					FROM warehouse w, load_warehouse lwp
 					WHERE lwp.type ='DEST'
 					AND w.warehouse_id = lwp.warehouse_id
-					AND lwp.load_id = $load_id
+					AND lwp.load_id = ?
 					ORDER BY creation_date";
-		return App::$db->query($sql);
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		return $stmt;
 	}
 	
 	function get_acct_owner_name(){
@@ -2405,16 +2483,22 @@ class load_table extends dts_table{
 				FROM `users` u, customer c, `load` l
 				WHERE u.user_id = c.acct_owner
 				AND c.customer_id = l.customer_id
-				AND l.load_id = '.$this->load_id;
-		$re = App::$db->query($sql);
-		$ro = $re->fetch(PDO::FETCH_NUM);
+				AND l.load_id = ?';
+		$binds = [$this->load_id];
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
+		}
+		$ro = $stmt->fetch(PDO::FETCH_NUM);
 		return $ro[0];
 	}
 	
 	function been_delivered(){
+		$binds = [$this->load_id];
 		$sql = "SELECT count(*)
 				FROM `load` l
-				WHERE load_id = $this->load_id
+				WHERE load_id = ?
 				AND (	SELECT count(*)
 						FROM load_warehouse lw
 						WHERE lw.load_id = l.load_id
@@ -2428,12 +2512,14 @@ class load_table extends dts_table{
 				AND (	SELECT count(*)
 						FROM load_carrier lc
 						WHERE lc.load_id = l.load_id) > 0";
-		$re = App::$db->query($sql);
-		if($re){
-			$ro = $re->fetch(PDO::FETCH_NUM);
-			return $ro[0];
+
+		$stmt = App::$db->prepare($sql);
+		$result = $stmt->execute($binds);
+		if(!$result){
+			return false;
 		}
-		return false;
+		$ro = $stmt->fetch(PDO::FETCH_NUM);
+		return $ro[0];
 	}
 }
 $l = new load_table();

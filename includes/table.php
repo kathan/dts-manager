@@ -684,8 +684,8 @@ class table{
 			$clause = 'AND';
 		}
 		$r = App::$db->query($sql);
-		if($r->errorCode()){
-			$this->add_error($r->errorCode());
+		if(App::$db->errorCode()){
+			$this->add_error(App::$db->errorCode());
 			$this->add_error($sql);
 			$this->add_error('table.update');
 			return false;
