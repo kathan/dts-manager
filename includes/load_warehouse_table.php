@@ -104,7 +104,6 @@ class load_warehouse_table extends dts_table{
 		$lt = $this->get_load($this->load_id);
 		$lw = $this->get_load_warehouse($this->load_id, $this->warehouse_id);
 		$c = $this->db_script();
-		//$c .= $this->check_size();
 		$c .= '<!-- get_load_warehouse_edit start -->';
 		$c .='<table><tr>';
 		//==== Load Module ====

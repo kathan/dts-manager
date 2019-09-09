@@ -157,6 +157,7 @@ class customer_table extends dts_table{
 		$this->add();
 		$this->customer_id = $this->last_id;
 	}
+
 	function get_customers(){
 		$binds = [Auth::getUserId()];
 		$sql = "	SELECT	customer_id, CONCAT('$this->prefix', customer_id) id, name customer_name, city, state, (SELECT username FROM `users` u WHERE u.user_id = c.acct_owner) acct_owner
@@ -213,6 +214,7 @@ class customer_table extends dts_table{
 		
 		return $t->fetch(App::getTempDir().'cust_load_list.tpl');
 	}
+
 	function get_warehouses(){
 		echo $_REQUEST['customer_id'];
 		
@@ -224,8 +226,6 @@ class customer_table extends dts_table{
 		$p->set_primary_key('warehouse_id');
 		return $p->render();
 	}
-	
-	
 	
 	function get_notes(){
 		$sql = "SELECT note_id, notes, last_updated
@@ -241,8 +241,7 @@ class customer_table extends dts_table{
 	}
 	
 	function get_search(){
-		$c = '<center><h2>Customer Search</h2>';
-		
+		$c = '<h2>Customer Search</h2>';
 		$si = new submit_input($this->search, $this->action);
 		$f =& $this->get_form();
 		$f->set_get();
@@ -252,7 +251,8 @@ class customer_table extends dts_table{
 		$this->add_virtual_column('name', 'name');
 		$this->add_virtual_column('city', 'city');
 		$this->add_virtual_column('state', 'state');
-		$s = new select_input('acct_owner', 'user_id', 'username', $this->get_users());
+		$users =  $this->get_users();
+		$s = new select_input('acct_owner', 'user_id', 'username', $users);
 		$f = $this->get_form();
 		$f->add_input($s);
 		$this->set_submit_input($si);
@@ -270,7 +270,6 @@ class customer_table extends dts_table{
 		$c .= $t->fetch(App::getTempDir().'cust_print.tpl');
 		return $c;
 	}
-	
 	
 	function get_search_results(){
 		$sql = "SELECT CONCAT('T', customer_id) p_customer_id, customer_id, name, address, city
@@ -361,9 +360,9 @@ class customer_table extends dts_table{
 		$sql = "SELECT user_id, username
 				FROM `users`";
 		$re = App::$db->query($sql);
-		$ary = [];
+		$ary = [''];
 		while($r = $re->fetch(PDO::FETCH_ASSOC)){
-                    $ary[$r['user_id']] = $r['username'];
+            $ary[$r['user_id']] = $r['username'];
 		}
 		return $ary;
 	}

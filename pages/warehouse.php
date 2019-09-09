@@ -217,7 +217,7 @@ class warehouse_table extends dts_table{
 	}
 
 	function get_search(){
-		$c = '<!-- warehouse search start --><center><h2>Warehouse Search</h2>';
+		$c = '<!-- warehouse search start --><h2>Warehouse Search</h2>';
 		$c .= "Use % as a wildcard character";
 		require_once("includes/submit_input.php");
 		

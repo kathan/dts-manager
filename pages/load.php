@@ -128,11 +128,11 @@ class load_table extends dts_table{
 						}
 						break;
 					case $this->search:
-						$code .= '<center><h2>Load Search Results</h2>';
+						$code .= '<h2>Load Search Results</h2>';
 						$code .= $this->get_search_results();	
 						break;
 					case $this->search_edit:
-						$code .= '<center><h2>Load Search</h2>';
+						$code .= '<h2>Load Search</h2>';
 						$code .= "Use % as a wildcard character";
 						$code .= $this->get_search_edit();
 						break;
@@ -240,7 +240,7 @@ class load_table extends dts_table{
 						}
 						break;
 					case $this->all:
-						$code .= '<center><h2>Load List</h2>';
+						$code .= '<h2>Load List</h2>';
 						$code .= $this->get_all_loads();
 						break;
 					default:
@@ -366,7 +366,7 @@ class load_table extends dts_table{
 		
 		$sql = "SELECT	c.carrier_id, phys_address,
                             CONCAT('<a href=\"#\" onclick=\"javascript:popUp(\'?page=load_carrier&action=$this->edit_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\', 960, 350)\">',name,'</a>') name,
-                            CONCAT('<center><input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
+                            CONCAT('<input type=\"button\" value=\"Rate Conf\" onclick=\"javascript:open_rate_conf(\'?page=$this->page&portal=$this->rate_conf_str&load_id=$this->load_id&carrier_id=',c.carrier_id,'&".SMALL_VIEW."\', \'load_carrier_".$this->load_id."_',c.carrier_id,'\')\">') rate_conf_button ";
 
 		
 		if(Auth::loggedInAs('admin')){
@@ -908,7 +908,7 @@ class load_table extends dts_table{
 	}
 	
 	function get_customer_search_edit_module(){
-		$c = '<center><h2>Customer Search</h2>';
+		$c = '<h2>Customer Search</h2>';
 		$c .= "Use % as a wildcard character";
 		
 		$wt = new table('customer');
@@ -1148,7 +1148,7 @@ class load_table extends dts_table{
 			$auth_edit=true;
 		}
 		$c .= $this->popup_script();
-		$c .= "<center><h2>#$this->load_id</h2>";
+		$c .= "<h2>#$this->load_id</h2>";
 		
 		//==== Repeat Load Button ====
 		$c .= "<form method='post' action='?page=$this->page&action=$this->repeat&load_id=$this->load_id'><input type='submit' value='Repeat'></form>";
@@ -1563,7 +1563,7 @@ class load_table extends dts_table{
 				function cancel_close(){
 					window.close();
 				}");
-		$c .= '<center><table>';
+		$c .= '<table>';
 		$c .= "<form id='new_form' onsubmit='submit_close();' method='post'>";
 		$c .= "<input type='hidden' name='page' value='$this->page'>";
 		$c .= "<input type='hidden' name='action' value='$this->add_str'>";
@@ -1588,7 +1588,7 @@ class load_table extends dts_table{
 			$c .= "<tr><td><input type='submit' name='action' value='$this->add_str'></td></tr>";
 			$c .= "<tr><td><input type='submit' name='action' value='$this->cancel_str'></td></tr>";
 		}
-		$c .= '</form></table></center>';
+		$c .= '</form></table>';
 		
 		return $c;
 	}
@@ -2216,11 +2216,11 @@ class load_table extends dts_table{
 		$header .= $this->style(".bold{font-weight:bold;}.heavy_frame{border:1px solid black}.right{text-align:right;}.center{text-align:center;}table{font-size:9pt;}
 		.bottom_border{border-top:solid black 1px}")."<body style='font-size:.8em;width:7in;font-family:sans-serif;'>";
 		
-		$header .= "<center>
+		$header .= "
 		<table width=100% border=0>
 			<tr>
 				<td style='text-align:left' width='1%'>
-					<center>Domestic Transport Solutions Carrier Confimation Load #</center>
+					Domestic Transport Solutions Carrier Confimation Load #
 				</td>
 			</tr>
 			<tr>
@@ -2231,13 +2231,13 @@ class load_table extends dts_table{
 								<img src='".App::getImgRoot()."/dts.gif'>
 							</td>
 							<td style='vertical-align:middle'>
-							<center><div style='font-size:16pt;padding:3pt;width:4em;' class='bold heavy_frame'>$_REQUEST[load_id]</div>
+							<div style='font-size:16pt;padding:3pt;width:4em;' class='bold heavy_frame'>$_REQUEST[load_id]</div>
 							</td>
 							<td width=30% style='vertical-align:middle'>";
 		if($r['ltl_number']){
 		$header .= "				
 							
-								<center><div style='padding:6pt;' class='bold heavy_frame'>$r[pro_number]</div><div style='padding:6pt;font-size:.8em' class='bold heavy_frame'>$r[ltl_number]
+								<div style='padding:6pt;' class='bold heavy_frame'>$r[pro_number]</div><div style='padding:6pt;font-size:.8em' class='bold heavy_frame'>$r[ltl_number]
 								</div>
 							";
 		}
@@ -2249,7 +2249,7 @@ class load_table extends dts_table{
 			</tr>
 			<tr>
 				<td>
-				<center>
+				
 					Driver must call Domestic Transport Solutions<br>
 		For distpatch at 847-981-1400 and ask for load # $r[load_id]<br>Domestic Transport Solutions has 24 hour dispatch. Call anytime.</td></tr></table>";
 		$header .= "<hr>";
@@ -2295,17 +2295,17 @@ class load_table extends dts_table{
 			$dest .= "<td>Phone:</td><td class='bold'>$drop[dest_phone]</td>";
 			$dest .= "<td width='$gutter'></td>";
 			$dest .= "<td>Notes:</td><td class='bold'>$drop[dest_notes]</td>";
-			$dest .= "</tr></table></center>";
+			$dest .= "</tr></table>";
 			$dest .= "<hr>";
 		}
 		$body = "Driver must ask for and receive:";
-		$body .= "<center><table width='80%'><tr>";
+		$body .= "<table width='80%'><tr>";
 		$body .= "<td>Commodity</td><td>Est Weight</td><td>Size</td><td>Class</td><td>Pallets</td><td>";
 		$body .= "</tr><tr>";
 		$body .= "<td class='bold heavy_frame'>$r[commodity]</td><td class='bold heavy_frame'>$r[weight]</td><td class='bold heavy_frame'>$r[size]</td><td class='bold heavy_frame'>$r[class]</td><td class='bold heavy_frame'>$r[pallets]</td><td>";
-		$body .= "</tr></table></center><br><br>";
+		$body .= "</tr></table><br><br>";
 		$body .= "Any loading or unloading fees must be negotiated prior to invoicing and driver must get bill signed and obtain a lumper receipt. ALL DRIVERS MUST CALL IN FOR DISPATCH , WHEN LOADED AND EMPTY WITH A VERBAL POD TO INSURE NO PENALTIES. DRIVERS MUST CHECK CALL DAILY WITH DTS BETWEEN THE HOURS OF 7:00AM AND 10:00AM CENTRAL TIME. FAILURE TO MEET ANY OF THE ABOVE REQUIREMENTS WILL RESULT IN A $50.00 PENALTY PER INSTANCE.";
-		$body .= "<br><br><center><table width='60%' class='' cellspacing='0'>";
+		$body .= "<br><br><table width='60%' class='' cellspacing='0'>";
 		$body .= "<tr>
 					<td></td>
 					<td>Amount</td>

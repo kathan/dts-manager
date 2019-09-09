@@ -86,7 +86,7 @@ class dts_table extends table{
 	function get_users(){
 		$sql = "SELECT user_id, IF(active = 1, username, concat(substr(first_name, 1, 1), substr(last_name, 1, 1))) username FROM `users` order by active desc";
 		$re = App::$db->query($sql);
-		$result = Array('');
+		$result = [''=>''];
 		while($r = $re->fetch(PDO::FETCH_ASSOC)){
 			$result[$r['user_id']] = $r['username'];
 		}

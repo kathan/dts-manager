@@ -18,7 +18,7 @@
 			<table style="width:100%" border="0">
 				<tr>
 					<td style="text-align:left" width="1%">
-						<center>Domestic Transport Solutions Carrier Confimation Load #</center>
+						Domestic Transport Solutions Carrier Confimation Load #
 					</td>
 				</tr>
 				<tr>

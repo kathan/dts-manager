@@ -51,11 +51,8 @@ class carrier_table extends dts_table{
 					case $this->add_str:
 						
 						if($this->add()) {
-							
-							//$code .= $this->get_carrier_list();
 							$code .= $this->get_search_results();
 						}else{
-							//$code .= "blah";
 							$code .= $this->error();
 							$code .= $this->feedback;
 							$code .= $this->_render_edit();
@@ -64,8 +61,6 @@ class carrier_table extends dts_table{
 						break;
 					case $this->delete_str:
 						$this->delete();
-						//$code .= '<center><h2>Carrier List</h2>';
-						//$code .= $this->get_carrier_list();
 						$code .= $this->get_search_results();
 						break;
 					case $this->search:
@@ -80,8 +75,6 @@ class carrier_table extends dts_table{
 						$code .= $this->get_carrier_edit();
 						break;
 					case $this->new_str:
-						//$code .= '<center><h2>New Carrier</h2>';
-						//$code .= $this->_render_edit();
 						$this->create_new();
 						header("location: ?page=carrier&action=$this->edit_str&carrier_id=$this->carrier_id&$this->new_str");
 						break;
@@ -93,9 +86,6 @@ class carrier_table extends dts_table{
 						}
 						break;
 					default:
-						//$code .= '<center><h2>Carrier List</h2>';
-						//$code .= $this->get_carrier_list();
-						//$code .= "boo";
 						$code .= $this->show_search_results($this->get_search_results());
 						break;
 				}
@@ -192,7 +182,7 @@ class carrier_table extends dts_table{
 		$this->insert_column('mc_number');
 		
 		$this->set_submit_input($si);
-		$c = "<!-- start carrier search --><center><h2>Carrier Search</h2>";
+		$c = "<!-- start carrier search --><h2>Carrier Search</h2>";
 		$c .= "Use % as a wildcard character";
 		$c .= $this->_render_edit();
 		$c .= "</fieldset><!-- end carrier search -->";

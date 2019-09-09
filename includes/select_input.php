@@ -19,8 +19,8 @@ class select_input extends html_input{
 		$code = "
 			<select name=\"$this->name\" id=\"$this->id\" ";
 		$keys = array_keys($this->custom_attributes);
-		foreach($keys as $name){
-			$code .= " $name='".$this->custom_attributes[$name]."'";
+		foreach($this->custom_attributes as $key => $val){
+			$code .= ' '.$key.'="'.$val.'"';
 		}
 		$code .= ">
 				".$this->get_options()."

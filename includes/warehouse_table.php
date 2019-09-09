@@ -163,7 +163,7 @@ class warehouse_table extends dts_table{
 		require_once("includes/portal.php");
 		$c ='';
 		
-		$c .= '<center><h2>Warehouse Search Results</h2></center>';
+		$c .= '<h2>Warehouse Search Results</h2>';
 		
 		$sql = "SELECT CONCAT('D',warehouse_id) id, warehouse_id, name, city, state FROM warehouse ";
 		$clause = 'WHERE';
@@ -205,7 +205,7 @@ class warehouse_table extends dts_table{
 	}
 
 	function get_search(){
-		$c = '<center><h2>Warehouse Search</h2>';
+		$c = '<h2>Warehouse Search</h2>';
 		$c .= "Use % as a wildcard character";
 		require_once("includes/submit_input.php");
 		
@@ -363,7 +363,7 @@ class warehouse_table extends dts_table{
 	function edit_warehouse(){
 		///autosave????
 		$r = $this->current_row();
-		$c =  "<center><h2>$this->prefix$this->warehouse_id</h2></center>";
+		$c =  "<h2>$this->prefix$this->warehouse_id</h2>";
 		$c .= "<form method='post'>
 					<input type='hidden' name='action' value='$this->wh_to_cust'>
 					<input type='hidden' name='page' value='customer'>

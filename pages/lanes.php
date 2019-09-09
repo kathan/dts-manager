@@ -33,9 +33,7 @@ class lane {
 	}
 	
 	function get_search_results(){
-		$c ='';
-		
-		$c .= '<center><h2>Lane Search Results</h2>';
+		$c = '<h2>Lane Search Results</h2>';
 		
 		$sql = "	SELECT l.load_id, CONCAT(pw.city, ', ', pw.state) pickup, CONCAT(dw.city, ', ', dw.state) destination
 						, l.load_type
