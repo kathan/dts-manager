@@ -1,0 +1,171 @@
+<!DOCTYPE html 
+	PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.20/angular-material.min.css" type="text/css" media="all" />
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular-route.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular-resource.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.20/angular-material.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular-messages.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular-animate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular-aria.min.js"></script>
+    <script src="js/fixed-table-head.js"></script>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons&display=block" rel="stylesheet">
+    <script type="text/javascript" src="js/LoadListCtrl.js"></script>
+    <style>
+        #load-list-table {
+            margin: 12px;
+        }
+        
+        #nav-menu td {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        #nav-menu img {
+            width: 72px;
+        }
+        
+        #nav-menu {
+            width: 100%;
+        }
+        
+        #nav-menu-cont {
+            width: 100%;
+            position: fixed;
+            background-color: white;
+            text-align: center
+        }
+    </style>
+</head>
+
+<body ng-app="DtsApp" ng-controller="LoadListCtrl">
+    <div id="nav-menu-cont">
+        <table id="nav-menu">
+            <thead>
+                <tr>
+                    <td>
+                        <a href="?page=load">
+                            <img src="images/package.svg" /><br/> Loads
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=customers">
+                            <img src="images/customer.svg" /><br/> Customers
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=carriers">
+                            <img src="images/carrier.svg" /><br/> Carriers
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=warehouses">
+                            <img src="images/warehouse.svg" /><br/> Warehouses
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=lanes">
+                            <img src="images/lane.svg" /><br/> Lanes
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=users">
+                            <img src="images/user.svg" /><br/> Users
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=reports">
+                            <img src="images/report.svg" /><br/> Reports
+                        </a>
+                    </td>
+                    <td>
+                        <a href="?page=logout">Log Out</a>
+                    </td>
+                    <td>
+                        New<br/>
+                        <select>
+                            <option></option>
+                            <option onselect="">Load</option>
+                            <option onselect="">Customer</option>
+                            <option onselect="">Carrier</option>
+                            <option onselect="">Warehouse</option>
+                        </select>
+                    </td>
+                    <td>
+                        <table style="text-align:center;font-size:8pt;color:white;">
+                            <tr>
+                                <td style="width:50%;background-color:green">TL</td>
+                                <td style="width:50%;background-color:blue">OCEAN</td>
+                            </tr>
+                            <tr>
+                                <td style="background-color:red">LTL</td>
+                                <td style="background-color:brown">PARTIAL</td>
+                            </tr>
+                            <tr>
+                                <td style="background-color:orange">RAIL</td>
+                                <td style="background-color:purple">REFRIG</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </thead>
+        </table>
+        <h3>Load List</h3>
+    </div>
+    <div style="height:127px;" class="menu-buffer">
+    </div>
+
+    <div style="height: 100%;overflow: scroll">
+        <table id="load-list-table" class="loadList" style="width:100%">
+            <thead style="position:fixed;background-color:white;border:1px solid black">
+                <tr>
+                    <th>
+                        Load Id
+                    </th>
+                    <th>
+                        Customer
+                    </th>
+                    <th>
+                        Origin
+                    </th>
+                    <th>
+                        Dest
+                    </th>
+                    <th>
+                        Activity Date
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="load in loads">
+                    <td>
+                        <a href="?page=load&load_id={{load.load_id}}">{{load.load_id}}</a>
+                    </td>
+                    <td>
+                        <a href="?page=load&load_id={{load.load_id}}">{{load.customer}}</a>
+                    </td>
+                    <td>
+                        <a href="?page=load&load_id={{load.load_id}}">{{load.origin}}</a>
+                    </td>
+                    <td>
+                        <a href="?page=load&load_id={{load.load_id}}">{{load.dest}}</a>
+                    </td>
+                    <td>
+                        <a href="?page=load&load_id={{load.load_id}}">{{load.activity_date}}</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

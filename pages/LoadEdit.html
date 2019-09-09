@@ -1,0 +1,769 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="all">
+    <script type="text/javascript" src="js/events.js"></script>
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery.ui.js"></script>
+    <script type="text/javascript" src="js/jquery.datepick.js"></script>
+    <script type="text/javascript" src="js/base.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.7.8/angular.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.20/angular-material.min.js"></script>
+    <style>
+        #nav-menu td {
+            padding-left: 10px;
+            padding-right: 10px;
+        }
+        
+        #nav-menu img {
+            width: 72px;
+        }
+        
+        #nav-menu {
+            width: 100%;
+        }
+        
+        #nav-menu-cont {
+            width: 100%;
+            position: fixed;
+            background-color: white;
+            text-align: center
+        }
+    </style>
+    <script type='text/javascript'>
+        function make_new() {
+            var p = document.getElementById('page');
+
+            if (p.value) {
+                p.form.submit();
+            }
+        }
+    </script>
+</head>
+
+<body>
+
+    <div style="height:127px;" class="menu-buffer">
+    </div>
+    <table width="90%">
+        <tr>
+            <td valign="top">
+
+                <div class='tab'>
+                    <ul>
+                        <li><a href='?page=load&action=search_edit' class=''><span>Search</span></a></li>
+                        <li><a href='?page=load' class=''><span>Boards</span></a></li>
+                        <li><a href='?page=load&action=all' class=''><span>List</span></a></li>
+                    </ul>
+                </div><br><br>
+                <div class='tab_sep'></div>
+                <title>DTS-Loads</title>
+                <script src='js/db_save.js' type="text/javascript"></script>
+                <script type="text/javascript">
+                    function get_portal(table, params) {
+                        try {
+                            var d = document.getElementById(table + '_portal');
+                            d.innerHTML = 'Loading ' + table;
+                            var url = '?page=load&portal=' + table + '&action=portal&sml_view&' + params;
+                            var portal = getFromURL(url);
+                        } catch (e) {
+                            alert('Error in get_portal:' + e.description + ' url:' + url);
+                        }
+                        if (d) {
+                            d.innerHTML = '';
+                            d.innerHTML = portal;
+                        } else {
+                            alert('Cannot find #d')
+                        }
+                    }
+                </script>
+                <script type="text/javascript">
+                    function get_module(name, params) {
+                        var d = document.getElementById(name + '_module');
+                        if (d) {
+                            d.innerHTML = 'Loading ' + name;
+                            try {
+                                var url = '?page=load&module=' + name + '&sml_view&' + params;
+                                var module = getFromURL(url);
+                            } catch (e) {
+                                alert('Error in module_script:' + e.description + ' url:' + url);
+                            }
+                            d.innerHTML = '';
+                            d.innerHTML = module;
+                        }
+                    }
+                </script>
+                <script type="text/javascript">
+                    function popUp(URL, id, width, height) {
+                        if (!width) {
+                            width = 600;
+                        }
+                        if (!height) {
+                            height = 600;
+                        }
+                        if (!id) {
+                            day = new Date();
+                            id = day.getTime();
+                        }
+                        eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,location=0,statusbar=0,menubar=0,resizable=1,width=" + width + ",height=" + height + ",left = 0,top = 0');");
+                    }
+                </script>
+                <div class='content load_content' id='content'>
+                    <script type="text/javascript">
+                        function column_updated(t) {
+                            if (t.name == 'customer_total' || t.name == 'carrier_total') {
+                                update_gp();
+                            } else if (t.name == 'cancelled' || t.name == 'rating') {
+                                return set_content_color();
+                            }
+                        }
+
+                        function update_gp() {
+                            var gp, cust_total_el, car_total_el, cust_total, car_total, gp_val;
+                            gp = document.getElementById('gp');
+
+                            cust_total_el = document.getElementById('customer_total');
+                            car_total_el = document.getElementById('carrier_total');
+                            cust_total_el ? cust_total = cust_total_el.innerHTML.valueOf() : alert('Cannot find #cust_total_el');
+                            car_total_el ? car_total = car_total_el.innerHTML.valueOf() : alert('Cannot find #car_total_el');
+
+                            gp_val = (cust_total - car_total).toFixed(2) || 0;
+                            gp ? gp.innerHTML = gp_val : alert('Cannot find gp');
+
+                            wc_change();
+                            dls_change();
+                        }
+                    </script>
+                    <style type="text/css">
+                        .load_content,
+                        .content {
+                            background-color: #EEEEEE
+                        }
+                    </style>
+                    <script type="text/javascript">
+                        function popUp(URL, id, width, height) {
+                            if (!width) {
+                                width = 600;
+                            }
+                            if (!height) {
+                                height = 600;
+                            }
+                            if (!id) {
+                                day = new Date();
+                                id = day.getTime();
+                            }
+                            eval("page" + id + " = window.open(URL, '" + id + "', 'toolbar=0,location=0,statusbar=0,menubar=0,resizable=1,width=" + width + ",height=" + height + ",left = 0,top = 0');");
+                        }
+                    </script>
+                    <h2>#1061611</h2>
+                    <form method='post' action='?page=load&action=repeat&load_id=1061611'><input type='submit' value='Repeat'></form>
+                    <table width='100%'>
+                        <tr>
+                            <td valign='top' width='33%' class='bottom_pad'>
+                                <fieldset style='height:6.5em'>
+                                    <legend>Order</legend>
+                                    <div id='order_module'>
+                                        <table width='100%'>
+                                            <tr>
+                                                <td>Order By:</td>
+                                                <td>
+                                                    <select name="order_by" id="action=update&table=load&load_id=1061611&order_by=" onchange='db_save(this);return column_updated(this);'>
+				
+                    <option value="0"></option>
+                    <option value="3" selected>dcentracchio</option>
+                    <option value="64">jorein</option>
+                    <option value="60">kkrass</option>
+                    <option value="1">admin</option>
+                    <option value="5">mmichalek</option>
+                    <option value="4">darrel</option>
+                    <option value="41">MG</option>
+                    <option value="30">CS</option>
+                    <option value="31">WB</option>
+                    <option value="32">ST</option>
+                    <option value="33">JR</option>
+                    <option value="34">NM</option>
+                    <option value="35">SW</option>
+                    <option value="36">JE</option>
+                    <option value="37">GC</option>
+                    <option value="38">ST</option>
+                    <option value="39">DG</option>
+                    <option value="40">CD</option>
+                    <option value="62">NR</option>
+                    <option value="42">MC</option>
+                    <option value="43">KL</option>
+                    <option value="44">OH</option>
+                    <option value="45">NS</option>
+                    <option value="46">DS</option>
+                    <option value="57">CG</option>
+                    <option value="58">LS</option>
+                    <option value="59">JB</option>
+                    <option value="63">DS</option>
+                    <option value="61">MC</option>
+                    <option value="17">EF</option>
+                    <option value="6">BC</option>
+                    <option value="7">DH</option>
+                    <option value="8">CD</option>
+                    <option value="9">RR</option>
+                    <option value="10">KS</option>
+                    <option value="11">DM</option>
+                    <option value="12">HG</option>
+                    <option value="13">RZ</option>
+                    <option value="14">LV</option>
+                    <option value="15">JW</option>
+                    <option value="16">HS</option>
+                    <option value="29">PD</option>
+                    <option value="18">LH</option>
+                    <option value="19">AS</option>
+                    <option value="20">TC</option>
+                    <option value="21">ZC</option>
+                    <option value="22">AC</option>
+                    <option value="23">RH</option>
+                    <option value="24">NT</option>
+                    <option value="25">PD</option>
+                    <option value="26">PW</option>
+                    <option value="27">KA</option>
+                    <option value="28">VP</option>
+            </select></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ordered Date:</td>
+                                                <td>08/12/2019</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Activity Date</td>
+                                                <td>
+                                                    <INPUT TYPE="text" id="action=update&table=load&load_id=1061611&activity_date=" name="activity_date" value="8/20/2019" SIZE=10 readOnly=true datechange="function(y,m,d){db_save(this.id, this.value);};" onchange="db_save(this);return column_updated(this);">
+                                                    <img onClick="cal_activity_date.select(document.getElementById('action=update&table=load&load_id=1061611&activity_date='),'cal_button_activity_date','MM/dd/yyyy')" ID="cal_button_activity_date" src="images/cal.gif" style='vertical-align:middle'>
+                                                    <span ID="cal_div_activity_date" style='background-color:white;position:absolute'></span>
+
+                                                    <script>
+                                                        include('js/CalendarPopup.js');
+                                                        var cal_activity_date = new CalendarPopup('cal_div_activity_date');
+                                                    </script>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                            </td>
+                            <td valign='top' width='33%' class='bottom_pad'>
+                                <fieldset style='height:6.5em'>
+                                    <legend>Zone</legend>
+                                    <div id='zone_module'>
+                                        <table width='100%'>
+                                            <tr>
+                                                <td class='right'>Zone:</td>
+                                                <td class='left'>
+                                                    <select name="zone" id="action=update&table=load&load_id=1061611&zone=" onchange='db_save(this);return column_updated(this);'>
+				
+                    <option value="0" selected></option>
+                    <option value="1">West-SW</option>
+                    <option value="2">South-SE</option>
+                    <option value="3">East-NE</option>
+                    <option value="4">Midwest</option>
+            </select></td>
+                                                <tr>
+                                                    <tr>
+                                                        <td class='right'><input type="checkbox" name="cancelled" id="action=update&table=load&load_id=1061611&cancelled=" onchange='db_save(this);return column_updated(this);'></td>
+                                                        <td class='left'>Cancel</td>
+                                                    </tr>
+                                        </table>
+                                    </div>
+                                </fieldset>
+                                <script type="text/javascript">
+                                    set_content_color();
+                                    var cont;
+
+                                    function set_content_color() {
+                                        if (!cont) {
+                                            cont = document.getElementById('content');
+                                        }
+                                        var cancelled = document.getElementsByName('cancelled');
+                                        cancelled = cancelled[0];
+
+                                        if (cancelled.checked) {
+                                            cont.style.backgroundColor = 'red';
+                                        } else {
+                                            cont.style.backgroundColor = 'RoyalBlue';
+                                        }
+                                        return true;
+                                    }
+                                </script>
+                            </td>
+                            <td valign='top' width='33%' class='bottom_pad'>
+                                <fieldset style='height:6.5em'>
+                                    <legend><a href='#' onclick="javascript:popUp('?page=load&action=Edit&module=problem&load_id=1061611&sml_view');return false;">Problem</a></legend>
+                                    <div id='problem_module'></div>
+                                </fieldset>
+                                <script type="text/javascript">
+                                    function update_problem_module() {
+                                        get_module('problem', 'action=view&load_id=1061611');
+                                    }
+                                    jQuery().ready(function() {
+                                        update_problem_module();
+                                    });
+                                </script>
+                            </td>
+                            <td valign='top'> </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3 class='bottom_pad'>
+                                    <fieldset>
+                                        <legend><a href='#' onclick="javascript:popUp('?page=load&action=customer_search_edit&load_id=1061611&sml_view', 700,550)">Customer</a></legend>
+                                        <div id='customer_module'></div>
+                                    </fieldset>
+                                    <script type="text/javascript">
+                                        function update_cust_module() {
+                                            get_module('customer', 'action=view&load_id=1061611');
+                                        }
+                                        jQuery().ready(function() {
+                                            update_cust_module();
+                                        });
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3 class='bottom_pad'>
+                                    <fieldset>
+                                        <legend>Load</legend>
+                                        <div id='load_module'>
+                                            <table width='100%'>
+                                                <tr>
+                                                    <td class='label_class'>Trailer Type:</td>
+                                                    <td>
+                                                        <select name="trailer_type" id="action=update&table=load&load_id=1061611&trailer_type=" onchange='db_save(this);return column_updated(this);'>
+				
+                    <option value="Van" selected>Van</option>
+                    <option value="Refrig">Refrig</option>
+                    <option value="Flatbed">Flatbed</option>
+            </select></td>
+                                                    <td class='label_class'>Pallets:</td>
+                                                    <td><input type="text" name="pallets" id="action=update&table=load&load_id=1061611&pallets=" size="11" onchange='db_save(this);return column_updated(this);' maxlength="11" value="7">
+                                                    </td>
+                                                    <td class='label_class'>Length (inches):</td>
+                                                    <td><input type="text" name="length" id="action=update&table=load&load_id=1061611&length=" size="11" onchange='db_save(this);return column_updated(this);' maxlength="11" value="">
+                                                    </td>
+                                                    <td class='label_class'>Size:</td>
+                                                    <td><input type="text" name="size" id="action=update&table=load&load_id=1061611&size=" size="11" onchange='db_save(this);return column_updated(this);' maxlength="11" value="">
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class='label_class'>Load Type:</td>
+                                                    <td>
+                                                        <select name="load_type" id="action=update&table=load&load_id=1061611&load_type=" onchange='db_save(this);return column_updated(this);'>
+				
+                    <option value=""></option>
+                    <option value="TL">TL</option>
+                    <option value="LTL">LTL</option>
+                    <option value="RAIL">RAIL</option>
+                    <option value="OCEAN">OCEAN</option>
+                    <option value="REFRIGERATED">REFRIGERATED</option>
+                    <option value="PARTIAL" selected>PARTIAL</option>
+            </select></td>
+                                                    <td class='label_class'>Commodity:</td>
+                                                    <td><input type="text" name="commodity" id="action=update&table=load&load_id=1061611&commodity=" onchange='db_save(this);return column_updated(this);' maxlength="100" value="">
+                                                    </td>
+                                                    <td class='label_class'>Weight (lbs.):</td>
+                                                    <td><input type="text" name="weight" id="action=update&table=load&load_id=1061611&weight=" size="11" onchange='db_save(this);return column_updated(this);' maxlength="11" value="">
+                                                    </td>
+                                                    <td class='label_class'>Class:</td>
+                                                    <td>
+                                                        <select name="class" id="action=update&table=load&load_id=1061611&class=" onchange='db_save(this);return column_updated(this);'>
+                <option></option>
+                    <option value="50">50</option>
+                    <option value="55">55</option>
+                    <option value="60">60</option>
+                    <option value="65">65</option>
+                    <option value="70">70</option>
+                    <option value="77.5">77.5</option>
+                    <option value="85">85</option>
+                    <option value="92.5">92.5</option>
+                    <option value="100">100</option>
+                    <option value="110">110</option>
+                    <option value="125">125</option>
+                    <option value="150">150</option>
+                    <option value="175">175</option>
+                    <option value="200">200</option>
+                    <option value="250">250</option>
+                    <option value="300">300</option>
+                    <option value="400">400</option>
+                    <option value="500">500</option>
+                    <option value="More">More</option>
+            </select></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </fieldset>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3 class='bottom_pad'>
+                                    <fieldset>
+                                        <legend><a href='#' onclick="javascript:popUp('?page=load&load_id=1061611&action=warehouse_search_edit&customer_id=2989&sml_view', 700, 550);return false;">Warehouse</a></legend>
+                                        <div id='load_warehouse_portal'></div>
+                                    </fieldset>
+                                    <script type="text/javascript">
+                                        function add_load_warehouse(load_id) {
+                                            var warehouse_selection = document.getElementById('warehouse_selection');
+                                            var type = document.getElementById('warehouse_type');
+                                            var param_str = 'table=load_warehouse&type=' + type.value + '&warehouse_id=' + warehouse_selection.value + '&load_id=';
+                                            var obj = {};
+                                            obj.id = param_str;
+                                            obj.value = load_id;
+                                            db_save(obj);
+                                            update_warehouse_portal();
+                                        }
+
+                                        function update_warehouse_portal() {
+                                            get_portal('load_warehouse', 'load_id=1061611');
+                                            init_cals();
+                                        }
+
+                                        function delete_warehouse(warehouse_id) {
+                                            if (confirm('Are you sure you want to delete warehouse ' + warehouse_id + ' from this load?')) {
+                                                var obj = {};
+                                                obj.id = 'action=delete&table=load_warehouse&load_id=1061611&warehouse_id=';
+                                                obj.value = warehouse_id;
+                                                db_save(obj);
+                                                update_warehouse_portal();
+                                            }
+                                        }
+                                        var cal_act_dates = Array();
+
+                                        function init_cals() {
+                                            include('js/CalendarPopup.js');
+
+                                            var cals = document.getElementsByName('cal_act_date');
+                                            for (i = 0; i < cals.length; i++) {
+                                                cal_act_dates[i] = new CalendarPopup(cals[i].id);
+                                                cal_act_dates[i].id = cals[i].id + '_cal';
+                                            }
+                                        }
+                                        jQuery().ready(function() {
+                                            update_warehouse_portal();
+                                        });
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3 class='bottom_pad'>
+                                    <fieldset>
+                                        <legend>
+                                            <a href='#' onclick="javascript:popUp('?page=load&action=Edit&module=money&load_id=1061611&sml_view',0,1064,240);return false;">Money</a>
+                                        </legend>
+                                        <div id='money_module'>
+
+                                        </div>
+                                    </fieldset>
+                                    <script type="text/javascript">
+                                        var gp = 0,
+                                            wcp = 0,
+                                            dlsp = 0;
+
+                                        function wc_change(o) {
+                                            var o = document.getElementsByName('wc_active')[0];
+                                            var gp_el = document.getElementById('gp');
+                                            var wc_perc_el = document.getElementById('wc_percent');
+                                            var wcp_el = document.getElementById('wcp');
+                                            var dtsp_el = document.getElementById('dtsp');
+
+                                            if (o && o.checked) {
+                                                var gp_el = document.getElementById('gp');
+                                                gp = gp_el.innerHTML;
+
+                                                var wc_perc = wc_perc_el.innerHTML * .01;
+
+                                                wcp = Math.round(gp * wc_perc * 100) / 100;
+                                                if (wcp_el) {
+                                                    wcp_el.style.visibility = 'visible';
+                                                    wcp_el.innerHTML = wcp;
+                                                } else {
+                                                    alert('Cannot find #wcp_el');
+                                                }
+
+                                            } else {
+                                                wcp = 0;
+                                                wcp_el ? wcp_el.style.visibility = 'hidden' : alert('Cannot find #wcp_el');
+                                            }
+                                            setDtsp();
+                                        }
+
+                                        function dls_change(o) {
+                                            var o = document.getElementsByName('dls_active')[0];
+                                            var gp_el = document.getElementById('gp');
+                                            var dls_perc_el = document.getElementById('dls_percent');
+                                            var dlsp_el = document.getElementById('dlsp');
+                                            var dtsp_el = document.getElementById('dtsp');
+
+                                            if (o && o.checked) {
+                                                var gp_el = document.getElementById('gp');
+                                                gp = gp_el.innerHTML;
+
+                                                var dls_perc = dls_perc_el.innerHTML * .01;
+
+                                                dlsp = Math.round(gp * dls_perc * 100) / 100;
+                                                dlsp_el ? dlsp_el.style.visibility = 'visible' : alert('Cannot find #dlsp_el');
+                                            } else {
+                                                dlsp = 0;
+                                                dlsp_el ? dlsp_el.style.visibility = 'hidden' : alert('Cannot find #dlsp_el');
+                                            }
+                                            setDtsp();
+                                        }
+
+                                        function setDtsp() {
+                                            jQuery('#dlsp').text(dlsp);
+                                            var gp_val = parseInt(gp) - (parseInt(wcp) + parseInt(dlsp));
+                                            jQuery('#dtsp').text(gp_val).css('visibility', 'visible');
+                                        }
+
+                                        function update_money_module() {
+                                            get_module('money', 'action=view&load_id=1061611');
+                                            update_gp();
+                                        }
+                                        jQuery().ready(function() {
+                                            update_money_module();
+                                        });
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3>
+                                    <fieldset>
+                                        <legend><a href='#' onclick="javascript:popUp('?page=load&load_id=1061611&action=carrier_search_edit&sml_view','carrier_search_'+1061611, 700, 550);return false;">Carrier</a></legend>
+                                        <div id='load_carrier_portal'></div>
+                                    </fieldset>
+                                    <script type="text/javascript">
+                                        function cancel() {
+                                            alert(this.value);
+                                            var c = document.getElementById('content');
+                                            c.style.color = 'red';
+                                        }
+
+                                        function add_load_carrier(load_id) {
+                                            var carrier_selection = document.getElementById('carrier_selection');
+                                            var param_str = 'table=load_carrier&carrier_id=' + carrier_selection.value + '&load_id=';
+                                            var obj = {};
+                                            obj.id = param_str;
+                                            obj.value = load_id;
+                                            db_save(obj);
+                                            update_carrier_portal();
+                                        }
+
+                                        function update_carrier_portal() {
+                                            get_portal('load_carrier', 'load_id=1061611');
+                                        }
+
+                                        function delete_carrier(carrier_id) {
+                                            if (confirm('Are you sure you want to delete carrier ' + carrier_id + ' from this load?')) {
+                                                var obj = {};
+                                                obj.id = 'action=delete&table=load_carrier&load_id=1061611&carrier_id=';
+                                                obj.value = carrier_id;
+                                                db_save(obj);
+                                                update_carrier_portal();
+                                            }
+                                        }
+                                        jQuery().ready(function() {
+                                            update_carrier_portal();
+                                        });
+                                    </script>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan=3>
+                                    <fieldset>
+                                        <legend>LTL Info</legend>
+                                        <div id='ltl_info'>
+                                            <table style='width:100%;border:1px solid black;' class='content'>
+                                                <tr>
+
+                                                    <th>
+                                                        Carrier
+                                                    </th>
+                                                    <th>
+                                                        Pro #
+                                                    </th>
+                                                    <th>
+                                                        BOL #
+                                </td>
+                                <th>
+                                    Bill Of Lading
+            </td>
+            </tr>
+            <tr>
+
+                <td>
+
+                    <select name="ltl_carrier" id="action=update&table=load&load_id=1061611&ltl_carrier=" onchange='db_save(this);return column_updated(this);'>
+                <option></option>
+                    <option value="0" selected></option>
+                    <option value="A Duie Pyle">A Duie Pyle</option>
+                    <option value="AAA Cooper">AAA Cooper</option>
+                    <option value="Brandt">Brandt</option>
+                    <option value="Central Freight">Central Freight</option>
+                    <option value="Central Transport">Central Transport</option>
+                    <option value="Conway">Conway</option>
+                    <option value="Dayton Freight">Dayton Freight</option>
+                    <option value="Dohrn">Dohrn</option>
+                    <option value="FedEx">FedEx</option>
+                    <option value="Frontline Freight">Frontline Freight</option>
+                    <option value="Jevic">Jevic</option>
+                    <option value="Lakeville Motors">Lakeville Motors</option>
+                    <option value="Land Air Express ">Land Air Express </option>
+                    <option value="Midwest Motor Exp">Midwest Motor Exp</option>
+                    <option value="Milan Express">Milan Express</option>
+                    <option value="N&M Transfer">N&M Transfer</option>
+                    <option value="Nebraska Transfer">Nebraska Transfer</option>
+                    <option value="New Century">New Century</option>
+                    <option value="New Penn">New Penn</option>
+                    <option value="Oak Harbor">Oak Harbor</option>
+                    <option value="Pitt Ohio">Pitt Ohio</option>
+                    <option value="R&L Carriers">R&L Carriers</option>
+                    <option value="Roadrunner Dawes">Roadrunner Dawes</option>
+                    <option value="SAIA">SAIA</option>
+                    <option value="Southeastern Freight">Southeastern Freight</option>
+                    <option value="Southwestern Motors">Southwestern Motors</option>
+                    <option value="Standard Forwarding">Standard Forwarding</option>
+                    <option value="US Special Delivery">US Special Delivery</option>
+                    <option value="USF Holland">USF Holland</option>
+                    <option value="USF Reddaway">USF Reddaway</option>
+                    <option value="Vitran Express">Vitran Express</option>
+                    <option value="Volunteer Express">Volunteer Express</option>
+                    <option value="Ward Trucking">Ward Trucking</option>
+                    <option value="Yellow">Yellow</option>
+            </select>
+                </td>
+                <td>
+                    <input type="text" name="pro_number" id="action=update&table=load&load_id=1061611&pro_number=" onchange='db_save(this);return column_updated(this);' maxlength="50" value="Ricardo">
+
+                </td>
+                <td>
+                    <input type="text" name="ltl_number" id="action=update&table=load&load_id=1061611&ltl_number=" onchange='db_save(this);return column_updated(this);' maxlength="30" value="DTS001021231">
+
+                </td>
+                <td>
+                    <input type="button" value="Bill Of Lading" onclick="javascript:window.open('?page=bol&load_id=1061611&sml_view', 'bol', 'toolbar=0,scrollbars=1,location=0,statusbar=0,menubar=0,resizable=1,width=730,height=980,left = 0,top = 0');" />
+                </td>
+            </tr>
+            </table>
+            </div>
+            </div>
+            </fieldset>
+            <script type="text/javascript">
+                function open_rate_conf(url, id) {
+                    eval("window.open(url, '" + id + "', 'toolbar=1, scrollbars=1, location=1, statusbar=1, menubar=1, resizable=1, width=700, height=600, left = 0, top = 0');");
+                }
+            </script>
+            </td>
+            </tr>
+            </table>
+            </div>
+            </td>
+            </tr>
+    </table>
+
+    <!-- start overdue load mod-->
+    <!--script type="text/javascript" src="jquery.js"></script-->
+    <script type="text/javascript">
+        $(function() {
+            $('#od_load_mod_close').click(function() {
+                hide_od_load_mod();
+            });
+
+            window.setInterval(function() {
+                get_od_loads();
+                get_approach_loads();
+            }, 900000); //15 minutes
+        });
+
+        function get_od_loads() {
+            $.getJSON('overdue_loads.php', function(data) {
+                document.getElementById('od_load_mod').overdue_count = data.length;
+                if (data.length > 0) {
+                    show_od_load(data);
+                } else {
+                    $('#od_load_mod_msg').html('');
+                }
+            });
+        }
+
+        function get_approach_loads() {
+            $.getJSON('approaching_loads.php', function(data) {
+                $('#od_load_mod').approach_count = data.length;
+                if (data.length > 0) {
+                    show_approach_load(data);
+                } else {
+                    $('#od_approach_mod_msg').html('');
+                    if (document.getElementById('od_load_mod').overdue_count == 0) {
+                        hide_od_load_mod();
+                    }
+
+                }
+            });
+        }
+
+        function show_approach_load(data) {
+            $('#od_load_mod').css('display', 'block');
+            var e;
+            data.length == 1 ? e = 'event' : e = 'events';
+            $('#od_approach_mod_msg').html('<a target="dts_od" href="?page=overdue">You have ' + data.length + ' approaching ' + e + '.</a>');
+        }
+
+        function show_od_load(data) {
+            $('#od_load_mod').css('display', 'block');
+            var e;
+            data.length == 1 ? e = 'event' : e = 'events';
+            $('#od_load_mod_msg').html('<a target="dts_od" href="/dts/?page=overdue">You have ' + data.length + ' overdue ' + e + '.</a>');
+
+        }
+
+        function hide_od_load_mod() {
+            $('#od_load_mod').css('display', 'none');
+        }
+
+        function locate_od_load_mod() {
+            var llm = $('#od_load_mod');
+            llm.css('top', $(window).height() / 2);
+        }
+    </script>
+    <style>
+        #od_load_mod {
+            bottom: 0px;
+            position: fixed;
+            display: none;
+            text-align: right;
+            border-top: #f55 solid 1px;
+            border-right: #f55 solid 1px
+        }
+        
+        #llm_hilight {
+            background-color: red;
+            padding: 3px;
+            border-top: #f77 solid 1px;
+            border-right: #f77 solid 1px
+        }
+        
+        #od_load_mod_close {
+            margin-bottom: 2px;
+            cursor: pointer
+        }
+        
+        #od_load_mod_msg,
+        #od_approach_mod_msg {
+            padding: 3px;
+            background-color: white
+        }
+    </style>
+    <div id="od_load_mod">
+        <div id="llm_hilight">
+            <img id="od_load_mod_close" src="images/CloseIcon.gif" />
+            <div id="od_load_mod_msg"></div>
+            <div id="od_approach_mod_msg"></div>
+            <div id="od_load_mod_list"></div>
+            <div id="od_approach_mod_list"></div>
+        </div>
+    </div>
+    <!-- end overdue load mod-->
+</body>
+
+</html>
