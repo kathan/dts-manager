@@ -6,20 +6,36 @@ require_once('includes/auth.php');
 require_once('includes/DB.php');
 require_once('includes/view.php');
 
-if(Auth::loggedInAs('super admin')){
-	echo "<title>DTS-Monthly Report</title>";
-	
-	echo month_report_form();
-	if(get_action() == 'Report'){
-		echo get_report();
+echo "<title>DTS - Monthly Reports</title>";
+echo month_report_form();
+if (Auth::loggedInAs('super admin')){
+	if(get_action() === 'Report'){
+		echo get_report($_REQUEST);
 	}
+}else if (isset($_GET['user_id']) && Auth::getUserId() === safe_get($_GET['user_id'])){
+	if(get_action() === 'Report'){
+		$opts = [
+			'user_id' => Auth::getUserId(),
+			'start_Month' => $_REQUEST['start_Month'],
+			'start_Year' => $_REQUEST['start_Year']
+		];
+
+		echo get_report($opts);
+	}
+}else{
+	echo "No access";
 }
 
 function month_report_form(){
 	$t = new Template();
-	$t->assign('users', get_users());
+	if(Auth::loggedInAs('super admin')){
+		$t->assign('users', get_users());
+	}else{
+		$t->assign('users', [Auth::getUserId() => Auth::getUserName()]);
+	}
+	
 	$t->assign('year', date('Y'));
-	isset($_REQUEST['user_id']) ? $t->assign('user_id', $_REQUEST['user_id']) : '';
+	isset($user_id) ? $t->assign('user_id', $user_id) : '';
 	
 	$t->assign('page', $_REQUEST['page']);
 	$t->assign('form', $_REQUEST);
@@ -32,31 +48,31 @@ function get_users(){
 	$sql = "SELECT *
 			FROM `users`";
 	$re = App::$db->query($sql);
-	$ary = Array('');
+	$ary = [];
 	while($r = $re->fetch(PDO::FETCH_ASSOC)){
 		$ary[$r['user_id']] = $r['username'];
 	}
 	return $ary;
 }
 
-function get_report(){
-	$start_month = intval($_REQUEST['start_Month']);
+function get_report($opts){
+	$start_month = intval($opts['start_Month']);
 	$month_str = get_month($start_month);
-	$first_day_str = "1-$month_str-".$_REQUEST['start_Year'];
+	$first_day_str = "1-$month_str-".$opts['start_Year'];
 	$debug='';
 	$debug.="first_day_str = $first_day_str<br/>";
 	
 	$first_of_month = date ('Y-m-d', strtotime($first_day_str));
 	$debug.="first_of_month = $first_of_month<br/>";
 	
-	$start_date = $_REQUEST['start_Year']."-".str_pad($start_month, 2, '0', STR_PAD_LEFT)."-01";
+	$start_date = $opts['start_Year']."-".str_pad($start_month, 2, '0', STR_PAD_LEFT)."-01";
 	$debug.="start_date = $start_date<br/>";
 	$start_week_day = "1";
 	
-	$first_sat_str = "first sat $month_str ".$_REQUEST['start_Year'];
+	$first_sat_str = "first sat $month_str ".$opts['start_Year'];
 	$debug.="first_sat_str = $first_sat_str<br/>";
 	
-	$first_mon_str = "first sun $month_str-".$_REQUEST['start_Year'];
+	$first_mon_str = "first sun $month_str-".$opts['start_Year'];
 	$debug.="first_mon_str = $first_mon_str<br/>";
 	
 	$first_day_month = date ('D', strtotime($first_day_str));
@@ -75,7 +91,7 @@ function get_report(){
 	$end_week_day = date ('j', strtotime($first_sat_str));
 	$debug.="end_week_day = $end_week_day<br/>";
 	
-	$debug.="start_Month = $_REQUEST[start_Month]<br/>";
+	$debug.="start_Month = $opts[start_Month]<br/>";
 	
 	$first_week = date('W', strtotime($first_day_str));
 	$debug.="first_week = $first_week<br/>";
@@ -86,10 +102,10 @@ function get_report(){
 	$day_count =date('t', strtotime($first_day_str));
 	$debug.="day_count = $day_count<br/>";
 	
-	$last_day_week_str = ($day_count)."-".$start_month."-".$_REQUEST['start_Year'];
+	$last_day_week_str = ($day_count)."-".$start_month."-".$opts['start_Year'];
 	$debug.="last_day_week_str = $last_day_week_str<br/>";
 	
-	$last_day_str = "$day_count-".$start_month."-".$_REQUEST['start_Year'];
+	$last_day_str = "$day_count-".$start_month."-".$opts['start_Year'];
 	$debug.="last_day_str = $last_day_str<br/>";
 	
 	$last_of_month = date ('Y-m-d', strtotime($last_day_str));
@@ -108,7 +124,7 @@ function get_report(){
 	$debug.="week_count = $week_count<br/>";
 	
 	for($w=1;$w <= $week_count; $w++){
-		$week = get_weekly($start_date, $end_date);
+		$week = get_weekly($start_date, $end_date, $opts);
 		
 		$month[] = $week;
 		if(date('N', strtotime($start_date." + 7 days")) == 7){
@@ -132,13 +148,13 @@ function get_report(){
 	
 
 	$t = new Template();
-	isset($_GET['user_id']) ? $t->assign('user_id', $_GET['user_id']) : '';
+	isset($opts['user_id']) ? $t->assign('user_id', $opts['user_id']) : '';
 	$t->assign('month', $month);
-	$t->assign('month_str', get_month($_GET['start_Month']));
-	$t->assign('start_year', $_GET['start_Year']);
-	if(isset($_GET['user_id'])){
-		$t->assign('user', App::getUsername($_GET['user_id']));
-		$t->assign('user_id', $_GET['user_id']);
+	$t->assign('month_str', get_month($opts['start_Month']));
+	$t->assign('start_year', $opts['start_Year']);
+	if(isset($opts['user_id'])){
+		$t->assign('user', App::getUsername($opts['user_id']));
+		$t->assign('user_id', $opts['user_id']);
 	}
 	$c = $t->fetch(App::getTempDir().'/monthly.tpl');
 	return $c;
@@ -149,111 +165,118 @@ function get_occur($n){
 	return $occ[$n];
 }
 
-function get_weekly($mon, $fri){
-	
-$sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
-		, load_id
-		, load_id id
-		, c.name customer
-		, l.cust_rate cust_rate
-		, l.carrier_rate carrier_rate
-		, wc_active
-		";
-	/*1/20/14 Added case statement to set profit to 0 if the user is only the booked with agent*/
-	if(isset($_GET['user_id']) &&  $_GET['user_id'] > 0){
-		$sql .= ", CASE WHEN c.acct_owner != $_GET[user_id] THEN 0 ";
-	}else{
-		$sql .= ", CASE ";
-	}
-	if(isset($_GET['wcp'])){
-		//Show the WCP percentage
-		$sql .= " WHEN wc_active = 1 THEN ((profit * .01) * wc_percent) ";
-	}else{
-		//Show the DTSP percentage
-		$sql .= " WHEN wc_active = 1 THEN ((profit * .01) * (100-wc_percent)) ";
-	}
-	$sql .= "	
-						ELSE profit
-					END profit";
-	
-	
-	if(strtotime($mon) >= strtotime('12/01/2011')){
-		/*12/3/13 Joe requested "Darrel. Can you make a quick change to our DB?  In the reports, can you change the percentage so that the carrier rep commission equal the profit. And not the current 33%" 
-		old line ", IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .3 carrier_rep_comm"
-		*/
-		$sql .= ", (SELECT username FROM `users` u, load_carrier lc WHERE lc.load_id = l.load_id AND u.user_id = lc.booked_with LIMIT 1) carrier_rep
-			, (SELECT booked_with FROM load_carrier lc WHERE lc.load_id = l.load_id LIMIT 1) carrier_rep_id
-			
-			, IF(wc_active, profit-((profit * .01) * wc_percent), profit) carrier_rep_comm
-			, (SELECT username FROM `users` u WHERE c.acct_owner = u.user_id) sales_rep
-			, acct_owner sales_rep_id
-			, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .1 sales_rep_comm";
-		
-		if(isset($_GET['user_id']) &&  $_GET['user_id'] > 0){
-			$sql .= ", CASE WHEN c.acct_owner != $_GET[user_id] THEN 0 ";
+function get_weekly($mon, $fri, $opts){
+	$binds = [];
+	$sql = " SELECT	DATE_FORMAT(l.activity_date, '%m/%e') date
+			, load_id
+			, load_id id
+			, c.name customer
+			, l.cust_rate cust_rate
+			, l.carrier_rate carrier_rate
+			, wc_active
+			";
+		/*1/20/14 Added case statement to set profit to 0 if the user is only the booked with agent*/
+		if(isset($opts['user_id']) &&  $opts['user_id'] > 0){
+			$binds[] = $opts['user_id'];
+			$sql .= ", CASE WHEN c.acct_owner != ? THEN 0 ";
 		}else{
 			$sql .= ", CASE ";
 		}
-		if(isset($_GET['wcp'])){
-			$sql .= "	WHEN wc_active = 1
-							THEN ((profit * .01) * wc_percent)";
+		if(isset($opts['wcp'])){
+			//Show the WCP percentage
+			$sql .= " WHEN wc_active = 1 THEN ((profit * .01) * wc_percent) ";
 		}else{
 			//Show the DTSP percentage
-			$sql .= "	WHEN wc_active = 1
-							THEN ((profit * .01) * (100-wc_percent)) ";
+			$sql .= " WHEN wc_active = 1 THEN ((profit * .01) * (100-wc_percent)) ";
+		}
+		$sql .= "	
+							ELSE profit
+						END profit";
+		
+		
+		if(strtotime($mon) >= strtotime('12/01/2011')){
+			/*12/3/13 Joe requested "Darrel. Can you make a quick change to our DB?  In the reports, can you change the percentage so that the carrier rep commission equal the profit. And not the current 33%" 
+			old line ", IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .3 carrier_rep_comm"
+			*/
+			$sql .= ", (SELECT username FROM `users` u, load_carrier lc WHERE lc.load_id = l.load_id AND u.user_id = lc.booked_with LIMIT 1) carrier_rep
+				, (SELECT booked_with FROM load_carrier lc WHERE lc.load_id = l.load_id LIMIT 1) carrier_rep_id
+				
+				, IF(wc_active, profit-((profit * .01) * wc_percent), profit) carrier_rep_comm
+				, (SELECT username FROM `users` u WHERE c.acct_owner = u.user_id) sales_rep
+				, acct_owner sales_rep_id
+				, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .1 sales_rep_comm";
+			
+			if(isset($opts['user_id']) &&  $opts['user_id'] > 0){
+				$sql .= ", CASE WHEN c.acct_owner != ? THEN 0 ";
+				$binds[] = $opts['user_id'];
+			}else{
+				$sql .= ", CASE ";
+			}
+			if(isset($opts['wcp'])){
+				$sql .= "	WHEN wc_active = 1
+								THEN ((profit * .01) * wc_percent)";
+			}else{
+				//Show the DTSP percentage
+				$sql .= "	WHEN wc_active = 1
+								THEN ((profit * .01) * (100-wc_percent)) ";
+			}
+			
+			$sql .= "			ELSE profit
+							END total_comm
+					/*, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .4 total_comm*/";
+		}
+			
+	$sql .= " 
+			FROM load_report_totals ";
+			
+	$sql .= " l
+			, customer c ";
+		$clause = 'WHERE';
+		if(isset($opts['wcp'])){
+			$sql .= "	$clause wc_active = 1 ";
+			$clause = 'AND';
+		}
+	
+		if($opts['user_id'] > 0){
+			//1/8/14 - Removed booked_with filter per Joe "we no longer pay employees for booking a load"
+			$binds[] = $opts['user_id'];
+			$binds[] = $opts['user_id'];
+			$sql .= " $clause (c.acct_owner = ?
+			OR load_id in (SELECT load_id FROM load_carrier WHERE booked_with = ?)
+			)";
+			$clause = 'AND';
 		}
 		
-		$sql .= "			ELSE profit
-						END total_comm
-				/*, IF(wc_active, profit-((profit * .01) * wc_percent), profit) * .4 total_comm*/";
-	}
-		
-$sql .= " 
-		FROM load_report_totals ";
-		
-$sql .= " l
-		, customer c ";
-	$clause = 'WHERE';
-	if(isset($_GET['wcp'])){
-		$sql .= "	$clause wc_active = 1 ";
-		$clause = 'AND';
-	}
-
-	if($_REQUEST['user_id'] > 0){
-		//1/8/14 - Removed booked_with filter per Joe "we no longer pay employees for booking a load"
-		$sql .= " $clause (c.acct_owner = $_REQUEST[user_id]
-		OR load_id in (SELECT load_id FROM load_carrier WHERE booked_with = $_REQUEST[user_id])
-		)";
-		$clause = 'AND';
-	}
-	
-	if(isset($_REQUEST['load_type']) && $_REQUEST['load_type'] != ''){
-		$load_types = array_to_list($_REQUEST['load_type']);
-		$sql .= " $clause load_type in ($load_types) ";
-		$clause = 'AND';
-	}
-	
-	$sql .= "		$clause l.customer_id = c.customer_id
-					AND activity_date >= '$mon'
-					AND activity_date <= '$fri'
-					order by activity_date, load_id";
-		$result = App::$db->query($sql);
-		if(!$result){
-			echo "Error in get_weekly<br/>";
-			echo $sql."<br/>";
-			echo $result->errorCode()."<br/>";
+		if(isset($opts['load_type']) && $opts['load_type'] != ''){
+			$load_types = array_to_list($opts['load_type']);
+			$sql .= " $clause load_type in ($load_types) ";
+			$clause = 'AND';
 		}
-		$t = new Template();
-		isset($_GET['user_id']) ? $t->assign('user_id', $_GET['user_id']) : '';
 		
-		$t->assign('start_month', $_REQUEST['start_Month']);
-		$t->assign('start_week_day', date('j', strtotime($mon)));
-		$t->assign('end_week_day', date('j', strtotime($fri)));
-		$a['start_month'] = $_REQUEST['start_Month'];
-		$a['start_week_day'] = date('j', strtotime($mon));
-		$a['end_week_day'] = date('j', strtotime($fri));
-		$a['loads'] =  DB::to_array($result);
-		return $a;
+		$binds[] = $mon;
+		$binds[] = $fri;
+		$sql .= "		$clause l.customer_id = c.customer_id
+						AND activity_date >= ?
+						AND activity_date <= ?
+						order by activity_date, load_id";
+			$stmt = App::$db->prepare($sql);
+			$result = $stmt->execute($binds);
+			if(!$result){
+				echo "Error in get_weekly<br/>";
+				echo $sql."<br/>";
+				echo App::$db->errorCode()."<br/>";
+			}
+			$t = new Template();
+			isset($opts['user_id']) ? $t->assign('user_id', $opts['user_id']) : '';
+			
+			$t->assign('start_month', $opts['start_Month']);
+			$t->assign('start_week_day', date('j', strtotime($mon)));
+			$t->assign('end_week_day', date('j', strtotime($fri)));
+			$a['start_month'] = $opts['start_Month'];
+			$a['start_week_day'] = date('j', strtotime($mon));
+			$a['end_week_day'] = date('j', strtotime($fri));
+			$a['loads'] =  DB::to_array($stmt);
+			return $a;
 }
 
 function array_to_list($ar){
