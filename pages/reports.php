@@ -28,10 +28,11 @@ if (Auth::loggedInAs('super admin')){
 
 function month_report_form(){
 	$t = new Template();
+	$user_id = Auth::getUserId();
 	if(Auth::loggedInAs('super admin')){
 		$t->assign('users', get_users());
 	}else{
-		$t->assign('users', [Auth::getUserId() => Auth::getUserName()]);
+		$t->assign('users', [$user_id => Auth::getUserName()]);
 	}
 	
 	$t->assign('year', date('Y'));

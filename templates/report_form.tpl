@@ -18,11 +18,14 @@
 	<form method="get">
 		<input type="hidden" name="page" value="{$page}">
 		<td>
-				{html_select_date prefix="start_" display_days=false start_year="2007" end_year=$year}
+			{html_select_date prefix="start_" display_days=false start_year="2007" end_year=$year}
 		</td>
 		
 		<td>
-			{html_options name=user_id options=$users selected=$form.user_id}
+			<select name="user_id">
+				<option></option>
+				{html_options options=$users selected=$form.user_id}
+			</select>
 		</td>
 		<td>
 			{if isset($form.wcp)}
