@@ -1,0 +1,10 @@
+branch-defaults:
+    master:
+        environment: DtsManager-dev
+global:
+    application_name: dts-manager
+    default_ec2_keyname: ec2-key-pair-name
+    default_platform: PHP 7.2 running on 64bit Amazon Linux/2.8.14
+    default_region: us-east-1
+    profile: eb-cli
+    sc: git
