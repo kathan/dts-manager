@@ -14,8 +14,14 @@ class Feedback{
 		self::$feedback[$context][] = $f;
 	}
 	
-	public static function add($f, $context=null){
-		self::add_feedback($f, $context);
+	public static function add($msgs, $context=null){
+		if(is_array($msgs)){
+			foreach($msgs as $msg){
+				self::add_feedback($msg, $context);
+			}
+		}else{
+			self::add_feedback($msgs, $context);
+		}
 	}
 	public static function set_context($c){
 		self::$context = $c;

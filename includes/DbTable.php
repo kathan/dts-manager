@@ -108,14 +108,9 @@ class DbTable{
 			}
 		}
 		$this->sql = "SELECT $select FROM `$this->name` t1 $where $limitOffset";
-		try {
-			$stmt = $this->db->prepare($this->sql);
-			$result = $stmt->execute($this->binds);
-			return $stmt;
-		} catch(PDOExecption $e) { 
-			$this->addError($e->getMessage());
-			return false;
-		}
+		$stmt = $this->db->prepare($this->sql);
+		$result = $stmt->execute($this->binds);
+		return $result;
 	}
 
 	function insert($input){
@@ -124,6 +119,7 @@ class DbTable{
 	
 	function add($input){
 		$this->binds = [];
+		$field_names = '';
 		foreach($input as $key => $val){	
 			if(array_key_exists(strtolower($key), $this->columns)){
 				if($field_names != ''){
@@ -137,12 +133,10 @@ class DbTable{
 			}
 		}
 		$this->sql = "INSERT INTO `".$this->name ."` ($field_names) VALUES ($values)";
-
-		try {
-			$stmt = $this->db->prepare($this->sql);
-			$result = $stmt->execute($this->binds);
-		} catch(PDOExecption $e) { 
-			$this->addError($e->getMessage());
+		$stmt = $this->db->prepare($this->sql);
+		$result = $stmt->execute($this->binds);
+		if(!$result) { 
+			$this->error_ary[] = $this->db->errorInfo()[2];
 			return false;
 		}
 		$this->last_id = $this->db->lastInsertId();
