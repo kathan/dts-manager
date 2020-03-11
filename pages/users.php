@@ -102,39 +102,36 @@ class users extends dts_table{
 
 	function save_user(){
 		if (Auth::loggedInAs('super admin') || Auth::loggedInAs($_COOKIE[Auth::COOKIE_USERNAME])){
+			
 			if(isset($_REQUEST['user_id'])){
-				
-				if(isset($_POST['password1']) && isset($_POST['password2'])){
-					
-					if($_POST['password1'] === $_POST['password2'] && $_POST['password1'] != '' && $_POST['password2'] != ''){
-						$data = $_POST;
-						$data['password'] = $_POST['password1'];
+				$data = $_POST;
+				if(isset($_POST['password1']) && isset($_POST['password2']) && $_POST['password1'] != '' && $_POST['password2'] != ''){
+					if($_POST['password1'] === $_POST['password2'] ){
 						$data['hash_password'] = Auth::encryptPassword($_POST['password1']);
-						unset($data['password1']);
-						unset($data['password2']);
-						if($this->userTable->update($data, ['user_id'=>$_GET['user_id']])){
-							Feedback::add("User Updated");
-						}else{
-							Feedback::add($t->error_str);
-						}
 					}else{
 						Feedback::add("Passwords do not match.");
 					}
 				}
-				
+				unset($data['password1']);
+				unset($data['password2']);
+				if($this->userTable->update($data, ['user_id'=>$_GET['user_id']])){
+					Feedback::add("User Updated");
+				}else{
+					Feedback::add($this->error_str);
+				}
 			}else{
 				if($_POST['password1'] && $_POST['password2']){
-					if(($_POST['password1'] == $_POST['password2'])){
+					if(($_POST['password1'] === $_POST['password2'])){
 						$_POST['password'] = $_POST['password1'];
 						$data = $_POST;
 						
-						$data['password_hash'] = Auth::hashPassword($data['password']);
+						$data['password_hash'] = Auth::encryptPassword($data['password']);
 						unset($data['password']);
 						if($this->userTable->insert($data)){
 							Feedback::add("User Added");
 							header('Location: ?page='.basename(__FILE__, '.php').'&action=edit&user_id='.$t->last_id);
 						}else{
-							Feedback::add($t->error_str);
+							Feedback::add($this->error_str);
 						}
 					}else{
 						Feedback::add("Passwords do not match.");
