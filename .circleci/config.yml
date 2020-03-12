@@ -7,3 +7,11 @@ dependencies:
         - sudo apt-get install python-dev
         - sudo pip install awsebcli
 
+jobs:
+    build:
+        docker: 
+            - image: circleci/php:7.4.3-fpm-buster
+        steps:
+            - checkout
+            - bash ./setup-eb.sh
+            - eb deploy
