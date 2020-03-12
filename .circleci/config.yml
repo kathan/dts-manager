@@ -13,7 +13,8 @@ jobs:
             - image: circleci/php:7.4.3-fpm-buster
         steps:
             - checkout
-            - run: |
-                echo pwd
-                ./setup-eb.sh
+            - run: 
+                command: |
+                    echo pwd
+                    ./setup-eb.sh
             - eb deploy
