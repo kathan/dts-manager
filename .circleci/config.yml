@@ -10,3 +10,15 @@ workflows:
             - commands:
                 - bash ./setup-eb.sh
                 - eb deploy
+
+---
+version: 2.1
+
+workflows:
+    version: 2
+    # On master push workflow
+    dev-release:
+        jobs:
+            - commands:
+                - bash ./setup-eb.sh
+                - eb deploy
