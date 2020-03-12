@@ -4,11 +4,9 @@ dependencies:
         - sudo apt-get install python-dev
         - sudo pip install awsebcli
     
-    Add the deployment config:
-    
 deployment:
     production:
         branch: master
         commands:
-        - bash ./setup-eb.sh
-        - eb deploy
+            - bash ./setup-eb.sh
+            - eb deploy
