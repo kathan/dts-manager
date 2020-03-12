@@ -15,6 +15,5 @@ jobs:
             - checkout
             - run: 
                 command: |
-                    echo pwd
                     ./setup-eb.sh
                     eb deploy
