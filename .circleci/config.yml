@@ -9,10 +9,9 @@ dependencies:
 
 jobs:
     prod-deploy:
-        production:
-            branch: master
-            steps:
-                - run:
-                    command: |
-                        bash ./setup-eb.sh
-                        eb deploy
+        branch: master
+        steps:
+            - run:
+                command: |
+                    bash ./setup-eb.sh
+                    eb deploy
