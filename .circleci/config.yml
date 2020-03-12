@@ -6,8 +6,7 @@ dependencies:
 
 workflows:
     version: 2
-        test:
-            jobs:
-                - commands:
-                    - bash ./setup-eb.sh
-                    - eb deploy
+        jobs:
+            - commands:
+                - bash ./setup-eb.sh
+                - eb deploy
