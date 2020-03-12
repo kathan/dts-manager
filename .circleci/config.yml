@@ -15,5 +15,8 @@ jobs:
             - checkout
             - run: 
                 command: |
+                    sudo apt-get update
+                    sudo apt-get install python-dev
+                    sudo pip install awsebcli
                     ./setup-eb.sh
                     eb deploy
