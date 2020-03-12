@@ -16,6 +16,7 @@ jobs:
             - run: 
                 command: |
                     sudo apt-get update
+                    sudo apt-get install apt-utils
                     sudo apt-get install python-dev
                     sudo pip install awsebcli
                     ./setup-eb.sh
