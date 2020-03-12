@@ -17,4 +17,4 @@ jobs:
                 command: |
                     echo pwd
                     ./setup-eb.sh
-            - eb deploy
+                    eb deploy
