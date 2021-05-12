@@ -10,7 +10,7 @@ require_once('includes/calendar.php');
 require_once('includes/select_input.php');
 
 class load_table extends dts_table{
-	var $load_id;
+	private $loadId;
 	var $view_str = 'view';
 	var $mod_str='module';
 	var $load_str='load';
@@ -34,12 +34,12 @@ class load_table extends dts_table{
 	var $row_height='6.5em';
 	var $page;
 	
-	function __construct(){
+	function __construct($loadId){
 		parent::__construct('load');
 		isset($_REQUEST['page']) ? $this->page = $_REQUEST['page'] : $this->page = 'load';
 		
-		if(isset($_REQUEST['load_id'])){
-			$this->load_id = $_REQUEST['load_id'];
+		if(isset($loadId)){
+			$this->loadId = $loadId;
 			$this->current_row();
 		}
 		
@@ -253,6 +253,19 @@ class load_table extends dts_table{
 		return $code;
 	}
 	
+	function get_load_module(){
+		$r = $this->current_row();
+		$c = "<table width='100%' border=1><tr>";
+		$c .= "<td>Trailer Type</td><td class='faux_edit' id='trailer_type'>$r[trailer_type]</td>";
+		$c .= "<td>Length (inches)</td><td class='faux_edit' id='length'>$r[length]</td>";
+		$c .= "<td>Size</td><td class='faux_edit' id='size'>$r[size]</td></tr>";
+		$c .= "<tr><td>Pallets</td><td class='faux_edit' id='pallets'>$r[pallets]</td>";
+		$c .= "<td>Weight (lbs.)</td><td class='faux_edit' id='weight'>$r[weight]</td>";
+		$c .= "<td>Class</td><td class='faux_edit' id='class'>$r[class]</td>";
+		$c .= "</tr></table>";
+		return $c;
+	}
+
 	function repeat_load(){
 		
 		$old_load_id = $_REQUEST['load_id'];
@@ -1612,7 +1625,7 @@ class load_table extends dts_table{
 		if(!$result){
 			return false;
 		}
-		return $r->fetch(PDO::FETCH_ASSOC);
+		return $stmt->fetch(PDO::FETCH_ASSOC);
 	}
 	
 	function fetch_new($name, $value=null){
@@ -2097,7 +2110,7 @@ class load_table extends dts_table{
 		if(!$result){
 			return false;
 		}
-		$r = $res->fetch(PDO::FETCH_ASSOC);
+		$r = $stmt->fetch(PDO::FETCH_ASSOC);
 		
 		$t = new Template();
 		$t->assign('load', $r);
@@ -2522,6 +2535,6 @@ class load_table extends dts_table{
 		return $ro[0];
 	}
 }
-$l = new load_table();
-	echo $l->render();
+$l = new load_table($_REQUEST['load_id']);
+echo $l->render();
 ?>

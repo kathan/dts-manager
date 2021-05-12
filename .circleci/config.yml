@@ -4,7 +4,8 @@ version: 2.1
 dependencies:
     pre:
         - sudo apt-get update
-        - sudo apt-get install python-dev
+        - sudo apt-get install apt-utils
+        - sudo apt-get install python3-pip
         - sudo pip install awsebcli
 
 jobs:
@@ -17,7 +18,7 @@ jobs:
                 command: |
                     sudo apt-get update
                     sudo apt-get install apt-utils
-                    sudo apt-get install python-pip
-                    sudo pip install awsebcli
+                    sudo apt-get install python3-pip
+                    sudo pip3 install awsebcli
                     ./setup-eb.sh
                     eb deploy
