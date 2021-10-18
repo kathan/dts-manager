@@ -1,6 +1,6 @@
 ---
 version: 2.1
-    
+
 dependencies:
     pre:
         - sudo apt-get update
@@ -10,11 +10,11 @@ dependencies:
 
 jobs:
     build:
-        docker: 
-            - image: circleci/php:7.4.3-fpm-buster
+        docker:
+            - image: circleci/php:8.0
         steps:
             - checkout
-            - run: 
+            - run:
                 command: |
                     sudo apt-get update
                     sudo apt-get install apt-utils
