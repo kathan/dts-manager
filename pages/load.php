@@ -10,7 +10,7 @@ require_once('includes/calendar.php');
 require_once('includes/select_input.php');
 
 class load_table extends dts_table{
-	private $loadId;
+	private $load_id;
 	var $view_str = 'view';
 	var $mod_str='module';
 	var $load_str='load';
@@ -34,12 +34,12 @@ class load_table extends dts_table{
 	var $row_height='6.5em';
 	var $page;
 	
-	function __construct($loadId){
+	function __construct($load_id){
 		parent::__construct('load');
 		isset($_REQUEST['page']) ? $this->page = $_REQUEST['page'] : $this->page = 'load';
 		
-		if(isset($loadId)){
-			$this->loadId = $loadId;
+		if(isset($load_id)){
+			$this->load_id = $load_id;
 			$this->current_row();
 		}
 		
@@ -80,6 +80,8 @@ class load_table extends dts_table{
 		$stmt = App::$db->prepare($sql);
 		$result = $stmt->execute([$this->load_id]);
 		$r = $stmt->fetch(PDO::FETCH_ASSOC);
+		// var_dump($sql);
+		// var_dump($this->load_id);
 		return $r;
 	}
 	
@@ -2535,6 +2537,10 @@ class load_table extends dts_table{
 		return $ro[0];
 	}
 }
-$l = new load_table($_REQUEST['load_id']);
+$load_id = null;
+if(isset($_REQUEST['load_id'])){
+	$load_id = $_REQUEST['load_id'];
+}
+$l = new load_table($load_id);
 echo $l->render();
 ?>
