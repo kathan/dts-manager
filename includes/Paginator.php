@@ -53,16 +53,25 @@ class Paginator{
 		return $a;
 	}
 	
-	
+	function fastFoward($re){
+		$count = 1;
+		while($count < $this->start && ($row = $re->fetch())){
+			$count++;
+		}
+	}
+
 	function to_array($re){
+		$this->fastFoward($re);
 		$ary = [];
 		$i = $this->start-1;
-		while($row = $re->fetch(PDO::FETCH_ASSOC, PDO::FETCH_ORI_ABS, $i)){
-			if($i >= $this->limit){
+		$count=0;
+		while($count < $this->limit && ($row = $re->fetch(PDO::FETCH_ASSOC, null))){
+			if($count >= $this->limit){
 				break;
 			}
 			$ary[] = $row;
 			$i++;
+			$count++;
 		}
 
 		return $ary;
