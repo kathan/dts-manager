@@ -9,6 +9,7 @@ require_once('includes/portal.php');
 require_once('includes/calendar.php');
 require_once('includes/select_input.php');
 
+$GLOBALS["page_title"] = "Loads";
 class load_table extends dts_table{
 	private $load_id;
 	var $view_str = 'view';
@@ -410,15 +411,24 @@ class load_table extends dts_table{
 		if(Auth::loggedInAs('admin')){
 			$c .= "<th>Delete</td>\n";
 		}
-		$c .= "</tr><tr>";
-		$c .= "<td class='faux_edit'>$r[name]</td>\n";
-		$c .= "<td class='faux_edit'>$r[phys_address]</td>\n";
-		$c .= "<td class='faux_edit'>$r[phone_fax]</td>\n";
-		$c .= "<td class='faux_edit'>$r[booked_with]</td>\n";
-		$c .= "<td class=''>$r[rate_conf_button]</td>\n";
+		$c .= "</tr>\n<tr>\n<td class='faux_edit'>";
+		isset($r["name"]) ? $c .= $r["name"]."</td>\n" : "";
+		$c .= "</td>\n<td class='faux_edit'>";
+		isset($r["phys_address"]) ? $c .= $r["phys_address"] : "";
+		$c .= "</td>\n<td class='faux_edit'>";
+		isset($r["phone_fax"]) ? $c .= $r["phone_fax"]: "";
+		$c .= "</td>\n<td class='faux_edit'>";
+		isset($r["booked_with"]) ? $c .= $r["booked_with"] : "";
+		$c .= "</td>\n<td class='faux_edit'>";
+		isset($r["rate_conf_button"]) ? $c .= $r["rate_conf_button"] : "";
+		$c .= "</td>\n";
 		if(Auth::loggedInAs('admin')){
-			$c .= "<td class='border'>$r[delete]</td>\n";
+			$c .= "<td class='border'>";
+			isset($r["delete"]) ? $c .= $r["delete"] : "";
+			$c .= "</td>\n";
 		}
+		
+		
 		$c .= "</tr></table>\n";
 		
 		return $c;
@@ -1774,7 +1784,7 @@ class load_table extends dts_table{
 			}
 		}
 		$t->assign('region_users', $rul);
-	
+		$t->registerPlugin("function","array2query", "array2query");
 		return $t->fetch(App::getTempDir().'region_user_list.tpl');
 	}
 	
@@ -1813,6 +1823,7 @@ class load_table extends dts_table{
 		$t->assign('booked', $this->get_loads($db_date, $this->booked, $_GET));
 		$t->assign('loaded', $this->get_loads($db_date, $this->loaded, $_GET));
 		$t->assign('delivered', $this->get_loads($db_date, $this->delivered, $_GET));
+		$t->registerPlugin("function","array2query", "array2query");
 		return $t->fetch(App::getTempDir().'load_board.tpl');
 	}
 	

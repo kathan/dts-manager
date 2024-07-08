@@ -20,15 +20,8 @@ function handleFatal() {
         !isset($errfile) ? $errfile = $error["file"] : $errfile = "unknown file";
         !isset($errline) ? $errline = $error["line"] : $errline = 0;
         !isset($errstr) ? $errstr  = $error["message"] : $errstr = "unknown";
-        // App:logit('Fatal Error: '.$errstr);
-        // Feedback::add('Fatal Error: '.$errstr);
         $stack = debug_backtrace(0);
-        // App::addError(['type'=>'Fatal Error', 'number'=>$errno, 'message'=>$errstr, 'file'=>$errfile, 'line'=>$errline, 'stack'=>$stack]);
-        //mailError('Fatal Error', $stack, $errno, $errstr, $errfile, $errline);
-    }/*else{
-        mailError('Fatal Error', [], -0, 'Something mysterious happened');
-    }*/
-	
+    }
 }
 class App{
     public static $db;
@@ -71,7 +64,7 @@ class App{
     public static function dbConnect(){
         $env = getenv();
 	    if(!isset(self::$db)){
-            self::$db = new PDO("mysql:host=$env[RDS_HOSTNAME];dbname=$env[RDS_DB_NAME];charset=utf8", $env['RDS_USERNAME'], $env['RDS_PASSWORD'], [PDO::MYSQL_ATTR_FOUND_ROWS => true]);
+            self::$db = new PDO("mysql:host=$env[RDS_HOSTNAME];port=$env[RDS_PORT];dbname=$env[RDS_DB_NAME];charset=utf8", $env['RDS_USERNAME'], $env['RDS_PASSWORD'], [PDO::MYSQL_ATTR_FOUND_ROWS => true]);
             if(self::$db){
                 return true;
             }else{

@@ -14,7 +14,7 @@
 						<table style="width:100%">
 							<tr>
 								<td style="width:10%;">
-									<a href="?page={$smarty.get.page}&day={$nav.prev_day}&month={$nav.prev_month}&year={$nav.prev_year}&{$smarty.get|@array2query:'year':'month':'day':'page'}">Previous Day</a>
+									<a href="?page={$smarty.get.page}&day={$nav.prev_day}&month={$nav.prev_month}&year={$nav.prev_year}&{array2query array=$smarty.get exclude=['year','month','day','page']}">Previous Day</a>
 								</td>
 								<td style="text-align:center;">
 									{$cal_navigator}

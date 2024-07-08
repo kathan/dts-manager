@@ -7,6 +7,7 @@ class DbColumn{
 	protected $primary;
 	protected $unique;
 	protected $auto_increment;
+	public $error_str;
 	
 	function __construct(&$table, $name, $type, $options=[]){
 		$this->table = $table;

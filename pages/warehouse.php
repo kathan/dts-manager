@@ -164,6 +164,7 @@ class warehouse_table extends dts_table{
 		$t->assign('pag', $p->get());
 		$t->assign('warehouse', $p->to_array($warehouse));
 		$t->assign('admin', Auth::loggedInAs('admin'));
+		$t->registerPlugin("function","array2query", "array2query");
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'warehouse_list.tpl');
 		return $c;

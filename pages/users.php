@@ -10,6 +10,7 @@ require_once("includes/feedback.php");
 require_once("includes/DbTable.php");
 require_once("includes/portal.php");
 $post_action = '';
+$GLOBALS["page_title"] = "Users";
 
 class users extends dts_table{
 	private $userTable;
@@ -505,7 +506,7 @@ class users extends dts_table{
 		}
 		$t->assign('oppDir', $oppDir);
 		$re = App::$db->query($sql);
-		if ($re->errorCode > 0){
+		if (isset($re->errorCode) && $re->errorCode > 0){
 			Feedback::add($re->errorCode());
 		}
 		$t->assign('users', $re->fetchAll(PDO::FETCH_ASSOC));
@@ -547,7 +548,7 @@ class users extends dts_table{
 		$p->set_primary_key('cust_note_id');
 		$p->hide_column('cust_note_id');
 		$p->set_table('cust_owner_notes');
-		$c .= "<input type='button' value='New Note' onclick='new_note($cust_id)'>";
+		$c = "<input type='button' value='New Note' onclick='new_note($cust_id)'>";
 		$c .= $p->render();
 		return $c;
 	}

@@ -13,30 +13,30 @@
 		<table width="100%"><tr><td>
 			<tr>
 				<td>Name:</td>
-				<td><input type="text" name="name" value="{$w.name}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&name=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="name" value="{if isset($w.name)}{$w.name}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&name=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>Address:</td>
-				<td><input type="text" name="address" value="{$w.address}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&address=" onchange="db_save(this);column_updated(this);" /></td></tr>
+				<td><input type="text" name="address" value="{if isset($w.address)}{$w.address}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&address=" onchange="db_save(this);column_updated(this);" /></td></tr>
 			<tr>
 				<td>City:</td>
-				<td><input type="text" name="city" value="{$w.city}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&city=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="city" value="{if isset($w.city)}{$w.city}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&city=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>State:</td>
-				<td><input type="text" name="state" value="{$w.state}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&state=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="state" value="{if isset($w.state)}{$w.state}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&state=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>Zip:</td>
-				<td><input type="text" name="zip" value="{$w.zip}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&zip=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="zip" value="{if isset($w.zip)}{$w.zip}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&zip=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>Phone:</td>
-				<td><input type="text" name="phone" value="{$w.phone}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&phone=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="phone" value="{if isset($w.phone)}{$w.phone}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&phone=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>Fax:</td>
-				<td><input type="text" name="fax" value="{$w.fax}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&fax=" onchange="db_save(this);column_updated(this);" /></td>
+				<td><input type="text" name="fax" value="{if isset($w.fax)}{$w.fax}{/if}" id="action={$action}&table=warehouse&warehouse_id={$w.warehouse_id}&fax=" onchange="db_save(this);column_updated(this);" /></td>
 			</tr>
 			<tr>
 				<td>Notes:</td>

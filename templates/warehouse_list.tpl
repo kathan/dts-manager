@@ -10,7 +10,7 @@
 				Warehouse Id:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="warehouse_id" size="11" maxlength="11" value="{$smarty.get.warehouse_id}" />
+				<input type="text" name="warehouse_id" size="11" maxlength="11" value="{if isset($smarty.get.warehouse_id)}{$smarty.get.warehouse_id}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -18,7 +18,7 @@
 				Name:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="name" maxlength="30" value="{$smarty.get.name}" />
+				<input type="text" name="name" maxlength="30" value="{if isset($smarty.get.name)}{$smarty.get.name}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -26,7 +26,7 @@
 				City:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="city" maxlength="100" value="{$smarty.get.city}" />
+				<input type="text" name="city" maxlength="100" value="{if isset($smarty.get.city)}{$smarty.get.city}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -34,7 +34,7 @@
 				State:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="state" size="2" maxlength="2" value="{$smarty.get.state}" />
+				<input type="text" name="state" size="2" maxlength="2" value="{if isset($smarty.get.state)}{$smarty.get.state}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -100,14 +100,14 @@
 	</tbody>
 </table>
 	{if $pag.start > 1}
-		<a href="?{$filters|@array2query:'start'}&amp;start=1">First</a> | 
-		<a href="?{$filters|@array2query:'start'}&amp;start={$pag.prev_start}">Previous</a>
+		<a href="?{array2query array=$filters exclude=['start']}&amp;start=1">First</a> | 
+		<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.prev_start}">Previous</a>
 	{/if}
 	
 	{$pag.start} thru {$pag.end} of {$pag.total}
 		{if $pag.next_start <= $pag.total}
-			<a href="?{$filters|@array2query:'start'}&amp;start={$pag.next_start}">Next</a> | 
-			<a href="?{$filters|@array2query:'start'}&amp;start={$pag.last_page_start}">Last</a>
+			<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.next_start}">Next</a> | 
+			<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.last_page_start}">Last</a>
 		{/if}
 
 <!-- warehouse_search_result_module -->

@@ -102,10 +102,9 @@ class carrier_table extends dts_table{
         
 	function show_carrier_print($carrier) {
 		$t = new Template();
-		
 		$t->assign('carrier', DB::to_array($carrier));
 		
-		$c .= $t->fetch(App::getTempDir().'carrier_print.tpl');
+		$c = $t->fetch(App::getTempDir().'carrier_print.tpl');
 		return $c;
 	}
 	function show_search_results($carrier) {
@@ -119,6 +118,7 @@ class carrier_table extends dts_table{
 		$t->assign('pag', $p->get());
 		$t->assign('carrier', $p->to_array($carrier));
 		$t->assign('admin', Auth::loggedInAs('admin'));
+		$t->registerPlugin("function","array2query", "array2query");
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'carrier_list.tpl');
 		return $c;
@@ -127,6 +127,7 @@ class carrier_table extends dts_table{
 	function get_search_results() {
 		$sql = "SELECT CONCAT('S', carrier_id) id, c.* FROM carrier c ";
 		$clause = 'WHERE';
+		$binds = [];
 		$where='';
                 // $binds = [];
 		if(isset($_REQUEST['carrier_id']) && intval(trim($_REQUEST['carrier_id'], 's S')) > 0) {

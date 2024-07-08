@@ -35,7 +35,11 @@
 			{/if}
 		</td>
 		<td>
-			{html_checkboxes name=load_type options=$load_types selected=$load_type selected=$form.load_type separator="<br/>"}
+			{if isset($form.load_type)}
+				{html_checkboxes name=load_type options=$load_types selected=$load_type selected=$form.load_type separator="<br/>"}
+			{else}
+				{html_checkboxes name=load_type options=$load_types selected=$load_type separator="<br/>"}
+			{/if}
 		</td>
 	</tr>
 	<tr>

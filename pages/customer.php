@@ -267,11 +267,12 @@ class customer_table extends dts_table{
 		isset($_GET['acct_owner']) ? $t->assign('acct_owner_name', App::get_username($_GET['acct_owner'])) : '';
 		$t->assign('cust', DB::to_array($cust));
 		
-		$c .= $t->fetch(App::getTempDir().'cust_print.tpl');
+		$c = $t->fetch(App::getTempDir().'cust_print.tpl');
 		return $c;
 	}
 	
 	function get_search_results(){
+		$binds = [];
 		$sql = "SELECT CONCAT('T', customer_id) p_customer_id, customer_id, name, address, city
 				, phone, fax, state, contact_name FROM customer ";
 		$clause = 'WHERE';
@@ -331,6 +332,7 @@ class customer_table extends dts_table{
 		$t->assign('pag', $p->get());
 		$t->assign('cust', $p->to_array($cust));
 		$t->assign('admin', Auth::loggedInAs('admin'));
+		$t->registerPlugin("function","array2query", "array2query");
 		$c='';
 		$c .= $t->fetch(App::getTempDir().'cust_list.tpl');
 		return $c;

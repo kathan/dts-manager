@@ -2,8 +2,7 @@
 require_once('includes/Template.php');
 $GLOBALS['page_title'] = 'Customer Reports';
 $t = new Template();
-$t->register_modifier("array2query", "array2query");
-$t->register_modifier("in_array", "in_array");
+$t->registerPlugin("function","in_array", "in_array");
 $t->assign('users', get_users());
 $_GET['user_id'] > 0 ? $t->assign('username', get_username($_GET['user_id'])) : '';
 isset($_GET['end_date']) && $_GET['end_date'] != '' ? $end_date = $_GET['end_date'] : $end_date = date('Y-m-d');
@@ -12,6 +11,7 @@ $t->assign('params', $_GET);
 $t->assign('start_date', $start_date);
 $t->assign('end_date', $end_date);
 $t->assign('cust', get_report($start_date, $end_date, $user_id)->fetchAll());
+$t->registerPlugin("function","array2query", "array2query");
 echo $t->fetch(App::$temp.'cust_report.tpl');
 
 function get_report($start, $end, $user_id=null){

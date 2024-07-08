@@ -120,7 +120,7 @@ class view{
 		//==== rows ====
 		
 		while($row = $stmt->fetch(PDO::FETCH_NUM)){
-			if(isset($pk)){
+			if(isset($row[$pk])){
 				$id = $row[$pk];
 			}else{
 				$id='';

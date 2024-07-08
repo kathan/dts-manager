@@ -68,7 +68,7 @@ class DbTable{
 					if($row['Extra'] == 'auto_increment'){
 						$column->auto_inc = true;
 					}
-					if($column->error_str){
+					if(isset($column->error_str)){
 						$this->addError($column->error_str);
 					}
 					$this->columns[$row['Field']] = $column;

@@ -1,5 +1,5 @@
 <?php
-require_once('includes/Template.php');
+require_once 'includes/Template.php';
 require_once('includes/global.php');
 require_once('includes/dts_table.php');
 require_once('includes/auth.php');

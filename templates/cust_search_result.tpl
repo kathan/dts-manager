@@ -12,7 +12,7 @@ Use % as a wildcard character
 			Customer Id:
 		</td>
 		<td class="edit_class">
-			<input type="text" name="customer_id" size="11" maxlength="11" value="{$smarty.get.customer_id}" />
+			<input type="text" name="customer_id" size="11" maxlength="11" value="{if isset($smarty.get.customer_id)}{$smarty.get.customer_id}{/if}" />
 		</td>
 	</tr>
 	<tr>
@@ -20,7 +20,7 @@ Use % as a wildcard character
 			Name:
 		</td>
 		<td class="edit_class">
-			<input type="text" name="name" maxlength="30" value="{$smarty.get.name}" />
+			<input type="text" name="name" maxlength="30" value="{if isset($smarty.get.name)}{$smarty.get.name}{/if}" />
 		</td>
 	</tr>
 	<tr>
@@ -28,7 +28,7 @@ Use % as a wildcard character
 			City:
 		</td>
 		<td class="edit_class">
-			<input type="text" name="city" maxlength="100" value="{$smarty.get.city}" />
+			<input type="text" name="city" maxlength="100" value="{if isset($smarty.get.city)}{$smarty.get.city}{/if}" />
 		</td>
 	</tr>
 	<tr>
@@ -36,7 +36,7 @@ Use % as a wildcard character
 			State:
 		</td>
 		<td class="edit_class">
-			<input type="text" name="state" size="2" maxlength="2" value="{$smarty.get.state}" />
+			<input type="text" name="state" size="2" maxlength="2" value="{if isset($smarty.get.state)}{$smarty.get.state}{/if}" />
 		</td>
 	</tr>
 	<tr>

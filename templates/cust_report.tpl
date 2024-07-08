@@ -41,11 +41,11 @@
 <table width="100%">
 	<tr>
 		{*<th>Customer ID</th>*}
-		<th><a href="?{$params|@array2query:'order':'dir'}&order=name&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Customer</a></th>
-		<th><a href="?{$params|@array2query:'order':'dir'}&order=cust_rep&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Cust Rep</a></th>
-		<th><a href="?{$params|@array2query:'order':'dir'}&order=load_count&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Load Count</a></th>
-		<th><a href="?{$params|@array2query:'order':'dir'}&order=gross_revenue&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Gross Revenue</a></th>
-		<th><a href="?{$params|@array2query:'order':'dir'}&order=profit&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Profit</a></th>
+		<th><a href="?{array2query array=$params exclude=['order','dir']}&order=name&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Customer</a></th>
+		<th><a href="?{array2query array=$params exclude=['order','dir']}&order=cust_rep&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Cust Rep</a></th>
+		<th><a href="?{array2query array=$params exclude=['order','dir']}&order=load_count&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Load Count</a></th>
+		<th><a href="?{array2query array=$params exclude=['order','dir']}&order=gross_revenue&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Gross Revenue</a></th>
+		<th><a href="?{array2query array=$params exclude=['order','dir']}&order=profit&dir={if $params.dir == 'asc'}desc{else}asc{/if}">Profit</a></th>
 	</tr>
 	{section name=i loop=$cust}
 		<tr class="{cycle values="altRow,normalRow"}">

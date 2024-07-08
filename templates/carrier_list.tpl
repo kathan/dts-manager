@@ -10,7 +10,7 @@
 				Carrier Id:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="carrier_id" size="11" maxlength="11" value="{$smarty.get.carrier_id}" />
+				<input type="text" name="carrier_id" size="11" maxlength="11" value="{if isset($smarty.get.carrier_id)}{$smarty.get.carrier_id}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -18,7 +18,7 @@
 				Name:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="name" maxlength="30" value="{$smarty.get.name}" />
+				<input type="text" name="name" maxlength="30" value="{if isset($smarty.get.name)}{$smarty.get.name}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -26,7 +26,7 @@
 				City:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="phys_city" maxlength="100" value="{$smarty.get.phys_city}" />
+				<input type="text" name="phys_city" maxlength="100" value="{if isset($smarty.get.phys_city)}{$smarty.get.phys_city}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -34,7 +34,7 @@
 				State:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="phys_state" size="2" maxlength="2" value="{$smarty.get.phys_state}" />
+				<input type="text" name="phys_state" size="2" maxlength="2" value="{if isset($smarty.get.phys_state)}{$smarty.get.phys_state}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -42,7 +42,7 @@
 				MC Number:
 			</td>
 			<td class="edit_class">
-				<input type="text" name="mc_number" value="{$smarty.get.mc_number}" />
+				<input type="text" name="mc_number" value="{if isset($smarty.get.mc_number)}{$smarty.get.mc_number}{/if}" />
 			</td>
 		</tr>
 		<tr>
@@ -108,14 +108,14 @@
 	</tbody>
 </table>
 	{if $pag.start > 1}
-		<a href="?{$filters|@array2query:'start'}&amp;start=1">First</a> | 
-		<a href="?{$filters|@array2query:'start'}&amp;start={$pag.prev_start}">Previous</a>
+		<a href="?{array2query array=$filters exclude=['start']}&amp;start=1">First</a> | 
+		<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.prev_start}">Previous</a>
 	{/if}
 	
 	{$pag.start} thru {$pag.end} of {$pag.total}
 		{if $pag.next_start <= $pag.total}
-			<a href="?{$filters|@array2query:'start'}&amp;start={$pag.next_start}">Next</a> | 
-			<a href="?{$filters|@array2query:'start'}&amp;start={$pag.last_page_start}">Last</a>
+			<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.next_start}">Next</a> | 
+			<a href="?{array2query array=$filters exclude=['start']}&amp;start={$pag.last_page_start}">Last</a>
 		{/if}
 
 <!-- carrier_search_result_module -->

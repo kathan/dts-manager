@@ -66,7 +66,7 @@
 					Carrier Id:
 				</td>
 				<td class="edit_class">
-					<input type="text" value="{$smarty.get.carrier_id}" maxlength="11" size="11" id="" name="carrier_id"/>
+					<input type="text" value="{if isset($smarty.get.carrier_id)}{$smarty.get.carrier_id}{/if}" maxlength="11" size="11" id="" name="carrier_id"/>
 				</td>
 			</tr>
 			<tr>
@@ -74,7 +74,7 @@
 					Name:
 				</td>
 				<td class="edit_class">
-					<input type="text" value="{$smarty.get.name}" maxlength="30" id="" name="name"/>
+					<input type="text" value="{if isset(smarty.get.name)}{$smarty.get.name}{/if}" maxlength="30" id="" name="name"/>
 				</td>
 			</tr>
 			<tr>
@@ -82,7 +82,7 @@
 					Phys City:
 				</td>
 				<td class="edit_class">
-					<input type="text" value="{$smarty.get.phys_city}" maxlength="100" id="" name="phys_city"/>
+					<input type="text" value="{if isset(smarty.get.phys_city)}{$smarty.get.phys_city}{/if}" maxlength="100" id="" name="phys_city"/>
 				</td>
 			</tr>
 			<tr>
@@ -90,7 +90,7 @@
 					Phys State:
 				</td>
 				<td class="edit_class">
-					<input type="text" value="{$smarty.get.phys_state}" maxlength="2" size="2" id="" name="phys_state"/>
+					<input type="text" value="{if isset(smarty.get.phys_state)}{$smarty.get.phys_state}{/if}" maxlength="2" size="2" id="" name="phys_state"/>
 				</td>
 			</tr>
 			<tr>

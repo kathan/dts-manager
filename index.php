@@ -6,23 +6,26 @@ require_once("includes/global.php");
 define('SMALL_VIEW', "sml_view");
 $t = new Template();
 //==========Process============
+$GLOBALS['page_title'] = "";
+
+$page = "";
 $c ='';
 if(isset($_GET['r'])){
     header("Location: $_GET[r]");
 }elseif(isset($_REQUEST[SMALL_VIEW])){
 
     if(substr(safe_get($_REQUEST['page']), 0, 4) == 'http'){
-	$page = "default.php";
-    }else{
-	if(substr($_REQUEST['page'], 0, 4) == 'http'){
-            $page = "default.php";
-	}else{
-            if(isset($_REQUEST['page']) && file_exists("pages/$page")){
-		$page = $_REQUEST['page'].'.php';
-            }else{
 		$page = "default.php";
-            }
-	}
+    }else{
+		if(substr($_REQUEST['page'], 0, 4) == 'http'){
+            $page = "default.php";
+		}else{
+        	if(isset($_REQUEST['page']) && file_exists("pages/$page")){
+				$page = $_REQUEST['page'].'.php';
+        	}else{
+				$page = "default.php";
+        	}
+		}
     }
     $page = ob_get_output("pages/$page");
 	$c .='<!DOCTYPE HTML>

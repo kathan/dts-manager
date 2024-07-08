@@ -44,6 +44,7 @@ class Feedback{
 	}
 
 	public static function show_feedback($context='global'){
+		$all_feedback = "";
 		if(isset(self::$feedback[$context])){
 			$fb = self::$feedback[$context];
 		}else{

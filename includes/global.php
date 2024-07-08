@@ -7,21 +7,19 @@ function safe_define($key, $value){
     }
 }
 
-function array2query(){
-    $args = func_get_args();
-    $ary = $args[0];
-    unset($args[0]);
-    $ex = $args;
+function array2query($params, $smarty){
+    $ary = $params['array'];
+    $exclude = $params['exclude'];
     if(is_array($ary)){
-	$i=0;
-	$str = '';
-	foreach($ary as $key => $val){
-            if(!in_array($key, $ex)){
-		$i > 0 ? $str .= '&amp;' : '';
-		$str .= "$key=".urlencode($val);
-		$i++;
-            }
-	}
+		$i=0;
+		$str = '';
+		foreach($ary as $key => $val){
+        	if(!in_array($key, $exclude)){
+				$i > 0 ? $str .= '&amp;' : '';
+				$str .= "$key=".urlencode($val);
+				$i++;
+        	}
+		}
     }
     return $str;
 }
