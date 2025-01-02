@@ -258,7 +258,7 @@
 	function cancel(){
 		if(confirm("Are you sure you want to cancel?")){
 		{/literal}
-			window.location="?action={$delete_str}&page={$smarty.get.page}&customer_id={$cust.customer_id}";
+			window.location="?action={$delete_str}&page={$smarty.get.page}{if isset($cust.customer_id)}&customer_id={$cust.customer_id}{/if}";
 		{literal}
 		}
 	}

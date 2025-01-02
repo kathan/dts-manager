@@ -120,6 +120,7 @@ class DbTable{
 	function add($input){
 		$this->binds = [];
 		$field_names = '';
+		$values = "";
 		foreach($input as $key => $val){	
 			if(array_key_exists(strtolower($key), $this->columns)){
 				if($field_names != ''){

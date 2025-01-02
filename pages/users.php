@@ -80,8 +80,10 @@ class users extends dts_table{
 			case "edit":
 				if(isset($user_id)){
 					$user = $this->get_user($user_id);
+					$content .= $this->edit_user($user);
+					break;
 				}
-				$content .= $this->edit_user($user);
+				$content .= $this->edit_user();
 				break;
 			case "cust":
 				$content .= $this->get_customers();
@@ -280,7 +282,7 @@ class users extends dts_table{
 			$content = $t->fetch(App::getTempDir().'user_edit.tpl');
 		}else{
 			$content = "You do not have enough permission to view this user.";
-		}//end if
+		}
 		return $content;
 	}
 

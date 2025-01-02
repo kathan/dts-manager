@@ -15,8 +15,7 @@ $t->registerPlugin("function","array2query", "array2query");
 echo $t->fetch(App::$temp.'cust_report.tpl');
 
 function get_report($start, $end, $user_id=null){
-	$binds = [$start, $end, $start, $end, $start, $end, $start, $end];
-	$sql .= "select customer_id
+	$sql = "select customer_id
 					, name
 					, (select username from `users` u where user_id = c.acct_owner) cust_rep
 					, (select count(*)
